@@ -30,7 +30,7 @@ app.use((req, res, next) =>
   next();
 });
 
-app.post('/api/addcard', async (req, res, next) =>
+app.post('api/addcard', async (req, res, next) =>
 {
   // incoming: userId, color
   // outgoing: error
@@ -56,7 +56,7 @@ app.post('/api/addcard', async (req, res, next) =>
   res.status(200).json(ret);
 });
 
-app.post('/api/login', async (req, res, next) => 
+app.post('api/login', async (req, res, next) => 
 {
   // incoming: login, password
   // outgoing: id, firstName, lastName, error
@@ -84,7 +84,7 @@ app.post('/api/login', async (req, res, next) =>
 });
 
 
-app.post('/api/searchcards', async (req, res, next) => 
+app.post('api/searchcards', async (req, res, next) => 
 {
   // incoming: userId, search
   // outgoing: results[], error

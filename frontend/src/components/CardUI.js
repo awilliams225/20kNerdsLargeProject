@@ -48,7 +48,7 @@ function CardUI()
 
 	};
 
-    const app_name = 'cop4331-9-19-2023-ed38a9ffe472'
+    const app_name = 'fight-or-flight-20k-5991cb1c14ef'
     function buildPath(route)
     {
         if (process.env.NODE_ENV === 'production') 

@@ -21,7 +21,7 @@ function CardUI()
     {
 	    event.preventDefault();
 
-        var obj = {userId:userId,card:card.value};
+        var obj = {UserId:userId,Card:card.value};
         var js = JSON.stringify(obj);
 
         try

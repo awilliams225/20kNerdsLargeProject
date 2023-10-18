@@ -30,18 +30,18 @@ app.use((req, res, next) =>
   next();
 });
 
-app.post('/api/addcard', async (req, res, next) =>
+app.post('/api/register', async (req, res, next) =>
 {
 	
-  const { userId, card } = req.body;
+  const { username, password } = req.body;
 
-  const newCard = {Card:card,UserId:userId};
+  const newUser = {Username:username, Password:password, Answers:[]};
   var error = '';
 
   try
   {
-    const db = client.db('COP4331Cards');
-    const result = db.collection('Cards').insertOne(newCard);
+    const db = client.db('COP4331_LargeProject');
+    const result = db.collection('Users').insertOne(newUser);
   }
   catch(e)
   {

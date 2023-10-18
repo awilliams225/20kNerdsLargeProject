@@ -43,6 +43,7 @@ function CardUI()
         }
         catch(e)
         {
+            console.log("Hello!");
             setMessage(e.toString());
         }
 

@@ -67,7 +67,7 @@ app.post('/api/login', async (req, res, next) =>
 
   if( results.length > 0 )
   {
-    id = results[0].UserId;
+    id = results[0]._id;
   }
 
   var ret = { id:id, error:''};

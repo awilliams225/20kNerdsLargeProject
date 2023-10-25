@@ -56,18 +56,19 @@ function Login()
   };
 
     return(
-      <div id="loginDiv">
-        <form onSubmit={doLogin}>
-        <span id="inner-title">PLEASE LOG IN</span><br />
-        <input type="text" id="loginName" placeholder="Username" 
-          ref={(c) => loginName = c} />
-        <input type="password" id="loginPassword" placeholder="Password" 
-          ref={(c) => loginPassword = c} />
-        <input type="submit" id="loginButton" class="buttons" value = "Do It"
-          onClick={doLogin} />
-        </form>
-        <span id="loginResult">{message}</span>
-     </div>
+      <div id="LoginDiv" style={{backgroundColor: '#1A1A20', height: '50vh', width: '75%',
+           borderRadius: '15px 0px 0px 15px', float: 'right', marginTop: '10vh'}}>
+            <form onSubmit={doLogin} style={{}}>
+                <span id="inner-title" style={{color: '#FFFFFF', marginTop: '20px'}}>Login</span><br />
+                <input type="text" id="loginName" placeholder="Username"
+                    ref={(c) => loginName = c} /><br />
+                <input type="password" id="loginPassword" placeholder="Password"
+                    ref={(c) => loginPassword = c} /><br />
+                <input type="submit" id="loginButton" class="buttons" value="Do It"
+                    onClick={doLogin} />
+            </form>
+            <span id="loginResult">{message}</span>
+        </div>
     );
 };
 

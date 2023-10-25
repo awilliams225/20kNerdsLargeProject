@@ -1,56 +1,73 @@
-//import React from 'react';
 import React, { useState } from 'react';
 
-function Login() {
-    var loginName;
-    var loginPassword;
+function Login()
+{
 
-    const [message, setMessage] = useState('');
+  var loginName;
+  var loginPassword;
 
-    const doLogin = async event => {
-        event.preventDefault();
-        //alert('doIt() ' + loginName.value + ' ' + loginPassword.value);
+  const [message,setMessage] = useState('');
 
-        var obj = { login: loginName.value, password: loginPassword.value };
-        var js = JSON.stringify(obj);
+  const app_name = 'fight-or-flight-20k-5991cb1c14ef'
+  function buildPath(route)
+  {
+    if (process.env.NODE_ENV === 'production') 
+    {
+        return 'https://' + app_name +  '.herokuapp.com/' + route;
+    }
+    else
+    {        
+        return 'http://localhost:5000/' + route;
+    }
+  }
 
-        try {
-            const response = await fetch('http://localhost:5001/api/login',
-                { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
+  const doLogin = async event => 
+  {
+      event.preventDefault();
 
-            var res = JSON.parse(await response.text());
+      var obj = {login:loginName.value,password:loginPassword.value};
+      var js = JSON.stringify(obj);
 
-            if (res.id <= 0) {
-                setMessage('User/Password combination incorrect');
-            }
-            else {
-                var user = { firstName: res.firstName, lastName: res.lastName, id: res.id }
-                localStorage.setItem('user_data', JSON.stringify(user));
+      try
+      {    
+          const response = await fetch(buildPath('api/login'),
+              {method:'POST',body:js,headers:{'Content-Type': 'application/json'}});
 
-                setMessage('');
-                window.location.href = '/cards';
-            }
-        }
-        catch (e) {
-            alert(e.toString());
-            return;
-        }
-    };
+          var res = JSON.parse(await response.text());
 
-    return (
-        <div id="LoginDiv" style={{backgroundColor: '#1A1A20', height: '50vh', width: '75%',
-           borderRadius: '15px 0px 0px 15px', float: 'right', marginTop: '10vh'}}>
-            <form onSubmit={doLogin} style={{}}>
-                <span id="inner-title" style={{color: '#FFFFFF', marginTop: '20px'}}>Login</span><br />
-                <input type="text" id="loginName" placeholder="Username"
-                    ref={(c) => loginName = c} /><br />
-                <input type="password" id="loginPassword" placeholder="Password"
-                    ref={(c) => loginPassword = c} /><br />
-                <input type="submit" id="loginButton" class="buttons" value="Do It"
-                    onClick={doLogin} />
-            </form>
-            <span id="loginResult">{message}</span>
-        </div>
+          if( res.id <= 0 )
+          {
+              setMessage('User/Password combination incorrect');
+          }
+          else
+          {
+              var user = {firstName:res.firstName,lastName:res.lastName,id:res.id}
+              localStorage.setItem('user_data', JSON.stringify(user));
+
+              setMessage('');
+              window.location.href = '/cards';
+          }
+      }
+      catch(e)
+      {
+          alert(e.toString());
+          return;
+      }    
+  };
+
+    return(
+      <div id="loginDiv">
+        <form onSubmit={doLogin}>
+        <span id="inner-title">PLEASE LOG IN</span><br />
+        <input type="text" id="loginName" placeholder="Username" 
+          ref={(c) => loginName = c} />
+        <input type="password" id="loginPassword" placeholder="Password" 
+          ref={(c) => loginPassword = c} />
+        <input type="submit" id="loginButton" class="buttons" value = "Do It"
+          onClick={doLogin} />
+        </form>
+        <span id="loginResult">{message}</span>
+     </div>
     );
 };
 

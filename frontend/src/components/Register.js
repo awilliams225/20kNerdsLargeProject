@@ -59,10 +59,10 @@ function Register()
 
     return(
       <div id="RegisterDiv" style={{backgroundColor: '#4BBCD5', height: '50vh', width: '75%',
-           borderRadius: '0px 15px 15px 0px', float: 'left', marginTop: '10vh',
+           borderRadius: '0px 15px 15px 0px', marginLeft: 0, marginTop: '10vh',
            textAlign: 'center', padding: '5vh'}}>
             <form onSubmit={doRegister} style={{}}>
-                <span id="inner-title" style={{color: '#FFFFFF', marginTop: '20px'}}>Sign Up</span><br />
+                <h2 style={{color: '#FFFFFF'}}>Sign Up</h2>
                 <input type="text" id="registerName" placeholder="Username"
                     ref={(c) => registerName = c} /><br />
                 <input type="email" id="registerEmail" placeholder="Email"

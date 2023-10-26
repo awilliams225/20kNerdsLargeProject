@@ -33,9 +33,9 @@ app.use((req, res, next) =>
 app.post('/api/register', async (req, res, next) =>
 {
 	
-  const { username, password } = req.body;
+  const { username, password, email } = req.body;
 
-  const newUser = {Username:username, Password:password, Answers:[]};
+  const newUser = {Username:username, Password:password, Email:email, Answers:[]};
   var error = '';
 
   try

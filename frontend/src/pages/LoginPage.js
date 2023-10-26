@@ -18,9 +18,9 @@ const LoginPage = () => {
             </div>
             <div style={{
                 backgroundColor: '#FF0000',
-                height: '100vh', width: '50vw'
+                height: '100vh', width: '50vw', float: 'left'
             }}>
-                <h1 style={{float: 'right', color: '#FFFFFF'}}>
+                <h1 style={{textAlign: 'right', color: '#FFFFFF'}}>
                     FIGHT O</h1>
                 <Login />
             </div>

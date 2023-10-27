@@ -119,3 +119,22 @@ if (process.env.NODE_ENV === 'production')
   });
 }
 
+app.post('/api/numQuestions', async (req, res, next) =>
+{
+
+  var result = 0;
+  var error = '';
+
+  try
+  {
+    const db = client.db('COP4331_LargeProject');
+    result = await db.collection('Questions').countDocuments({});
+  }
+  catch(e)
+  {
+    error = e.toString();
+  }
+
+  var ret = { numQuestions: result, error:''};
+  res.status(200).json(ret);
+});

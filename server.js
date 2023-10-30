@@ -45,7 +45,6 @@ app.post('/api/register', async (req, res, next) =>
   }
   catch(e)
   {
-    console.log("Hello!");
     error = e.toString();
   }
 
@@ -136,5 +135,27 @@ app.post('/api/numQuestions', async (req, res, next) =>
   }
 
   var ret = { numQuestions: result, error:''};
+  res.status(200).json(ret);
+});
+
+app.post('/api/addPost', async (req, res, next) => {
+  
+  var error = '';
+
+  const { slug, content } = req.body;
+
+  const newPost = { Slug:slug, Content:content}
+
+  try 
+  {
+    const db = client.db('COP4331_LargeProject');
+    const result = db.collection('Post').insertOne(newPost);
+  }
+  catch(e)
+  {
+    error = e.toString();
+  }
+
+  var ret = { error:''};
   res.status(200).json(ret);
 });

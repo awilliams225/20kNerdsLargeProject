@@ -143,9 +143,9 @@ app.post('/api/addPost', async (req, res, next) => {
   
   var error = '';
 
-  const { slug, content } = req.body;
+  const { answerId, userId, slug, content } = req.body;
 
-  const newPost = { Slug:slug, Content:content}
+  const newPost = { AnswerId:answerId, UserId:userId, Slug:slug, Content:content, Comments: []}
 
   try 
   {
@@ -161,14 +161,14 @@ app.post('/api/addPost', async (req, res, next) => {
   res.status(200).json(ret);
 });
 
-app.post('/api/getPost', async (req, res, next) => 
+app.get('/api/posts/:slug', async (req, res, next) => 
 {
   // incoming: Slug
   // outgoing: Markdown post
 	
   var error = '';
 
-  const { slug } = req.body;
+  const slug = req.params.slug;
 
   const db = client.db('COP4331_LargeProject');
   const results = await db.collection('Post').find({Slug:slug}).toArray();
@@ -178,10 +178,6 @@ app.post('/api/getPost', async (req, res, next) =>
   if( results.length > 0 )
   {
     content = results[0].Content;
-  }
-  else
-  {
-    content = "NO CONTENT";
   }
 
   var ret = { Content:content, error:''};

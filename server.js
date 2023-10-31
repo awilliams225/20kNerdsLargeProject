@@ -119,3 +119,74 @@ if (process.env.NODE_ENV === 'production')
   });
 }
 
+<<<<<<< Updated upstream
+=======
+app.post('/api/numQuestions', async (req, res, next) =>
+{
+
+  var result = 0;
+  var error = '';
+
+  try
+  {
+    const db = client.db('COP4331_LargeProject');
+    result = await db.collection('Questions').countDocuments({});
+  }
+  catch(e)
+  {
+    error = e.toString();
+  }
+
+  var ret = { numQuestions: result, error:''};
+  res.status(200).json(ret);
+});
+
+app.post('/api/addPost', async (req, res, next) => {
+  
+  var error = '';
+
+  const { slug, content } = req.body;
+
+  const newPost = { Slug:slug, Content:content}
+
+  try 
+  {
+    const db = client.db('COP4331_LargeProject');
+    const result = db.collection('Post').insertOne(newPost);
+  }
+  catch(e)
+  {
+    error = e.toString();
+  }
+
+  var ret = { error:''};
+  res.status(200).json(ret);
+});
+
+app.post('/api/getPost', async (req, res, next) => 
+{
+  // incoming: Slug
+  // outgoing: Markdown post
+	
+  var error = '';
+
+  const { slug } = req.body;
+
+  const db = client.db('COP4331_LargeProject');
+  const results = await db.collection('Post').find({Slug:slug}).toArray();
+
+  var content = '';
+
+  if( results.length > 0 )
+  {
+    content = results[0].Content;
+  }
+  else
+  {
+    content = "NO CONTENT";
+  }
+
+  var ret = { Content:content, error:''};
+  res.status(200).json(ret);
+});
+>>>>>>> Stashed changes

@@ -119,8 +119,6 @@ if (process.env.NODE_ENV === 'production')
   });
 }
 
-<<<<<<< Updated upstream
-=======
 app.post('/api/numQuestions', async (req, res, next) =>
 {
 
@@ -189,4 +187,3 @@ app.post('/api/getPost', async (req, res, next) =>
   var ret = { Content:content, error:''};
   res.status(200).json(ret);
 });
->>>>>>> Stashed changes

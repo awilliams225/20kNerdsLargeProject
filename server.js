@@ -183,3 +183,30 @@ app.get('/api/posts/:slug', async (req, res, next) =>
   var ret = { Content:content, error:''};
   res.status(200).json(ret);
 });
+
+app.get('/api/users/:UserId', async (req, res, next) => {
+
+  var error = '';
+  var postsList = [];
+
+  const userId = req.params.UserId;
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    const posts = db.collection("Post");
+
+    const query = { UserId: userId };
+
+    postsList = await posts.find(query).toArray();
+
+
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { list: postsList, error: error };
+  res.status(200).json(ret);
+
+
+});

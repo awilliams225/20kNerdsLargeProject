@@ -45,7 +45,6 @@ export default function Post() {
     }, [slug]);
 
     const renderPost = () => {
-        console.log(loading)
         if (loading) {
             return <h1>Loading...</h1>
         }

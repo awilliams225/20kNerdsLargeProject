@@ -224,6 +224,7 @@ app.get('/api/posts/:slug', async (req, res, next) =>
   res.status(200).json(ret);
 });
 
+// Returns list of posts associated with given user ID
 app.get('/api/users/:UserId', async (req, res, next) => {
 
   var error = '';
@@ -246,6 +247,59 @@ app.get('/api/users/:UserId', async (req, res, next) => {
   }
 
   var ret = { list: postsList, error: error };
+  res.status(200).json(ret);
+
+});
+
+// Returns one random question
+app.get('/api/questions/getRandom', async (req, res, next) => {
+
+  var error = '';
+  var randomQuestion;
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    const questions = db.collection("Questions");
+
+    const query =  [{ $sample: { size: 1 } }];
+
+    randomQuestion = await questions.aggregate(query).next();
+
+
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { question: randomQuestion, error: error };
+  res.status(200).json(ret);
+
+});
+
+// Returns paginated list of questions based on current page and number of questions per page
+app.post('/api/questions/:pageNum', async (req, res, next) => {
+
+  var error = '';
+  var questionList = [];
+
+  const { questionPerPage } = req.body;
+
+  const pageNum = parseInt(req.params.pageNum);
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    const questions = db.collection("Questions");
+
+    const toSkip = (pageNum - 1) * questionPerPage ;
+
+    questionList = await questions.find().skip(toSkip).limit(questionPerPage).toArray();
+
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { question: questionList, error: error };
   res.status(200).json(ret);
 
 });

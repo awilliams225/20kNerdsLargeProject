@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function Login()
+export default function Login()
 {
 
   var loginName;
@@ -71,6 +71,4 @@ function Login()
             <span id="loginResult">{message}</span>
         </div>
     );
-};
-
-export default Login;
+}

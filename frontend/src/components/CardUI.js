@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function CardUI()
+export default function CardUI()
 {
 
     var card = '';
@@ -113,5 +113,3 @@ function CardUI()
         </div>
     );
 }
-
-export default CardUI;

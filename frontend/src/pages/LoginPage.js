@@ -1,7 +1,6 @@
 import React from 'react';
 import "bootstrap/dist/css/bootstrap.css"
 
-import PageTitle from '../components/PageTitle';
 import Login from '../components/Login';
 import Register from '../components/Register';
 
@@ -26,6 +25,6 @@ const LoginPage = () => {
             </div>
         </div>
     );
-};
+}
 
 export default LoginPage;

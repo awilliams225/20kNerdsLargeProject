@@ -161,6 +161,26 @@ app.post('/api/addPost', async (req, res, next) => {
   res.status(200).json(ret);
 });
 
+app.post('/api/getUserById', async (req, res, next) => {
+  var error = '';
+  var result = null;
+
+  const { userId } = req.body;
+
+  try
+  {
+    const db = client.db('COP4331_LargeProject');
+    result = await db.collection('Users').find({UserId:userId}).toArray();
+  }
+  catch(e)
+  {
+    error = e.toString();
+  }
+  
+  var ret = { user: result[0], error: error }
+  res.status(200).json(ret);
+})
+
 app.post('/api/getPosts', async (req, res, next) => {
   var error = '';
   var result = null;

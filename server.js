@@ -135,7 +135,7 @@ app.post('/api/numQuestions', async (req, res, next) =>
     error = e.toString();
   }
 
-  var ret = { numQuestions: result, error:''};
+  var ret = { numQuestions: result, error:error};
   res.status(200).json(ret);
 });
 
@@ -157,9 +157,29 @@ app.post('/api/addPost', async (req, res, next) => {
     error = e.toString();
   }
 
-  var ret = { error:''};
+  var ret = { error:error};
   res.status(200).json(ret);
 });
+
+app.post('/api/getPosts', async (req, res, next) => {
+  var error = '';
+  var result = null;
+
+  const { questionId } = req.body;
+
+  try
+  {
+    const db = client.db('COP4331_LargeProject');
+    result = await db.collection('Post').find({QuestionId:questionId}).toArray();
+  }
+  catch(e)
+  {
+    error = e.toString();
+  }
+  
+  var ret = { postList: result, error: error }
+  res.status(200).json(ret);
+})
 
 app.get('/api/posts/:slug', async (req, res, next) => 
 {
@@ -180,7 +200,7 @@ app.get('/api/posts/:slug', async (req, res, next) =>
     content = results[0].Content;
   }
 
-  var ret = { Content:content, error:''};
+  var ret = { Content:content, error:error};
   res.status(200).json(ret);
 });
 
@@ -207,6 +227,5 @@ app.get('/api/users/:UserId', async (req, res, next) => {
 
   var ret = { list: postsList, error: error };
   res.status(200).json(ret);
-
 
 });

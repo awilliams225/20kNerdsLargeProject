@@ -3,6 +3,7 @@ import Spinner from 'react-bootstrap/Spinner';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { useParams } from "react-router-dom";
 import React, { useState, useEffect } from 'react';
+import ReactMarkdown from "react-markdown";
 
 export default function AnswerForum() {
     
@@ -29,7 +30,7 @@ export default function AnswerForum() {
             setLoading(true);
 
             console.log(questionId);
-            var obj = {QuestionId: questionId};
+            var obj = {questionId: parseInt(questionId)};
             var js = JSON.stringify(obj);
 
             console.log(js);
@@ -68,7 +69,9 @@ export default function AnswerForum() {
                                 <Card>
                                     <Card.Body>
                                         <Card.Title>{post.Title}</Card.Title>
-                                        <Card.Text>{post.Content}</Card.Text>
+                                        <Card.Text>
+                                            <ReactMarkdown children={post.Content}></ReactMarkdown>
+                                        </Card.Text>
                                     </Card.Body>
                                 </Card>
                             </ListGroup.Item>

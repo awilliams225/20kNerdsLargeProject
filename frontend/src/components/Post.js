@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import React, { useState, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
 
 
 export default function Post() {
@@ -51,7 +52,7 @@ export default function Post() {
         else {
             return (
                 <>
-                <h1>{ post.Content }</h1>
+                <ReactMarkdown children={ post.Content }></ReactMarkdown>
                 </>
             )
         }

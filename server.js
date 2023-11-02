@@ -8,7 +8,13 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
+const nodemailer = require("nodemailer");
+
 const path = require('path');           
+const Mailgen = require('mailgen');
+const EMAIL = process.env.EMAIL;
+const PASSWORD = process.env.PASSWORD;
+
 const PORT = process.env.PORT || 5000;
 
 const app = express();
@@ -28,6 +34,62 @@ app.use((req, res, next) =>
     'GET, POST, PATCH, DELETE, OPTIONS'
   );
   next();
+});
+
+// in progress Email verification
+app.post('/api/registerWithEmail', async (req, res, next) =>
+{
+  const { firstName, lastName, username, password, userEmail } = req.body;
+	let config = {
+    service : 'gmail',
+    auth : {
+      user: EMAIL,
+      pass: PASSWORD
+    }
+  }
+
+  let transporter = nodemailer.createTransport(config);
+  let MailGenerator = new Mailgen({
+    theme: "default",
+    product : {
+      name: "FightOrFlight",
+      link: 'https://fight-or-flight-20k-5991cb1c14ef.herokuapp.com'
+    }
+  })
+
+  let response = {
+      body: {
+        name: firstName + " " + lastName,
+        intro: 'Welcome to FightOrFlight! We\'re very excited to have you on board.',
+        action: {
+            instructions: 'To get started, please click here:',
+            button: {
+                color: '#22BC66', // Optional action button color
+                text: 'Confirm your account',
+                link: 'https://mailgen.js/confirm?s=d9729feb74992cc3482b350163a1a010'
+            }
+        },
+        outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'
+    }
+  }
+
+  let mail = MailGenerator.generate(response)
+
+  let message = {
+    from : EMAIL,
+    to: userEmail,
+    subject: "Registration",
+    html: mail
+  }
+  transporter.sendMail(message).then(() => {
+    return res.status(201).json({
+      msg: "you should recieve an email"
+    })
+  }).catch(error => {
+    return res.status(500).json({ error })
+  })
+
+
 });
 
 app.post('/api/register', async (req, res, next) =>
@@ -224,6 +286,7 @@ app.get('/api/posts/:slug', async (req, res, next) =>
   res.status(200).json(ret);
 });
 
+// Returns list of posts associated with given user ID
 app.get('/api/users/:UserId', async (req, res, next) => {
 
   var error = '';
@@ -246,6 +309,112 @@ app.get('/api/users/:UserId', async (req, res, next) => {
   }
 
   var ret = { list: postsList, error: error };
+  res.status(200).json(ret);
+
+});
+
+// Returns one random question
+app.get('/api/questions/getRandom', async (req, res, next) => {
+
+  var error = '';
+  var randomQuestion;
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    const questions = db.collection("Questions");
+
+    const query =  [{ $sample: { size: 1 } }];
+
+    randomQuestion = await questions.aggregate(query).next();
+
+
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { question: randomQuestion, error: error };
+  res.status(200).json(ret);
+
+});
+
+// Returns paginated list of questions based on current page and number of questions per page
+app.post('/api/questions/:pageNum', async (req, res, next) => {
+
+  var error = '';
+  var questionList = [];
+
+  const { questionPerPage } = req.body;
+
+  const pageNum = parseInt(req.params.pageNum);
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    const questions = db.collection("Questions");
+
+    const toSkip = (pageNum - 1) * questionPerPage ;
+
+    questionList = await questions.find().skip(toSkip).limit(questionPerPage).toArray();
+
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { question: questionList, error: error };
+  res.status(200).json(ret);
+
+});
+
+// Returns one random question
+app.get('/api/questions/getRandom', async (req, res, next) => {
+
+  var error = '';
+  var randomQuestion;
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    const questions = db.collection("Questions");
+
+    const query =  [{ $sample: { size: 1 } }];
+
+    randomQuestion = await questions.aggregate(query).next();
+
+
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { question: randomQuestion, error: error };
+  res.status(200).json(ret);
+
+});
+
+// Returns paginated list of questions based on current page and number of questions per page
+app.post('/api/questions/:pageNum', async (req, res, next) => {
+
+  var error = '';
+  var questionList = [];
+
+  const { questionPerPage } = req.body;
+
+  const pageNum = parseInt(req.params.pageNum);
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    const questions = db.collection("Questions");
+
+    const toSkip = (pageNum - 1) * questionPerPage ;
+
+    questionList = await questions.find().skip(toSkip).limit(questionPerPage).toArray();
+
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { question: questionList, error: error };
   res.status(200).json(ret);
 
 });

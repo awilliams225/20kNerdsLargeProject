@@ -249,3 +249,5 @@ app.get('/api/users/:UserId', async (req, res, next) => {
   res.status(200).json(ret);
 
 });
+
+module.exports = app;

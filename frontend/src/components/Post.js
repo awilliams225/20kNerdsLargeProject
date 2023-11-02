@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 
 export default function Post() {
-    const { slug } = useParams();
+    const { questionId, slug } = useParams();
 
     const [post, setPost] = useState({});
     const [loading, setLoading] = useState(false);

@@ -1,14 +1,14 @@
 import React from 'react';
 
 import Navbar from '../components/Navbar';
-import PostCard from '../components/PostCard';
+import AnswerForum from '../components/AnswerForum';
 
 const ForumPage = () =>
 {
     return(
         <div>
             <Navbar />
-            <PostCard />
+            <AnswerForum />
         </div>
     );
 }

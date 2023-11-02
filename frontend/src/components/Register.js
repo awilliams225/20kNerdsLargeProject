@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function Register()
+export default function Register()
 {
 
   var registerName;
@@ -75,6 +75,4 @@ function Register()
             <span id="registerResult">{message}</span>
         </div>
     );
-};
-
-export default Register;
+}

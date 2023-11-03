@@ -11,7 +11,6 @@ export default function QuestionList() {
     const app_name = 'fight-or-flight-20k-5991cb1c14ef'
     function buildPath(route)
     {
-        console.log(route);
       if (process.env.NODE_ENV === 'production') 
       {
           return 'https://' + app_name +  '.herokuapp.com/' + route;
@@ -29,8 +28,6 @@ export default function QuestionList() {
             var obj = {questionPerPage: parseInt(1)};
             var js = JSON.stringify(obj);
 
-            console.log(js);
-
             const response = await fetch(buildPath(`api/questions/pageNum?` + new URLSearchParams({pageNum: 2})), {method:'POST',body:js,headers:{'Content-Type': 'application/json'}});
             
             if (response != null)
@@ -38,8 +35,6 @@ export default function QuestionList() {
                 const json = await response.json();
 
                 setQuestions(json);
-
-                console.log(json);
 
                 setLoading(false);
             }

@@ -9,37 +9,32 @@ export default function QuestionList() {
     const [loading, setLoading] = useState(true);
 
     const app_name = 'fight-or-flight-20k-5991cb1c14ef'
-    function buildPath(route)
-    {
-      if (process.env.NODE_ENV === 'production') 
-      {
-          return 'https://' + app_name +  '.herokuapp.com/' + route;
-      }
-      else
-      {        
-          return 'http://localhost:5000/' + route;
-      }
+    function buildPath(route) {
+        if (process.env.NODE_ENV === 'production') {
+            return 'https://' + app_name + '.herokuapp.com/' + route;
+        }
+        else {
+            return 'http://localhost:5000/' + route;
+        }
     }
 
     useEffect(() => {
         const grabQuestions = async () => {
             setLoading(true);
 
-            var obj = {questionPerPage: parseInt(1)};
+            var obj = { questionPerPage: parseInt(1) };
             var js = JSON.stringify(obj);
 
-            const response = await fetch(buildPath(`api/questions/pageNum?` + new URLSearchParams({pageNum: 2})), {method:'POST',body:js,headers:{'Content-Type': 'application/json'}});
-            
-            if (response != null)
-            {
+            const response = await fetch(buildPath(`api/questions/pageNum?` + new URLSearchParams({ pageNum: 2 })), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
+
+            if (response != null) {
                 const json = await response.json();
 
                 setQuestions(json);
 
                 setLoading(false);
             }
-            else
-            {
+            else {
                 console.log("Response is null");
             }
         }

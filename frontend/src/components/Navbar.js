@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 
-export default function Navbar()
-{
+export default function Navbar() {
 
-    return(
+    return (
         <div>
             <h1>Poopy site</h1>
         </div>

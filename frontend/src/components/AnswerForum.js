@@ -6,23 +6,20 @@ import React, { useState, useEffect } from 'react';
 import ReactMarkdown from "react-markdown";
 
 export default function AnswerForum() {
-    
+
     const { questionId } = useParams();
 
     const [posts, setPosts] = useState({});
     const [loading, setLoading] = useState(true);
 
     const app_name = 'fight-or-flight-20k-5991cb1c14ef'
-    function buildPath(route)
-    {
-      if (process.env.NODE_ENV === 'production') 
-      {
-          return 'https://' + app_name +  '.herokuapp.com/' + route;
-      }
-      else
-      {        
-          return 'http://localhost:5000/' + route;
-      }
+    function buildPath(route) {
+        if (process.env.NODE_ENV === 'production') {
+            return 'https://' + app_name + '.herokuapp.com/' + route;
+        }
+        else {
+            return 'http://localhost:5000/' + route;
+        }
     }
 
     useEffect(() => {
@@ -30,23 +27,21 @@ export default function AnswerForum() {
             setLoading(true);
 
             console.log(questionId);
-            var obj = {questionId: parseInt(questionId)};
+            var obj = { questionId: parseInt(questionId) };
             var js = JSON.stringify(obj);
 
             console.log(js);
 
-            const response = await fetch(buildPath('api/getPosts'), {method: 'POST',body:js,headers:{'Content-Type': 'application/json'}});
-            
-            if (response != null)
-            {
+            const response = await fetch(buildPath('api/getPosts'), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
+
+            if (response != null) {
                 const json = await response.json();
-    
+
                 setPosts(json);
-                
+
                 setLoading(false);
             }
-            else
-            {
+            else {
                 console.log("Response is null");
             }
         }

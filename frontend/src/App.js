@@ -6,6 +6,7 @@ import PostPage from './pages/PostPage';
 import ForumPage from './pages/ForumPage';
 import LoginPage from './pages/LoginPage';
 import CardPage from './pages/CardPage';
+import QuestionPage from './pages/QuestionPage';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/cards" element={<CardPage />} />
+        <Route path="/home" element={<QuestionPage />}/>
         <Route path="/question/:questionId" element={<ForumPage />}/>
         <Route path="/question/:questionId/post/:slug" element={<PostPage />}/>
       </Routes>

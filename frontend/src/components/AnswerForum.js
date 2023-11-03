@@ -60,7 +60,6 @@ export default function AnswerForum() {
         }
         else {
             var postList = posts.postList;
-            console.log(postList);
             return (
                 <>
                     <ListGroup>

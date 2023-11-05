@@ -15,8 +15,8 @@ function App() {
         <Route path="/" element={<LoginPage />} />
         <Route path="/cards" element={<CardPage />} />
         <Route path="/home" element={<QuestionPage />}/>
-        <Route path="/question/:questionId" element={<ForumPage />}/>
-        <Route path="/question/:questionId/post/:slug" element={<PostPage />}/>
+        <Route path="/question/:questionSlug" element={<ForumPage />}/>
+        <Route path="/question/:questionSlug/post/:slug" element={<PostPage />}/>
       </Routes>
     </BrowserRouter>
   );

@@ -48,11 +48,12 @@ export default function QuestionList() {
         }
         else {
             var questionList = questions.question;
+            console.log(questionList);
             return (
                 <>
                     <ListGroup>
                         {questionList.map((question) => (
-                            <ListGroup.Item action variant="dark">
+                            <ListGroup.Item action variant="dark" href={"question/"}>
                                 <Card>
                                     <Card.Body>
                                         <Card.Title>{question.text}</Card.Title>

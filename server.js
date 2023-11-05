@@ -247,12 +247,12 @@ app.post('/api/getPosts', async (req, res, next) => {
   var error = '';
   var result = null;
 
-  const { questionId } = req.body;
+  const { questionSlug } = req.body;
 
   try
   {
     const db = client.db('COP4331_LargeProject');
-    result = await db.collection('Post').find({QuestionId:questionId}).toArray();
+    result = await db.collection('Post').find({QuestionSlug:questionSlug}).toArray();
   }
   catch(e)
   {

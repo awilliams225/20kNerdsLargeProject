@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
+import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 
@@ -14,25 +15,26 @@ export default function CreatePostForm() {
     return (
         <>
             <Button onClick={handleShow}>
-                Test
+                Create Post
             </Button>
             <Modal show={show} onHide={handleClose} data-bs-theme="dark">
-                <Modal.Header closeButton>
-                    <Modal.Title>Create a Post</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>Enter the answer you wish to post here:</Modal.Body>
-                <Form className="m-3">
-                    <Form.Group className="mb-5" controlId="formPostTitle">
-                        <Form.Label>Post Title</Form.Label>
-                        <Form.Control type="text" placeholder="Write a witty title..." />
-                    </Form.Group>
-                    <Form.Group className="mb-5" controlId="formPostContent">
-                        <Form.Label>Post Content</Form.Label>
-                        <Form.Control type="text" placeholder="Explain your answer..." />
-                    </Form.Group>
-                    <Button variant="warning" type="submit">Discard</Button>
-                    <Button variant="primary" type="submit">Publish</Button>
-                </Form>
+                <Card bg="dark">
+                    <Card.Header>Create a Post</Card.Header>
+                    <Card.Body>
+                        <Form className="m-3">
+                            <Form.Group className="mb-5" controlId="formPostTitle">
+                                <Form.Label>Post Title</Form.Label>
+                                <Form.Control type="text" placeholder="Write a witty title..." />
+                            </Form.Group>
+                            <Form.Group className="mb-5" controlId="formPostContent">
+                                <Form.Label>Post Content</Form.Label>
+                                <Form.Control as="textarea" placeholder="Explain your answer..." />
+                            </Form.Group>
+                            <Button variant="danger me-3" type="submit">Discard</Button>
+                            <Button variant="primary" type="submit">Publish</Button>
+                        </Form>
+                    </Card.Body>
+                </Card>
             </Modal>
         </>
     )

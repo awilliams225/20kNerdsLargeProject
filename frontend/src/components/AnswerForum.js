@@ -57,9 +57,9 @@ export default function AnswerForum() {
             var postList = posts.postList;
             return (
                 <>
-                    <ListGroup>
+                    <ListGroup className="mt-3">
                         {postList.map((post) => (
-                            <ListGroup.Item action variant="dark" href={questionSlug + "/post/" + post.Slug}>
+                            <ListGroup.Item action variant="dark" href={questionSlug + "/post/" + post.Slug} className="my-1">
                                 <Card>
                                     <Card.Body>
                                         <Card.Title>{post.Title}</Card.Title>

@@ -1,12 +1,12 @@
 import React from 'react';
 
-import Navbar from '../components/Navbar';
+import GlobalNavbar from '../components/GlobalNavbar';
 import QuestionList from '../components/QuestionList';
 
 const QuestionPage = () => {
     return (
         <div>
-            <Navbar />
+            <GlobalNavbar />
             <QuestionList />
         </div>
     );

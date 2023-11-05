@@ -22,7 +22,7 @@ export default function QuestionList() {
         const grabQuestions = async () => {
             setLoading(true);
 
-            var obj = { questionPerPage: parseInt(1) };
+            var obj = { questionPerPage: parseInt(5) };
             var js = JSON.stringify(obj);
 
             const response = await fetch(buildPath(`api/questions/pageNum?` + new URLSearchParams({ pageNum: 2 })), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
@@ -53,7 +53,7 @@ export default function QuestionList() {
                 <>
                     <ListGroup>
                         {questionList.map((question) => (
-                            <ListGroup.Item action variant="dark" href={"question/"}>
+                            <ListGroup.Item action variant="dark" href={"question/" + question.slug}>
                                 <Card>
                                     <Card.Body>
                                         <Card.Title>{question.text}</Card.Title>

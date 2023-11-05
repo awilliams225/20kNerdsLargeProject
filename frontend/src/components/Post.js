@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown';
 
 
 export default function Post() {
-    const { questionId, slug } = useParams();
+    const { questionSlug, slug } = useParams();
 
     const [post, setPost] = useState({});
     const [loading, setLoading] = useState(false);

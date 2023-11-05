@@ -7,7 +7,7 @@ import ReactMarkdown from "react-markdown";
 
 export default function AnswerForum() {
 
-    const { questionId } = useParams();
+    const { questionSlug } = useParams();
 
     const [posts, setPosts] = useState({});
     const [loading, setLoading] = useState(true);
@@ -26,8 +26,8 @@ export default function AnswerForum() {
         const grabForum = async () => {
             setLoading(true);
 
-            console.log(questionId);
-            var obj = { questionId: parseInt(questionId) };
+            console.log(questionSlug);
+            var obj = { questionSlug: questionSlug };
             var js = JSON.stringify(obj);
 
             console.log(js);
@@ -47,7 +47,7 @@ export default function AnswerForum() {
         }
 
         grabForum();
-    }, [questionId]);
+    }, [questionSlug]);
 
     const renderForum = () => {
         if (loading) {
@@ -59,7 +59,7 @@ export default function AnswerForum() {
                 <>
                     <ListGroup>
                         {postList.map((post) => (
-                            <ListGroup.Item action variant="dark" href={questionId + "/post/" + post.Slug}>
+                            <ListGroup.Item action variant="dark" href={questionSlug + "/post/" + post.Slug}>
                                 <Card>
                                     <Card.Body>
                                         <Card.Title>{post.Title}</Card.Title>

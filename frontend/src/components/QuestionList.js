@@ -1,15 +1,11 @@
 import Card from 'react-bootstrap/Card';
 import Spinner from 'react-bootstrap/Spinner';
 import ListGroup from 'react-bootstrap/ListGroup';
-import { useParams } from "react-router-dom";
 import React, { useState, useEffect } from 'react';
-import ReactMarkdown from "react-markdown";
 
-export default function AnswerForum() {
+export default function QuestionList() {
 
-    const { questionSlug } = useParams();
-
-    const [posts, setPosts] = useState({});
+    const [questions, setQuestions] = useState({});
     const [loading, setLoading] = useState(true);
 
     const app_name = 'fight-or-flight-20k-5991cb1c14ef'
@@ -23,21 +19,18 @@ export default function AnswerForum() {
     }
 
     useEffect(() => {
-        const grabForum = async () => {
+        const grabQuestions = async () => {
             setLoading(true);
 
-            console.log(questionSlug);
-            var obj = { questionSlug: questionSlug };
+            var obj = { questionPerPage: parseInt(5) };
             var js = JSON.stringify(obj);
 
-            console.log(js);
-
-            const response = await fetch(buildPath('api/getPosts'), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
+            const response = await fetch(buildPath(`api/questions/pageNum?` + new URLSearchParams({ pageNum: 2 })), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 
             if (response != null) {
                 const json = await response.json();
 
-                setPosts(json);
+                setQuestions(json);
 
                 setLoading(false);
             }
@@ -46,26 +39,24 @@ export default function AnswerForum() {
             }
         }
 
-        grabForum();
-    }, [questionSlug]);
+        grabQuestions();
+    }, []);
 
-    const renderForum = () => {
+    const renderQuestions = () => {
         if (loading) {
             return <Spinner animation="border" />;
         }
         else {
-            var postList = posts.postList;
+            var questionList = questions.question;
+            console.log(questionList);
             return (
                 <>
-                    <ListGroup className="mt-3">
-                        {postList.map((post) => (
-                            <ListGroup.Item action variant="dark" href={questionSlug + "/post/" + post.Slug} className="my-1">
+                    <ListGroup>
+                        {questionList.map((question) => (
+                            <ListGroup.Item action variant="dark" href={"question/" + question.slug}>
                                 <Card>
                                     <Card.Body>
-                                        <Card.Title>{post.Title}</Card.Title>
-                                        <Card.Text>
-                                            <ReactMarkdown children={post.Content}></ReactMarkdown>
-                                        </Card.Text>
+                                        <Card.Title>{question.text}</Card.Title>
                                     </Card.Body>
                                 </Card>
                             </ListGroup.Item>
@@ -79,7 +70,7 @@ export default function AnswerForum() {
     return (
         <>
             <div>
-                {renderForum()}
+                {renderQuestions()}
             </div>
         </>
     )

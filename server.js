@@ -7,6 +7,7 @@ client.connect();
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 
 const nodemailer = require("nodemailer");
 
@@ -34,6 +35,43 @@ app.use((req, res, next) =>
     'GET, POST, PATCH, DELETE, OPTIONS'
   );
   next();
+});
+
+app.post("/api/generateToken", (req, res) => { 
+
+  const { userId } = req.body;
+
+  let jwtSecretKey = process.env.JWT_SECRET_KEY; 
+  let data = { 
+      time: Date(), 
+      userId: userId
+  } 
+
+  const token = jwt.sign(data, jwtSecretKey); 
+
+  ret = { token: token };
+
+  res.status(200).json(ret);
+});
+
+
+app.get("/api/validateToken", (req, res) => { 
+
+  let tokenHeaderKey = process.env.TOKEN_HEADER_KEY; 
+  let jwtSecretKey = process.env.JWT_SECRET_KEY; 
+
+  try { 
+      const token = req.header(tokenHeaderKey); 
+
+      const verified = jwt.verify(token, jwtSecretKey); 
+      if(verified){ 
+          return res.send({ "message": "Successfully Verified"}); 
+      }else{ 
+          return res.status(401).send(error); 
+      } 
+  } catch (error) { 
+      return res.status(401).send(error); 
+  } 
 });
 
 // in progress Email verification
@@ -136,31 +174,6 @@ app.post('/api/login', async (req, res, next) =>
   res.status(200).json(ret);
 });
 
-
-app.post('/api/searchcards', async (req, res, next) => 
-{
-  // incoming: userId, search
-  // outgoing: results[], error
-
-  var error = '';
-
-  const { userId, search } = req.body;
-
-  var _search = search.trim();
-  
-  const db = client.db('COP4331Cards');
-  const results = await db.collection('Cards').find({"Card":{$regex:_search+'.*', $options:'i'}}).toArray();
-  
-  var _ret = [];
-  for( var i=0; i<results.length; i++ )
-  {
-    _ret.push( results[i].Card );
-  }
-  
-  var ret = {results:_ret, error:error};
-  res.status(200).json(ret);
-});
-
 app.listen(PORT, () => 
 {
   console.log('Server listening on port ' + PORT);
@@ -247,12 +260,12 @@ app.post('/api/getPosts', async (req, res, next) => {
   var error = '';
   var result = null;
 
-  const { questionId } = req.body;
+  const { questionSlug } = req.body;
 
   try
   {
     const db = client.db('COP4331_LargeProject');
-    result = await db.collection('Post').find({QuestionId:questionId}).toArray();
+    result = await db.collection('Post').find({QuestionSlug:questionSlug}).toArray();
   }
   catch(e)
   {

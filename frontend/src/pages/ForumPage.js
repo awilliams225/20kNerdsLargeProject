@@ -1,14 +1,18 @@
 import React from 'react';
 
-import Navbar from '../components/Navbar';
+import GlobalNavbar from '../components/GlobalNavbar';
+import CreatePostForm from '../components/CreatePostForm';
 import AnswerForum from '../components/AnswerForum';
+import Container from 'react-bootstrap/Container';
 
-const ForumPage = () =>
-{
-    return(
+const ForumPage = () => {
+    return (
         <div>
-            <Navbar />
-            <AnswerForum />
+            <GlobalNavbar />
+            <Container className="my-5">
+                <CreatePostForm />
+                <AnswerForum />
+            </Container>
         </div>
     );
 }

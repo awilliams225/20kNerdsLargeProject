@@ -5,15 +5,22 @@
     "main": "server.js",
     "scripts": {
         "start": "node server.js",
-        "heroku-postbuild": " NPM_CONFIG_PRODUCTION=false npm install --prefix frontend && npm run build --prefix frontend"
+        "heroku-postbuild": " NPM_CONFIG_PRODUCTION=false npm install --prefix frontend && npm run build --prefix frontend",
+        "test": "mocha --timeout 10000"
     },
     "author": "",
     "license": "ISC",
     "dependencies": {
         "body-parser": "^1.20.2",
+        "chai": "^4.3.10",
+        "chai-http": "^4.4.0",
         "cors": "^2.8.5",
         "dotenv": "^16.3.1",
         "express": "^4.18.2",
-        "mongodb": "^6.1.0"
+        "jsonwebtoken": "^9.0.2",
+        "mailgen": "^2.0.28",
+        "mocha": "^10.2.0",
+        "mongodb": "^6.1.0",
+        "nodemailer": "^6.9.7"
     }
 }

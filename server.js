@@ -145,6 +145,7 @@ app.post('/api/register', async (req, res, next) =>
   }
   catch(e)
   {
+    console.log("Hello!");
     error = e.toString();
   }
 
@@ -193,3 +194,242 @@ if (process.env.NODE_ENV === 'production')
   });
 }
 
+app.post('/api/numQuestions', async (req, res, next) =>
+{
+
+  var result = 0;
+  var error = '';
+
+  try
+  {
+    const db = client.db('COP4331_LargeProject');
+    result = await db.collection('Questions').countDocuments({});
+  }
+  catch(e)
+  {
+    error = e.toString();
+  }
+
+  var ret = { numQuestions: result, error:error};
+  res.status(200).json(ret);
+});
+
+app.post('/api/addPost', async (req, res, next) => {
+  
+  var error = '';
+
+  const { answerId, userId, slug, content } = req.body;
+
+  const newPost = { AnswerId:answerId, UserId:userId, Slug:slug, Content:content, Comments: []}
+
+  try 
+  {
+    const db = client.db('COP4331_LargeProject');
+    const result = db.collection('Post').insertOne(newPost);
+  }
+  catch(e)
+  {
+    error = e.toString();
+  }
+
+  var ret = { error:error};
+  res.status(200).json(ret);
+});
+
+app.post('/api/getUserById', async (req, res, next) => {
+  var error = '';
+  var result = null;
+
+  const { userId } = req.body;
+
+  try
+  {
+    const db = client.db('COP4331_LargeProject');
+    result = await db.collection('Users').find({UserId:userId}).toArray();
+  }
+  catch(e)
+  {
+    error = e.toString();
+  }
+  
+  var ret = { user: result[0], error: error }
+  res.status(200).json(ret);
+})
+
+app.post('/api/getPosts', async (req, res, next) => {
+  var error = '';
+  var result = null;
+
+  const { questionSlug } = req.body;
+
+  try
+  {
+    const db = client.db('COP4331_LargeProject');
+    result = await db.collection('Post').find({QuestionSlug:questionSlug}).toArray();
+  }
+  catch(e)
+  {
+    error = e.toString();
+  }
+  
+  var ret = { postList: result, error: error }
+  res.status(200).json(ret);
+})
+
+app.get('/api/posts/:slug', async (req, res, next) => 
+{
+  // incoming: Slug
+  // outgoing: Markdown post
+	
+  var error = '';
+
+  const slug = req.params.slug;
+
+  const db = client.db('COP4331_LargeProject');
+  const results = await db.collection('Post').find({Slug:slug}).toArray();
+
+  var content = '';
+
+  if( results.length > 0 )
+  {
+    content = results[0].Content;
+  }
+
+  var ret = { Content:content, error:error};
+  res.status(200).json(ret);
+});
+
+// Returns list of posts associated with given user ID
+app.get('/api/users/:UserId', async (req, res, next) => {
+
+  var error = '';
+  var postsList = [];
+
+  const userId = req.params.UserId;
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    const posts = db.collection("Post");
+
+    const query = { UserId: userId };
+
+    postsList = await posts.find(query).toArray();
+
+
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { list: postsList, error: error };
+  res.status(200).json(ret);
+
+});
+
+// Returns one random question
+app.get('/api/questions/getRandom', async (req, res, next) => {
+
+  var error = '';
+  var randomQuestion;
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    const questions = db.collection("Questions");
+
+    const query =  [{ $sample: { size: 1 } }];
+
+    randomQuestion = await questions.aggregate(query).next();
+
+
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { question: randomQuestion, error: error };
+  res.status(200).json(ret);
+
+});
+
+// Returns paginated list of questions based on current page and number of questions per page
+app.post('/api/questions/:pageNum', async (req, res, next) => {
+
+  var error = '';
+  var questionList = [];
+
+  const { questionPerPage } = req.body;
+
+  const pageNum = parseInt(req.params.pageNum);
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    const questions = db.collection("Questions");
+
+    const toSkip = (pageNum - 1) * questionPerPage ;
+
+    questionList = await questions.find().skip(toSkip).limit(questionPerPage).toArray();
+
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { question: questionList, error: error };
+  res.status(200).json(ret);
+
+});
+
+// Returns one random question
+app.get('/api/questions/getRandom', async (req, res, next) => {
+
+  var error = '';
+  var randomQuestion;
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    const questions = db.collection("Questions");
+
+    const query =  [{ $sample: { size: 1 } }];
+
+    randomQuestion = await questions.aggregate(query).next();
+
+
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { question: randomQuestion, error: error };
+  res.status(200).json(ret);
+
+});
+
+// Returns paginated list of questions based on current page and number of questions per page
+app.post('/api/questions/:pageNum', async (req, res, next) => {
+
+  var error = '';
+  var questionList = [];
+
+  const { questionPerPage } = req.body;
+
+  const pageNum = parseInt(req.params.pageNum);
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    const questions = db.collection("Questions");
+
+    const toSkip = (pageNum - 1) * questionPerPage ;
+
+    questionList = await questions.find().skip(toSkip).limit(questionPerPage).toArray();
+
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { question: questionList, error: error };
+  res.status(200).json(ret);
+
+});
+
+module.exports = app;

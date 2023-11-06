@@ -65,7 +65,7 @@ app.get("/api/validateToken", (req, res) => {
 
       const verified = jwt.verify(token, jwtSecretKey); 
       if(verified){ 
-          return res.send("Successfully Verified"); 
+          return res.send({ "message": "Successfully Verified"}); 
       }else{ 
           return res.status(401).send(error); 
       } 

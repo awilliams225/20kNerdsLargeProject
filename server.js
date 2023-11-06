@@ -174,31 +174,6 @@ app.post('/api/login', async (req, res, next) =>
   res.status(200).json(ret);
 });
 
-
-app.post('/api/searchcards', async (req, res, next) => 
-{
-  // incoming: userId, search
-  // outgoing: results[], error
-
-  var error = '';
-
-  const { userId, search } = req.body;
-
-  var _search = search.trim();
-  
-  const db = client.db('COP4331Cards');
-  const results = await db.collection('Cards').find({"Card":{$regex:_search+'.*', $options:'i'}}).toArray();
-  
-  var _ret = [];
-  for( var i=0; i<results.length; i++ )
-  {
-    _ret.push( results[i].Card );
-  }
-  
-  var ret = {results:_ret, error:error};
-  res.status(200).json(ret);
-});
-
 app.listen(PORT, () => 
 {
   console.log('Server listening on port ' + PORT);

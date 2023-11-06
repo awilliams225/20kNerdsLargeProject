@@ -53,7 +53,7 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
     theme: "default",
     product : {
       name: "FightOrFlight",
-      link: 'https://fight-or-flight-20k-5991cb1c14ef.herokuapp.com'
+      link: 'http://localhost:3000/'
     }
   })
 
@@ -66,7 +66,7 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
             button: {
                 color: '#22BC66', // Optional action button color
                 text: 'Confirm your account',
-                link: 'https://mailgen.js/confirm?s=d9729feb74992cc3482b350163a1a010'
+                link: 'http://localhost:3000/'
             }
         },
         outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'

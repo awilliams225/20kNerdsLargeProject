@@ -13,10 +13,10 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LoginPage />} />
-        <Route path="/cards" element={<CardPage />} />
-        <Route path="/home" element={<QuestionPage />}/>
-        <Route path="/question/:questionSlug" element={<ForumPage />}/>
-        <Route path="/question/:questionSlug/post/:slug" element={<PostPage />}/>
+        <Route path="/cards/" element={<CardPage />} />
+        <Route path="/home/:page?/" element={<QuestionPage />}/>
+        <Route path="/question/:questionSlug/:page?/" element={<ForumPage />}/>
+        <Route path="/question/:questionSlug/post/:slug/:page?/" element={<PostPage />}/>
       </Routes>
     </BrowserRouter>
   );

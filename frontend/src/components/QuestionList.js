@@ -2,11 +2,18 @@ import Card from 'react-bootstrap/Card';
 import Spinner from 'react-bootstrap/Spinner';
 import ListGroup from 'react-bootstrap/ListGroup';
 import React, { useState, useEffect } from 'react';
+import { useParams } from "react-router-dom";
+import Paginator from '../components/Paginator';
 
 export default function QuestionList() {
 
     const [questions, setQuestions] = useState({});
+    const [numQuestions, setNumQuestions] = useState({});
     const [loading, setLoading] = useState(true);
+
+    const questionsPerPage = 5;
+
+    const { page = '1' } = useParams();
 
     const app_name = 'fight-or-flight-20k-5991cb1c14ef'
     function buildPath(route) {
@@ -22,10 +29,10 @@ export default function QuestionList() {
         const grabQuestions = async () => {
             setLoading(true);
 
-            var obj = { questionPerPage: parseInt(5) };
+            var obj = { questionPerPage: parseInt(questionsPerPage) };
             var js = JSON.stringify(obj);
 
-            const response = await fetch(buildPath(`api/questions/pageNum?` + new URLSearchParams({ pageNum: 2 })), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
+            const response = await fetch(buildPath("api/questions/" + page), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 
             if (response != null) {
                 const json = await response.json();
@@ -39,8 +46,26 @@ export default function QuestionList() {
             }
         }
 
+        const grabNumQuestions = async () => {
+            setLoading(true);
+
+            const response = await fetch(buildPath("api/numQuestions"), { method: 'POST',  headers: { 'Content-Type': 'application/json' } });
+
+            if (response != null) {
+                const json = await response.json();
+
+                setNumQuestions(json.numQuestions);
+
+                setLoading(false);
+            }
+            else {
+                console.log("Response is null");
+            }
+        }
+
         grabQuestions();
-    }, []);
+        grabNumQuestions();
+    }, [page]);
 
     const renderQuestions = () => {
         if (loading) {
@@ -48,9 +73,9 @@ export default function QuestionList() {
         }
         else {
             var questionList = questions.question;
-            console.log(questionList);
             return (
                 <>
+                    <Paginator activePage={page} numPages={Math.ceil(numQuestions / questionsPerPage)}/>
                     <ListGroup>
                         {questionList.map((question) => (
                             <ListGroup.Item action variant="dark" href={"question/" + question.slug}>

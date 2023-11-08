@@ -130,6 +130,63 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
 
 });
 
+// email verification for forgot password
+app.post('/api/forgotPassword', async (req, res, next) =>
+{
+  const { firstName, lastName, username, password, userEmail } = req.body;
+	let config = {
+    service : 'gmail',
+    auth : {
+      user: EMAIL,
+      pass: PASSWORD
+    }
+  }
+
+  let transporter = nodemailer.createTransport(config);
+  let MailGenerator = new Mailgen({
+    theme: "default",
+    product : {
+      name: "FightOrFlight",
+      link: 'http://localhost:3000/'
+    }
+  })
+
+  let response = {
+      body: {
+        name: firstName + " " + lastName,
+        intro: 'Welcome back to FightOrFlight! You have requested a password reset for your account.',
+        action: {
+            instructions: 'To get started, please click here:',
+            button: {
+                color: '#22BC66', // Optional action button color
+                text: 'Confirm your account',
+                link: 'http://localhost:3000/'
+            }
+        },
+        outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'
+    }
+  }
+
+  let mail = MailGenerator.generate(response)
+
+  let message = {
+    from : EMAIL,
+    to: userEmail,
+    subject: "Forgot Password",
+    html: mail
+  }
+  transporter.sendMail(message).then(() => {
+    return res.status(201).json({
+      msg: "you should recieve an email"
+    })
+  }).catch(error => {
+    return res.status(500).json({ error })
+  })
+
+
+});
+
+
 app.post('/api/register', async (req, res, next) =>
 {
 	

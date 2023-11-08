@@ -115,3 +115,27 @@ describe("Token", () => {
     })
 
 })
+
+describe("Questions", () => {
+    it("Should return the number of questions", () => {
+        chai.request(app)
+            .post('/api/numQuestions')
+            .then((res) => {
+                res.should.have.status(200);
+                res.should.be.a('object');
+                res.should.have.property('numQuestions');
+                done();
+            })
+    })
+
+    it("It should return a random question", () => {
+        chai.request(app)
+            .get('/api/questions/gerRandom')
+            .then((res) => {
+                res.should.have.status(200);
+                res.should.be.a('object');
+                res.shoud.have.property('question', object);
+                done();
+            })
+    })
+})

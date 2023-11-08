@@ -231,26 +231,6 @@ app.post('/api/login', async (req, res, next) =>
   res.status(200).json(ret);
 });
 
-app.listen(PORT, () => 
-{
-  console.log('Server listening on port ' + PORT);
-});
-
-///////////////////////////////////////////////////
-// For Heroku deployment
-
-// Server static assets if in production
-if (process.env.NODE_ENV === 'production') 
-{
-  // Set static folder
-  app.use(express.static('frontend/build'));
-
-  app.get('*', (req, res) => 
- {
-    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
-  });
-}
-
 app.post('/api/numQuestions', async (req, res, next) =>
 {
 
@@ -268,6 +248,26 @@ app.post('/api/numQuestions', async (req, res, next) =>
   }
 
   var ret = { numQuestions: result, error:error};
+  res.status(200).json(ret);
+});
+
+// Returns number of posts associated with given question slug
+app.post('/api/numPosts', async (req, res, next) => {
+
+  var result = 0;
+  var error = '';
+
+  const { questionSlug } = req.body;
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    result = await db.collection('Post').countDocuments({QuestionSlug: questionSlug});
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { numPosts: result, error: error };
   res.status(200).json(ret);
 });
 
@@ -414,7 +414,7 @@ app.post('/api/questions/:pageNum', async (req, res, next) => {
   var error = '';
   var questionList = [];
 
-  const { questionPerPage } = req.body;
+v
 
   const pageNum = parseInt(req.params.pageNum);
 
@@ -487,6 +487,26 @@ app.post('/api/questions/:pageNum', async (req, res, next) => {
   var ret = { question: questionList, error: error };
   res.status(200).json(ret);
 
+});
+
+///////////////////////////////////////////////////
+// For Heroku deployment
+
+// Server static assets if in production
+if (process.env.NODE_ENV === 'production') 
+{
+  // Set static folder
+  app.use(express.static('frontend/build'));
+
+  app.get('*', (req, res) => 
+ {
+    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
+  });
+}
+
+app.listen(PORT, () => 
+{
+  console.log('Server listening on port ' + PORT);
 });
 
 module.exports = app;

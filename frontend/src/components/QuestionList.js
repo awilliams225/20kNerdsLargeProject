@@ -9,7 +9,8 @@ export default function QuestionList() {
 
     const [questions, setQuestions] = useState({});
     const [numQuestions, setNumQuestions] = useState({});
-    const [loading, setLoading] = useState(true);
+    const [loading, setQuestionsLoading] = useState(true);
+    const [loadingPagination, setPaginationLoading] = useState(true);
 
     const questionsPerPage = 5;
 
@@ -27,7 +28,7 @@ export default function QuestionList() {
 
     useEffect(() => {
         const grabQuestions = async () => {
-            setLoading(true);
+            setQuestionsLoading(true);
 
             var obj = { questionPerPage: parseInt(questionsPerPage) };
             var js = JSON.stringify(obj);
@@ -39,7 +40,7 @@ export default function QuestionList() {
 
                 setQuestions(json);
 
-                setLoading(false);
+                setQuestionsLoading(false);
             }
             else {
                 console.log("Response is null");
@@ -47,7 +48,7 @@ export default function QuestionList() {
         }
 
         const grabNumQuestions = async () => {
-            setLoading(true);
+            setPaginationLoading(true);
 
             const response = await fetch(buildPath("api/numQuestions"), { method: 'POST',  headers: { 'Content-Type': 'application/json' } });
 
@@ -56,7 +57,7 @@ export default function QuestionList() {
 
                 setNumQuestions(json.numQuestions);
 
-                setLoading(false);
+                setPaginationLoading(false);
             }
             else {
                 console.log("Response is null");
@@ -68,7 +69,7 @@ export default function QuestionList() {
     }, [page]);
 
     const renderQuestions = () => {
-        if (loading) {
+        if (loading || loadingPagination) {
             return <Spinner animation="border" />;
         }
         else {
@@ -78,7 +79,7 @@ export default function QuestionList() {
                     <Paginator activePage={page} numPages={Math.ceil(numQuestions / questionsPerPage)}/>
                     <ListGroup>
                         {questionList.map((question) => (
-                            <ListGroup.Item action variant="dark" href={"question/" + question.slug}>
+                            <ListGroup.Item action variant="dark" href={"/question/" + question.slug + "/"}>
                                 <Card>
                                     <Card.Body>
                                         <Card.Title>{question.text}</Card.Title>

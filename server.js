@@ -218,9 +218,9 @@ app.post('/api/addPost', async (req, res, next) => {
   
   var error = '';
 
-  const { answerId, userId, slug, content } = req.body;
+  const { userId, slug, content, title, questionSlug } = req.body;
 
-  const newPost = { AnswerId:answerId, UserId:userId, Slug:slug, Content:content, Comments: []}
+  const newPost = { UserId:userId, Slug:slug, Content:content, Title:title, QuestionSlug:questionSlug, Comments: []}
 
   try 
   {

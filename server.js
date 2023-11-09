@@ -79,7 +79,7 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
 {
   const { firstName, lastName, username, password, userEmail } = req.body;
 	let config = {
-    service : 'gmail',
+    service : 'hotmail',
     auth : {
       user: EMAIL,
       pass: PASSWORD
@@ -130,6 +130,63 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
 
 });
 
+// email verification for forgot password
+app.post('/api/forgotPassword', async (req, res, next) =>
+{
+  const { firstName, lastName, username, password, userEmail } = req.body;
+	let config = {
+    service : 'hotmail',
+    auth : {
+      user: EMAIL,
+      pass: PASSWORD
+    }
+  }
+
+  let transporter = nodemailer.createTransport(config);
+  let MailGenerator = new Mailgen({
+    theme: "default",
+    product : {
+      name: "FightOrFlight",
+      link: 'http://localhost:3000/'
+    }
+  })
+
+  let response = {
+      body: {
+        name: firstName + " " + lastName,
+        intro: 'Welcome back to FightOrFlight! You have requested a password reset for your account.',
+        action: {
+            instructions: 'To get started, please click here:',
+            button: {
+                color: '#22BC66', // Optional action button color
+                text: 'Confirm your account',
+                link: 'http://localhost:3000/'
+            }
+        },
+        outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'
+    }
+  }
+
+  let mail = MailGenerator.generate(response)
+
+  let message = {
+    from : EMAIL,
+    to: userEmail,
+    subject: "Forgot Password",
+    html: mail
+  }
+  transporter.sendMail(message).then(() => {
+    return res.status(201).json({
+      msg: "you should recieve an email"
+    })
+  }).catch(error => {
+    return res.status(500).json({ error })
+  })
+
+
+});
+
+
 app.post('/api/register', async (req, res, next) =>
 {
 	
@@ -167,34 +224,13 @@ app.post('/api/login', async (req, res, next) =>
 
   if( results.length > 0 )
   {
-    id = results._id;
+    id = results[0]._id;
   }
 
   var ret = { id:id, error:''};
   res.status(200).json(ret);
 });
 
-app.listen(PORT, () => 
-{
-  console.log('Server listening on port ' + PORT);
-});
-
-///////////////////////////////////////////////////
-// For Heroku deployment
-
-// Server static assets if in production
-if (process.env.NODE_ENV === 'production') 
-{
-  // Set static folder
-  app.use(express.static('frontend/build'));
-
-  app.get('*', (req, res) => 
- {
-    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
-  });
-}
-
-// Returns total number of questions in collection
 app.post('/api/numQuestions', async (req, res, next) =>
 {
 
@@ -225,14 +261,7 @@ app.post('/api/numPosts', async (req, res, next) => {
 
   try {
     const db = client.db('COP4331_LargeProject');
-
-    const query = {$and: [
-      { "QuestionSlug": { $exists: true } },
-      { "QuestionSlug": questionSlug }
-    ]
-  };
-
-    result = await db.collection('Post').countDocuments(query);
+    result = await db.collection('Post').countDocuments({QuestionSlug: questionSlug});
   }
   catch (e) {
     error = e.toString();
@@ -242,14 +271,13 @@ app.post('/api/numPosts', async (req, res, next) => {
   res.status(200).json(ret);
 });
 
-// Adds new post to collection
 app.post('/api/addPost', async (req, res, next) => {
   
   var error = '';
 
-  const { answerId, userId, slug, content } = req.body;
+  const { userId, slug, content, title, questionSlug } = req.body;
 
-  const newPost = { AnswerId:answerId, UserId:userId, Slug:slug, Content:content, Comments: []}
+  const newPost = { UserId:userId, Slug:slug, Content:content, Title:title, QuestionSlug:questionSlug, Comments: []}
 
   try 
   {
@@ -265,7 +293,26 @@ app.post('/api/addPost', async (req, res, next) => {
   res.status(200).json(ret);
 });
 
-// Returns posts associated with given question
+app.post('/api/getUserById', async (req, res, next) => {
+  var error = '';
+  var result = null;
+
+  const { userId } = req.body;
+
+  try
+  {
+    const db = client.db('COP4331_LargeProject');
+    result = await db.collection('Users').find({UserId:userId}).toArray();
+  }
+  catch(e)
+  {
+    error = e.toString();
+  }
+  
+  var ret = { user: result[0], error: error }
+  res.status(200).json(ret);
+})
+
 app.post('/api/getPosts', async (req, res, next) => {
   var error = '';
   var result = null;
@@ -286,32 +333,6 @@ app.post('/api/getPosts', async (req, res, next) => {
   res.status(200).json(ret);
 })
 
-// Returns paginated list of posts associated with given question
-app.post('/api/postsByQuestion/:pageNum', async (req, res, next) => {
-  var error = '';
-  var postList = [];
-
-  const { questionSlug, postsPerPage } = req.body;
-
-  const pageNum = parseInt(req.params.pageNum);
-
-  try {
-    const db = client.db('COP4331_LargeProject');
-    const posts = db.collection("Post");
-
-    const toSkip = (pageNum - 1) * postsPerPage;
-
-    postList = await posts.find({ QuestionSlug: questionSlug }).skip(toSkip).limit(parseInt(postsPerPage)).toArray();
-  }
-  catch (e) {
-    error = e.toString();
-  }
-
-  var ret = { list: postList, error: error }
-  res.status(200).json(ret);
-})
-
-// Returns markdown post contents associated with slug
 app.get('/api/posts/:slug', async (req, res, next) => 
 {
   // incoming: Slug
@@ -387,7 +408,7 @@ app.get('/api/questions/getRandom', async (req, res, next) => {
 
 });
 
-// Returns paginated list of questions based on current page (param) and number of questions per page (body)
+// Returns paginated list of questions based on current page and number of questions per page
 app.post('/api/questions/:pageNum', async (req, res, next) => {
 
   var error = '';
@@ -403,7 +424,7 @@ app.post('/api/questions/:pageNum', async (req, res, next) => {
 
     const toSkip = (pageNum - 1) * questionPerPage ;
 
-    questionList = await questions.find().skip(toSkip).limit(parseInt(questionPerPage)).toArray();
+    questionList = await questions.find().skip(toSkip).limit(questionPerPage).toArray();
 
   }
   catch (e) {
@@ -413,6 +434,79 @@ app.post('/api/questions/:pageNum', async (req, res, next) => {
   var ret = { question: questionList, error: error };
   res.status(200).json(ret);
 
+});
+
+// Returns one random question
+app.get('/api/questions/getRandom', async (req, res, next) => {
+
+  var error = '';
+  var randomQuestion;
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    const questions = db.collection("Questions");
+
+    const query =  [{ $sample: { size: 1 } }];
+
+    randomQuestion = await questions.aggregate(query).next();
+
+
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { question: randomQuestion, error: error };
+  res.status(200).json(ret);
+
+});
+
+// Returns paginated list of questions based on current page and number of questions per page
+app.post('/api/questions/:pageNum', async (req, res, next) => {
+
+  var error = '';
+  var questionList = [];
+
+  const { questionPerPage } = req.body;
+
+  const pageNum = parseInt(req.params.pageNum);
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    const questions = db.collection("Questions");
+
+    const toSkip = (pageNum - 1) * questionPerPage ;
+
+    questionList = await questions.find().skip(toSkip).limit(questionPerPage).toArray();
+
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { question: questionList, error: error };
+  res.status(200).json(ret);
+
+});
+
+///////////////////////////////////////////////////
+// For Heroku deployment
+
+// Server static assets if in production
+if (process.env.NODE_ENV === 'production') 
+{
+  // Set static folder
+  app.use(express.static('frontend/build'));
+
+  app.get('*', (req, res) => 
+ {
+    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
+  });
+}
+
+app.listen(PORT, () => 
+{
+  console.log('Server listening on port ' + PORT);
 });
 
 module.exports = app;

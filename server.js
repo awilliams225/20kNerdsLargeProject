@@ -167,7 +167,7 @@ app.post('/api/login', async (req, res, next) =>
 
   if( results.length > 0 )
   {
-    id = results[0]._id;
+    id = results._id;
   }
 
   var ret = { id:id, error:''};
@@ -194,6 +194,7 @@ if (process.env.NODE_ENV === 'production')
   });
 }
 
+// Returns total number of questions in collection
 app.post('/api/numQuestions', async (req, res, next) =>
 {
 
@@ -224,7 +225,14 @@ app.post('/api/numPosts', async (req, res, next) => {
 
   try {
     const db = client.db('COP4331_LargeProject');
-    result = await db.collection('Post').countDocuments({QuestionSlug: questionSlug});
+
+    const query = {$and: [
+      { "QuestionSlug": { $exists: true } },
+      { "QuestionSlug": questionSlug }
+    ]
+  };
+
+    result = await db.collection('Post').countDocuments(query);
   }
   catch (e) {
     error = e.toString();
@@ -234,6 +242,7 @@ app.post('/api/numPosts', async (req, res, next) => {
   res.status(200).json(ret);
 });
 
+// Adds new post to collection
 app.post('/api/addPost', async (req, res, next) => {
   
   var error = '';
@@ -256,26 +265,7 @@ app.post('/api/addPost', async (req, res, next) => {
   res.status(200).json(ret);
 });
 
-app.post('/api/getUserById', async (req, res, next) => {
-  var error = '';
-  var result = null;
-
-  const { userId } = req.body;
-
-  try
-  {
-    const db = client.db('COP4331_LargeProject');
-    result = await db.collection('Users').find({UserId:userId}).toArray();
-  }
-  catch(e)
-  {
-    error = e.toString();
-  }
-  
-  var ret = { user: result[0], error: error }
-  res.status(200).json(ret);
-})
-
+// Returns posts associated with given question
 app.post('/api/getPosts', async (req, res, next) => {
   var error = '';
   var result = null;
@@ -296,6 +286,32 @@ app.post('/api/getPosts', async (req, res, next) => {
   res.status(200).json(ret);
 })
 
+// Returns paginated list of posts associated with given question
+app.post('/api/postsByQuestion/:pageNum', async (req, res, next) => {
+  var error = '';
+  var postList = [];
+
+  const { questionSlug, postsPerPage } = req.body;
+
+  const pageNum = parseInt(req.params.pageNum);
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    const posts = db.collection("Post");
+
+    const toSkip = (pageNum - 1) * postsPerPage;
+
+    postList = await posts.find({ QuestionSlug: questionSlug }).skip(toSkip).limit(parseInt(postsPerPage)).toArray();
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { list: postList, error: error }
+  res.status(200).json(ret);
+})
+
+// Returns markdown post contents associated with slug
 app.get('/api/posts/:slug', async (req, res, next) => 
 {
   // incoming: Slug
@@ -371,60 +387,7 @@ app.get('/api/questions/getRandom', async (req, res, next) => {
 
 });
 
-// Returns paginated list of questions based on current page and number of questions per page
-app.post('/api/questions/:pageNum', async (req, res, next) => {
-
-  var error = '';
-  var questionList = [];
-
-v
-
-  const pageNum = parseInt(req.params.pageNum);
-
-  try {
-    const db = client.db('COP4331_LargeProject');
-    const questions = db.collection("Questions");
-
-    const toSkip = (pageNum - 1) * questionPerPage ;
-
-    questionList = await questions.find().skip(toSkip).limit(questionPerPage).toArray();
-
-  }
-  catch (e) {
-    error = e.toString();
-  }
-
-  var ret = { question: questionList, error: error };
-  res.status(200).json(ret);
-
-});
-
-// Returns one random question
-app.get('/api/questions/getRandom', async (req, res, next) => {
-
-  var error = '';
-  var randomQuestion;
-
-  try {
-    const db = client.db('COP4331_LargeProject');
-    const questions = db.collection("Questions");
-
-    const query =  [{ $sample: { size: 1 } }];
-
-    randomQuestion = await questions.aggregate(query).next();
-
-
-  }
-  catch (e) {
-    error = e.toString();
-  }
-
-  var ret = { question: randomQuestion, error: error };
-  res.status(200).json(ret);
-
-});
-
-// Returns paginated list of questions based on current page and number of questions per page
+// Returns paginated list of questions based on current page (param) and number of questions per page (body)
 app.post('/api/questions/:pageNum', async (req, res, next) => {
 
   var error = '';
@@ -440,7 +403,7 @@ app.post('/api/questions/:pageNum', async (req, res, next) => {
 
     const toSkip = (pageNum - 1) * questionPerPage ;
 
-    questionList = await questions.find().skip(toSkip).limit(questionPerPage).toArray();
+    questionList = await questions.find().skip(toSkip).limit(parseInt(questionPerPage)).toArray();
 
   }
   catch (e) {

@@ -79,7 +79,7 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
 {
   const { firstName, lastName, username, password, userEmail } = req.body;
 	let config = {
-    service : 'hotmail',
+    service : 'gmail',
     auth : {
       user: EMAIL,
       pass: PASSWORD

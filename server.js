@@ -79,7 +79,7 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
 {
   const { firstName, lastName, username, password, userEmail } = req.body;
 	let config = {
-    service : 'gmail',
+    service : 'hotmail',
     auth : {
       user: EMAIL,
       pass: PASSWORD
@@ -91,7 +91,7 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
     theme: "default",
     product : {
       name: "FightOrFlight",
-      link: 'https://fight-or-flight-20k-5991cb1c14ef.herokuapp.com/login'
+      link: 'http://localhost:3000/'
     }
   })
 
@@ -104,7 +104,7 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
             button: {
                 color: '#22BC66', // Optional action button color
                 text: 'Confirm your account',
-                link: 'https://fight-or-flight-20k-5991cb1c14ef.herokuapp.com/login'
+                link: 'http://localhost:3000/'
             }
         },
         outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'
@@ -302,49 +302,49 @@ app.post('/api/addPost', async (req, res, next) => {
   res.status(200).json(ret);
 });
 
-app.post('/api/numQuestions', async (req, res, next) =>
-{
-
-  var result = 0;
+// Returns list of all posts associated with quesion
+app.post('/api/getPosts', async (req, res, next) => {
   var error = '';
+  var result = null;
+
+  const { questionSlug } = req.body;
 
   try
   {
     const db = client.db('COP4331_LargeProject');
-    result = await db.collection('Questions').countDocuments({});
+    result = await db.collection('Post').find({QuestionSlug:questionSlug}).toArray();
   }
   catch(e)
   {
     error = e.toString();
   }
-
-  var ret = { numQuestions: result, error:''};
-  res.status(200).json(ret);
-});
-
-app.post('/api/addPost', async (req, res, next) => {
   
+  var ret = { postList: result, error: error }
+  res.status(200).json(ret);
+})
+
+// Returns markdown post contents associated with post slug
+app.get('/api/posts/:slug', async (req, res, next) => 
+{
+  // incoming: Slug
+  // outgoing: Markdown post
+	
   var error = '';
 
-  const { slug, content } = req.body;
+  const slug = req.params.slug;
 
-  const newPost = { Slug:slug, Content:content}
+  const db = client.db('COP4331_LargeProject');
+  const results = await db.collection('Post').find({Slug:slug}).toArray();
 
-  try 
+  var content = '';
+
+  if( results.length > 0 )
   {
-    const db = client.db('COP4331_LargeProject');
-    const result = db.collection('Post').insertOne(newPost);
-  }
-  catch(e)
-  {
-    error = e.toString();
+    content = results[0].Content;
   }
 
-  var ret = { error:''};
+  var ret = { Content:content, error:error};
   res.status(200).json(ret);
-});app.listen(PORT, () => 
-{
-  console.log('Server listening on port ' + PORT);
 });
 
 // Returns list of posts associated with given user ID
@@ -427,62 +427,33 @@ app.post('/api/questions/:pageNum', async (req, res, next) => {
 
 });
 
-// Returns one random question
-app.get('/api/questions/getRandom', async (req, res, next) => {
+
+// Returns paginated list of posts associated with question
+app.post('/api/postsByQuestion/:pageNum', async (req, res, next) => {
 
   var error = '';
-  var randomQuestion;
+  var postList = [];
 
-  try {
-    const db = client.db('COP4331_LargeProject');
-    const questions = db.collection("Questions");
-
-    const query =  [{ $sample: { size: 1 } }];
-
-    randomQuestion = await questions.aggregate(query).next();
-
-
-  }
-  catch (e) {
-    error = e.toString();
-  }
-
-  var ret = { question: randomQuestion, error: error };
-  res.status(200).json(ret);
-
-});
-
-// Returns paginated list of questions based on current page and number of questions per page
-app.post('/api/questions/:pageNum', async (req, res, next) => {
-
-  var error = '';
-  var questionList = [];
-
-  const { questionPerPage } = req.body;
+  const { questionSlug, postsPerPage } = req.body;
 
   const pageNum = parseInt(req.params.pageNum);
 
   try {
     const db = client.db('COP4331_LargeProject');
-    const questions = db.collection("Questions");
+    const posts = db.collection("Post");
 
-    const toSkip = (pageNum - 1) * questionPerPage ;
+    const toSkip = (pageNum - 1) * postsPerPage ;
 
-    questionList = await questions.find().skip(toSkip).limit(questionPerPage).toArray();
+    postList = await posts.find({ QuestionSlug: questionSlug }).skip(toSkip).limit(parseInt(postsPerPage)).toArray();
 
   }
   catch (e) {
     error = e.toString();
   }
 
-  var ret = { question: questionList, error: error };
+  var ret = { posts: postList, error: error };
   res.status(200).json(ret);
 
-});
-
-app.listen(PORT, () => 
-{
-  console.log('Server listening on port ' + PORT);
 });
 
 ///////////////////////////////////////////////////
@@ -499,5 +470,10 @@ if (process.env.NODE_ENV === 'production')
     res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
   });
 }
+
+app.listen(PORT, () => 
+{
+  console.log('Server listening on port ' + PORT);
+});
 
 module.exports = app;

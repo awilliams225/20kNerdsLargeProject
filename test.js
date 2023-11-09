@@ -123,18 +123,32 @@ describe("Questions", () => {
             .then((res) => {
                 res.should.have.status(200);
                 res.should.be.a('object');
-                res.should.have.property('numQuestions');
+                res.should.have.property('something');
                 done();
             })
     })
 
     it("It should return a random question", () => {
         chai.request(app)
-            .get('/api/questions/gerRandom')
+            .get('/api/questions/getRandom')
             .then((res) => {
                 res.should.have.status(200);
                 res.should.be.a('object');
-                res.shoud.have.property('question', object);
+                res.should.have.property('something');
+                done();
+            })
+    })
+
+    it("It should return the first page of questions in 6-count pages", () => {
+        let obj = {
+            "questionPerPage": 6
+        }
+        chai.request(app)
+            .post('/api/questions/1')
+            .then((res) => {
+                res.should.have.status(200);
+                res.should.be.a('object');
+                res.should.have.property('question');
                 done();
             })
     })

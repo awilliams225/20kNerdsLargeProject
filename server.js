@@ -231,6 +231,7 @@ app.post('/api/login', async (req, res, next) =>
   res.status(200).json(ret);
 });
 
+// Returns number of questions
 app.post('/api/numQuestions', async (req, res, next) =>
 {
 
@@ -260,8 +261,15 @@ app.post('/api/numPosts', async (req, res, next) => {
   const { questionSlug } = req.body;
 
   try {
+
+   const query = {
+      $and: [
+        { "QuestionSlug": { $exists: true } },
+        { "QuestionSlug": questionSlug }
+      ]
+    };
     const db = client.db('COP4331_LargeProject');
-    result = await db.collection('Post').countDocuments({QuestionSlug: questionSlug});
+    result = await db.collection('Post').countDocuments(query);
   }
   catch (e) {
     error = e.toString();
@@ -271,6 +279,7 @@ app.post('/api/numPosts', async (req, res, next) => {
   res.status(200).json(ret);
 });
 
+// Adds new post to collection
 app.post('/api/addPost', async (req, res, next) => {
   
   var error = '';
@@ -293,26 +302,7 @@ app.post('/api/addPost', async (req, res, next) => {
   res.status(200).json(ret);
 });
 
-app.post('/api/getUserById', async (req, res, next) => {
-  var error = '';
-  var result = null;
-
-  const { userId } = req.body;
-
-  try
-  {
-    const db = client.db('COP4331_LargeProject');
-    result = await db.collection('Users').find({UserId:userId}).toArray();
-  }
-  catch(e)
-  {
-    error = e.toString();
-  }
-  
-  var ret = { user: result[0], error: error }
-  res.status(200).json(ret);
-})
-
+// Returns list of all posts associated with quesion
 app.post('/api/getPosts', async (req, res, next) => {
   var error = '';
   var result = null;
@@ -333,6 +323,7 @@ app.post('/api/getPosts', async (req, res, next) => {
   res.status(200).json(ret);
 })
 
+// Returns markdown post contents associated with post slug
 app.get('/api/posts/:slug', async (req, res, next) => 
 {
   // incoming: Slug
@@ -436,55 +427,31 @@ app.post('/api/questions/:pageNum', async (req, res, next) => {
 
 });
 
-// Returns one random question
-app.get('/api/questions/getRandom', async (req, res, next) => {
+
+// Returns paginated list of posts associated with question
+app.post('/api/postsByQuestion/:pageNum', async (req, res, next) => {
 
   var error = '';
-  var randomQuestion;
+  var postList = [];
 
-  try {
-    const db = client.db('COP4331_LargeProject');
-    const questions = db.collection("Questions");
-
-    const query =  [{ $sample: { size: 1 } }];
-
-    randomQuestion = await questions.aggregate(query).next();
-
-
-  }
-  catch (e) {
-    error = e.toString();
-  }
-
-  var ret = { question: randomQuestion, error: error };
-  res.status(200).json(ret);
-
-});
-
-// Returns paginated list of questions based on current page and number of questions per page
-app.post('/api/questions/:pageNum', async (req, res, next) => {
-
-  var error = '';
-  var questionList = [];
-
-  const { questionPerPage } = req.body;
+  const { questionSlug, postsPerPage } = req.body;
 
   const pageNum = parseInt(req.params.pageNum);
 
   try {
     const db = client.db('COP4331_LargeProject');
-    const questions = db.collection("Questions");
+    const posts = db.collection("Post");
 
-    const toSkip = (pageNum - 1) * questionPerPage ;
+    const toSkip = (pageNum - 1) * postsPerPage ;
 
-    questionList = await questions.find().skip(toSkip).limit(questionPerPage).toArray();
+    postList = await posts.find({ QuestionSlug: questionSlug }).skip(toSkip).limit(parseInt(postsPerPage)).toArray();
 
   }
   catch (e) {
     error = e.toString();
   }
 
-  var ret = { question: questionList, error: error };
+  var ret = { posts: postList, error: error };
   res.status(200).json(ret);
 
 });

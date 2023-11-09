@@ -79,7 +79,7 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
 {
   const { firstName, lastName, username, password, userEmail } = req.body;
 	let config = {
-    service : 'gmail',
+    service : 'hotmail',
     auth : {
       user: EMAIL,
       pass: PASSWORD
@@ -135,7 +135,7 @@ app.post('/api/forgotPassword', async (req, res, next) =>
 {
   const { firstName, lastName, username, password, userEmail } = req.body;
 	let config = {
-    service : 'gmail',
+    service : 'hotmail',
     auth : {
       user: EMAIL,
       pass: PASSWORD

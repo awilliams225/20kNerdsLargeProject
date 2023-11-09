@@ -91,7 +91,7 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
     theme: "default",
     product : {
       name: "FightOrFlight",
-      link: 'http://localhost:3000/'
+      link: 'https://fight-or-flight-20k-5991cb1c14ef.herokuapp.com/login'
     }
   })
 
@@ -104,7 +104,7 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
             button: {
                 color: '#22BC66', // Optional action button color
                 text: 'Confirm your account',
-                link: 'http://localhost:3000/'
+                link: 'https://fight-or-flight-20k-5991cb1c14ef.herokuapp.com/login'
             }
         },
         outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'
@@ -202,6 +202,7 @@ app.post('/api/register', async (req, res, next) =>
   }
   catch(e)
   {
+    console.log("Hello!");
     error = e.toString();
   }
 
@@ -346,6 +347,144 @@ app.post('/api/addPost', async (req, res, next) => {
   console.log('Server listening on port ' + PORT);
 });
 
+// Returns list of posts associated with given user ID
+app.get('/api/users/:UserId', async (req, res, next) => {
+
+  var error = '';
+  var postsList = [];
+
+  const userId = req.params.UserId;
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    const posts = db.collection("Post");
+
+    const query = { UserId: userId };
+
+    postsList = await posts.find(query).toArray();
+
+
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { list: postsList, error: error };
+  res.status(200).json(ret);
+
+});
+
+// Returns one random question
+app.get('/api/questions/getRandom', async (req, res, next) => {
+
+  var error = '';
+  var randomQuestion;
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    const questions = db.collection("Questions");
+
+    const query =  [{ $sample: { size: 1 } }];
+
+    randomQuestion = await questions.aggregate(query).next();
+
+
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { question: randomQuestion, error: error };
+  res.status(200).json(ret);
+
+});
+
+// Returns paginated list of questions based on current page and number of questions per page
+app.post('/api/questions/:pageNum', async (req, res, next) => {
+
+  var error = '';
+  var questionList = [];
+
+  const { questionPerPage } = req.body;
+
+  const pageNum = parseInt(req.params.pageNum);
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    const questions = db.collection("Questions");
+
+    const toSkip = (pageNum - 1) * questionPerPage ;
+
+    questionList = await questions.find().skip(toSkip).limit(questionPerPage).toArray();
+
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { question: questionList, error: error };
+  res.status(200).json(ret);
+
+});
+
+// Returns one random question
+app.get('/api/questions/getRandom', async (req, res, next) => {
+
+  var error = '';
+  var randomQuestion;
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    const questions = db.collection("Questions");
+
+    const query =  [{ $sample: { size: 1 } }];
+
+    randomQuestion = await questions.aggregate(query).next();
+
+
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { question: randomQuestion, error: error };
+  res.status(200).json(ret);
+
+});
+
+// Returns paginated list of questions based on current page and number of questions per page
+app.post('/api/questions/:pageNum', async (req, res, next) => {
+
+  var error = '';
+  var questionList = [];
+
+  const { questionPerPage } = req.body;
+
+  const pageNum = parseInt(req.params.pageNum);
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    const questions = db.collection("Questions");
+
+    const toSkip = (pageNum - 1) * questionPerPage ;
+
+    questionList = await questions.find().skip(toSkip).limit(questionPerPage).toArray();
+
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { question: questionList, error: error };
+  res.status(200).json(ret);
+
+});
+
+app.listen(PORT, () => 
+{
+  console.log('Server listening on port ' + PORT);
+});
+
 ///////////////////////////////////////////////////
 // For Heroku deployment
 
@@ -360,10 +499,5 @@ if (process.env.NODE_ENV === 'production')
     res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
   });
 }
-
-app.listen(PORT, () => 
-{
-  console.log('Server listening on port ' + PORT);
-});
 
 module.exports = app;

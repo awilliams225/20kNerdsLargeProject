@@ -79,7 +79,7 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
 {
   const { firstName, lastName, username, password, userEmail } = req.body;
 	let config = {
-    service : 'hotmail',
+    service : 'gmail',
     auth : {
       user: EMAIL,
       pass: PASSWORD
@@ -183,6 +183,29 @@ app.post('/api/forgotPassword', async (req, res, next) =>
     return res.status(500).json({ error })
   })
 
+
+});
+
+app.post('/api/changePassword', async (req, res, next) => {
+
+  var error = '';
+  const { username, newPassword } = req.body;
+  
+  try {
+    const db = client.db('COP4331_LargeProject');
+    db.collection('Users').updateOne( { Username:username },
+    {
+      $set: {
+        Password: newPassword
+      }
+    })
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { newPassword: newPassword, error: error };
+  res.status(200).json(ret);
 
 });
 

@@ -77,7 +77,7 @@ app.get("/api/validateToken", (req, res) => {
 // in progress Email verification
 app.post('/api/registerWithEmail', async (req, res, next) =>
 {
-  const { userEmail } = req.body;
+  const { email } = req.body;
 	let config = {
     service : 'gmail',
     auth : {
@@ -132,7 +132,7 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
 // email verification for forgot password
 app.post('/api/forgotPassword', async (req, res, next) =>
 {
-  const { userEmail } = req.body;
+  const { email } = req.body;
 	let config = {
     service : 'gmail',
     auth : {

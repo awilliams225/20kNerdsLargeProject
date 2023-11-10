@@ -77,7 +77,7 @@ app.get("/api/validateToken", (req, res) => {
 // in progress Email verification
 app.post('/api/registerWithEmail', async (req, res, next) =>
 {
-  const { firstName, lastName, username, password, userEmail } = req.body;
+  const { userEmail } = req.body;
 	let config = {
     service : 'gmail',
     auth : {
@@ -91,20 +91,19 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
     theme: "default",
     product : {
       name: "FightOrFlight",
-      link: 'https://fight-or-flight-20k-5991cb1c14ef.herokuapp.com/login'
+      link: 'http://localhost:3000/'
     }
   })
 
   let response = {
       body: {
-        name: firstName + " " + lastName,
         intro: 'Welcome to FightOrFlight! We\'re very excited to have you on board.',
         action: {
             instructions: 'To get started, please click here:',
             button: {
                 color: '#22BC66', // Optional action button color
                 text: 'Confirm your account',
-                link: 'https://fight-or-flight-20k-5991cb1c14ef.herokuapp.com/login'
+                link: 'http://localhost:3000/emailverified'
             }
         },
         outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'
@@ -129,6 +128,85 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
 
 
 });
+
+// email verification for forgot password
+app.post('/api/forgotPassword', async (req, res, next) =>
+{
+  const { userEmail } = req.body;
+	let config = {
+    service : 'gmail',
+    auth : {
+      user: EMAIL,
+      pass: PASSWORD
+    }
+  }
+
+  let transporter = nodemailer.createTransport(config);
+  let MailGenerator = new Mailgen({
+    theme: "default",
+    product : {
+      name: "FightOrFlight",
+      link: 'http://localhost:3000/'
+    }
+  })
+
+  let response = {
+      body: {
+        intro: 'Welcome back to FightOrFlight! You have requested a password reset for your account.',
+        action: {
+            instructions: 'To get started, please click here:',
+            button: {
+                color: '#22BC66', // Optional action button color
+                text: 'Change password',
+                link: 'http://localhost:3000/changepassword'
+            }
+        },
+        outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'
+    }
+  }
+
+  let mail = MailGenerator.generate(response)
+
+  let message = {
+    from : EMAIL,
+    to: userEmail,
+    subject: "Forgot Password",
+    html: mail
+  }
+  transporter.sendMail(message).then(() => {
+    return res.status(201).json({
+      msg: "you should recieve an email"
+    })
+  }).catch(error => {
+    return res.status(500).json({ error })
+  })
+
+
+});
+
+app.post('/api/changePassword', async (req, res, next) => {
+
+  var error = '';
+  const { username, newPassword } = req.body;
+  
+  try {
+    const db = client.db('COP4331_LargeProject');
+    db.collection('Users').updateOne( { Username:username },
+    {
+      $set: {
+        Password: newPassword
+      }
+    })
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { newPassword: newPassword, error: error };
+  res.status(200).json(ret);
+
+});
+
 
 app.post('/api/register', async (req, res, next) =>
 {
@@ -174,6 +252,28 @@ app.post('/api/login', async (req, res, next) =>
   res.status(200).json(ret);
 });
 
+app.post('/api/getUserByEmail', async (req, res, next) => 
+{
+	
+ var error = '';
+
+  const { email } = req.body;
+
+  const db = client.db('COP4331_LargeProject');
+  const results = await db.collection('Users').find({Email:email}).toArray();
+
+  var id = -1;
+
+  if( results.length > 0 )
+  {
+    id = results[0]._id;
+  }
+
+  var ret = { id:id, error:''};
+  res.status(200).json(ret);
+});
+
+// Returns number of questions
 app.post('/api/numQuestions', async (req, res, next) =>
 {
 
@@ -194,13 +294,41 @@ app.post('/api/numQuestions', async (req, res, next) =>
   res.status(200).json(ret);
 });
 
+// Returns number of posts associated with given question slug
+app.post('/api/numPosts', async (req, res, next) => {
+
+  var result = 0;
+  var error = '';
+
+  const { questionSlug } = req.body;
+
+  try {
+
+   const query = {
+      $and: [
+        { "QuestionSlug": { $exists: true } },
+        { "QuestionSlug": questionSlug }
+      ]
+    };
+    const db = client.db('COP4331_LargeProject');
+    result = await db.collection('Post').countDocuments(query);
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { numPosts: result, error: error };
+  res.status(200).json(ret);
+});
+
+// Adds new post to collection
 app.post('/api/addPost', async (req, res, next) => {
   
   var error = '';
 
-  const { answerId, userId, slug, content } = req.body;
+  const { userId, slug, content, title, questionSlug } = req.body;
 
-  const newPost = { AnswerId:answerId, UserId:userId, Slug:slug, Content:content, Comments: []}
+  const newPost = { UserId:userId, Slug:slug, Content:content, Title:title, QuestionSlug:questionSlug, Comments: []}
 
   try 
   {
@@ -216,26 +344,7 @@ app.post('/api/addPost', async (req, res, next) => {
   res.status(200).json(ret);
 });
 
-app.post('/api/getUserById', async (req, res, next) => {
-  var error = '';
-  var result = null;
-
-  const { userId } = req.body;
-
-  try
-  {
-    const db = client.db('COP4331_LargeProject');
-    result = await db.collection('Users').find({UserId:userId}).toArray();
-  }
-  catch(e)
-  {
-    error = e.toString();
-  }
-  
-  var ret = { user: result[0], error: error }
-  res.status(200).json(ret);
-})
-
+// Returns list of all posts associated with quesion
 app.post('/api/getPosts', async (req, res, next) => {
   var error = '';
   var result = null;
@@ -256,6 +365,7 @@ app.post('/api/getPosts', async (req, res, next) => {
   res.status(200).json(ret);
 })
 
+// Returns markdown post contents associated with post slug
 app.get('/api/posts/:slug', async (req, res, next) => 
 {
   // incoming: Slug
@@ -359,62 +469,33 @@ app.post('/api/questions/:pageNum', async (req, res, next) => {
 
 });
 
-// Returns one random question
-app.get('/api/questions/getRandom', async (req, res, next) => {
+
+// Returns paginated list of posts associated with question
+app.post('/api/postsByQuestion/:pageNum', async (req, res, next) => {
 
   var error = '';
-  var randomQuestion;
+  var postList = [];
 
-  try {
-    const db = client.db('COP4331_LargeProject');
-    const questions = db.collection("Questions");
-
-    const query =  [{ $sample: { size: 1 } }];
-
-    randomQuestion = await questions.aggregate(query).next();
-
-
-  }
-  catch (e) {
-    error = e.toString();
-  }
-
-  var ret = { question: randomQuestion, error: error };
-  res.status(200).json(ret);
-
-});
-
-// Returns paginated list of questions based on current page and number of questions per page
-app.post('/api/questions/:pageNum', async (req, res, next) => {
-
-  var error = '';
-  var questionList = [];
-
-  const { questionPerPage } = req.body;
+  const { questionSlug, postsPerPage } = req.body;
 
   const pageNum = parseInt(req.params.pageNum);
 
   try {
     const db = client.db('COP4331_LargeProject');
-    const questions = db.collection("Questions");
+    const posts = db.collection("Post");
 
-    const toSkip = (pageNum - 1) * questionPerPage ;
+    const toSkip = (pageNum - 1) * postsPerPage ;
 
-    questionList = await questions.find().skip(toSkip).limit(questionPerPage).toArray();
+    postList = await posts.find({ QuestionSlug: questionSlug }).skip(toSkip).limit(parseInt(postsPerPage)).toArray();
 
   }
   catch (e) {
     error = e.toString();
   }
 
-  var ret = { question: questionList, error: error };
+  var ret = { posts: postList, error: error };
   res.status(200).json(ret);
 
-});
-
-app.listen(PORT, () => 
-{
-  console.log('Server listening on port ' + PORT);
 });
 
 ///////////////////////////////////////////////////
@@ -431,5 +512,10 @@ if (process.env.NODE_ENV === 'production')
     res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
   });
 }
+
+app.listen(PORT, () => 
+{
+  console.log('Server listening on port ' + PORT);
+});
 
 module.exports = app;

@@ -4,6 +4,8 @@ const MongoClient = require('mongodb').MongoClient;
 const client = new MongoClient(url);
 client.connect();
 
+const ObjectId = require('mongodb').ObjectId;
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -132,7 +134,22 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
 // email verification for forgot password
 app.post('/api/forgotPassword', async (req, res, next) =>
 {
-  const { email } = req.body;
+  const { userId, email } = req.body;
+
+  const newRequest = { userId };
+  var error = '';
+
+  try
+  {
+    const db = client.db('COP4331_LargeProject');
+    const result = db.collection('PassChangeRequests').insertOne(newRequest);
+  }
+  catch(e)
+  {
+    error = e.toString();
+    return res.status(500).json({ error })
+  }
+
 	let config = {
     service : 'gmail',
     auth : {
@@ -184,6 +201,35 @@ app.post('/api/forgotPassword', async (req, res, next) =>
 
 });
 
+app.post('/api/grabIdByPassRequest', async (req, res, next) => {
+
+  var error = '';
+  const { requestId } = req.body;
+
+  var objId = new ObjectId(requestId);
+
+  var id = -1;
+  var result = [];
+
+  try 
+  {
+    const db = client.db('COP4331_LargeProject');
+    result = await db.collection('PassChangeRequests').find({_id:objId}).toArray();
+  }
+  catch (e)
+  {
+    error = e.toString();
+  }
+
+  if( result.length > 0 )
+  {
+    id = result[0]._id;
+  }
+  
+  var ret = { userId: id, error: error };
+  res.status(200).json(ret);
+})
+
 app.post('/api/changePassword', async (req, res, next) => {
 
   var error = '';
@@ -207,7 +253,6 @@ app.post('/api/changePassword', async (req, res, next) => {
 
 });
 
-
 app.post('/api/register', async (req, res, next) =>
 {
 	
@@ -223,7 +268,6 @@ app.post('/api/register', async (req, res, next) =>
   }
   catch(e)
   {
-    console.log("Hello!");
     error = e.toString();
   }
 

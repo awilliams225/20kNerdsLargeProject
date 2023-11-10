@@ -7,6 +7,8 @@ import ForumPage from './pages/ForumPage';
 import LoginPage from './pages/LoginPage';
 import CardPage from './pages/CardPage';
 import QuestionPage from './pages/QuestionPage';
+import ChangePasswordPage from './pages/ChangePasswordPage';
+import EmailRegisteredPage from './pages/EmailRegisteredPage';
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
         <Route path="/home/:page?/" element={<QuestionPage />}/>
         <Route path="/question/:questionSlug/:page?/" element={<ForumPage />}/>
         <Route path="/question/:questionSlug/post/:slug/:page?/" element={<PostPage />}/>
+        <Route path="/changepassword" element={<ChangePasswordPage/>} />
+        <Route path="/emailverified" element={<EmailRegisteredPage />} />
       </Routes>
     </BrowserRouter>
   );

@@ -77,7 +77,7 @@ app.get("/api/validateToken", (req, res) => {
 // in progress Email verification
 app.post('/api/registerWithEmail', async (req, res, next) =>
 {
-  const { firstName, lastName, username, password, userEmail } = req.body;
+  const { userEmail } = req.body;
 	let config = {
     service : 'gmail',
     auth : {
@@ -97,14 +97,13 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
 
   let response = {
       body: {
-        name: firstName + " " + lastName,
         intro: 'Welcome to FightOrFlight! We\'re very excited to have you on board.',
         action: {
             instructions: 'To get started, please click here:',
             button: {
                 color: '#22BC66', // Optional action button color
                 text: 'Confirm your account',
-                link: 'http://localhost:3000/'
+                link: 'http://localhost:3000/emailverified'
             }
         },
         outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'
@@ -133,9 +132,9 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
 // email verification for forgot password
 app.post('/api/forgotPassword', async (req, res, next) =>
 {
-  const { firstName, lastName, username, password, userEmail } = req.body;
+  const { userEmail } = req.body;
 	let config = {
-    service : 'hotmail',
+    service : 'gmail',
     auth : {
       user: EMAIL,
       pass: PASSWORD
@@ -153,14 +152,13 @@ app.post('/api/forgotPassword', async (req, res, next) =>
 
   let response = {
       body: {
-        name: firstName + " " + lastName,
         intro: 'Welcome back to FightOrFlight! You have requested a password reset for your account.',
         action: {
             instructions: 'To get started, please click here:',
             button: {
                 color: '#22BC66', // Optional action button color
-                text: 'Confirm your account',
-                link: 'http://localhost:3000/'
+                text: 'Change password',
+                link: 'http://localhost:3000/changepassword'
             }
         },
         outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'
@@ -242,6 +240,27 @@ app.post('/api/login', async (req, res, next) =>
 
   const db = client.db('COP4331_LargeProject');
   const results = await db.collection('Users').find({Username:login,Password:password}).toArray();
+
+  var id = -1;
+
+  if( results.length > 0 )
+  {
+    id = results[0]._id;
+  }
+
+  var ret = { id:id, error:''};
+  res.status(200).json(ret);
+});
+
+app.post('/api/getUserByEmail', async (req, res, next) => 
+{
+	
+ var error = '';
+
+  const { email } = req.body;
+
+  const db = client.db('COP4331_LargeProject');
+  const results = await db.collection('Users').find({Email:email}).toArray();
 
   var id = -1;
 

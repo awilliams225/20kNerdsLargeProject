@@ -114,7 +114,7 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
 
   let message = {
     from : EMAIL,
-    to: userEmail,
+    to: email,
     subject: "Registration",
     html: mail
   }
@@ -169,7 +169,7 @@ app.post('/api/forgotPassword', async (req, res, next) =>
 
   let message = {
     from : EMAIL,
-    to: userEmail,
+    to: email,
     subject: "Forgot Password",
     html: mail
   }

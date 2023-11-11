@@ -201,7 +201,7 @@ app.post('/api/forgotPassword', async (req, res, next) =>
 
 });
 
-app.post('/api/grabIdByPassRequest', async (req, res, next) => {
+app.post('/api/grabUserByPassRequest', async (req, res, next) => {
 
   var error = '';
   const { requestId } = req.body;
@@ -223,7 +223,7 @@ app.post('/api/grabIdByPassRequest', async (req, res, next) => {
 
   if( result.length > 0 )
   {
-    id = result[0]._id;
+    id = result[0].userId;
   }
   
   var ret = { userId: id, error: error };
@@ -233,11 +233,13 @@ app.post('/api/grabIdByPassRequest', async (req, res, next) => {
 app.post('/api/changePassword', async (req, res, next) => {
 
   var error = '';
-  const { username, newPassword } = req.body;
+  const { userId, oldPassword, newPassword } = req.body;
+
+  var objId = new ObjectId(userId);
   
   try {
     const db = client.db('COP4331_LargeProject');
-    db.collection('Users').updateOne( { Username:username },
+    db.collection('Users').updateOne( { _id:objId, Password:oldPassword },
     {
       $set: {
         Password: newPassword

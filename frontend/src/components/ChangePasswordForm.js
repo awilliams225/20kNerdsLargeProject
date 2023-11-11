@@ -1,12 +1,15 @@
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router';
 
 export default function ChangePasswordForm() {
 
-    const [oldPass] = useState('');
-    const [newPass] = useState('');
-    const [username] = useState('');
+    const [userId, setId] = useState('');
+    const [oldPass, setOldPass] = useState('');
+    const [newPass, setNewPass] = useState('');
+
+    const { requestId } = useParams();
 
     const app_name = 'fight-or-flight-20k-5991cb1c14ef'
     function buildPath(route) {
@@ -18,9 +21,37 @@ export default function ChangePasswordForm() {
         }
     }
 
+
+
+    useEffect(() => {
+
+        const grabUser = async () => {
+            var obj = { requestId: requestId };
+            var js = JSON.stringify(obj);
+
+            const response = await fetch(buildPath("api/grabUserByPassRequest"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
+
+            if (response.status === 200) {
+                const json = await response.json();
+
+                console.log(json.userId);
+
+                setId(json.userId);
+            }
+            else {
+                console.log(response.text);
+            }
+        }
+
+        grabUser();
+
+    })
+
     async function changePass() {
-        var obj = { username: oldPass, password: newPass };
+        var obj = { userId: userId, oldPassword: oldPass, newPassword: newPass };
         var js = JSON.stringify(obj);
+
+        console.log(newPass);
 
         const response = await fetch(buildPath("api/changePassword"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 
@@ -36,14 +67,11 @@ export default function ChangePasswordForm() {
         <>
         <Form>
             <Form.Group controlId="passChange">
-                <Form.Label classname='mb-3'>Username</Form.Label>
-                <Form.Control type='username' placeholder='Username' value={username}></Form.Control>
-
                 <Form.Label className='mb-3'>Current Password</Form.Label>
-                <Form.Control type='password' placeholder='Current Password' value={oldPass} />
+                <Form.Control type='password' placeholder='Current Password' value={oldPass} onChange={ e => setOldPass(e.target.value) } />
 
                 <Form.Label className='mb-3'>New Password</Form.Label>
-                <Form.Control type='password' placeholder='New Password' value={newPass} />
+                <Form.Control type='password' placeholder='New Password' value={newPass} onChange={ e => setNewPass(e.target.value) } />
             </Form.Group>
             <Button variant='primary' onClick={changePass}>
                 Change Password

@@ -4,6 +4,8 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import { useParams } from "react-router-dom";
 import React, { useState, useEffect } from 'react';
 import ReactMarkdown from "react-markdown";
+import Paginator from '../components/Paginator';
+import CreatePostForm from '../components/CreatePostForm';
 
 export default function AnswerForum() {
 
@@ -57,6 +59,8 @@ export default function AnswerForum() {
             var postList = posts.postList;
             return (
                 <>
+                    <CreatePostForm questionSlug={questionSlug} />
+                    <Paginator activePage={1} numPages={5} />
                     <ListGroup className="mt-3">
                         {postList.map((post) => (
                             <ListGroup.Item action variant="dark" href={"post/" + post.Slug + "/"} className="my-1">

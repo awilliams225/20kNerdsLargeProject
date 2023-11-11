@@ -35,6 +35,8 @@ export default function Login() {
             else {
                 var user = { firstName: res.firstName, lastName: res.lastName, id: res.id }
                 localStorage.setItem('user_data', JSON.stringify(user));
+                console.log(JSON.stringify(user));
+                console.log(JSON.parse(JSON.stringify(user)));
 
                 setMessage('');
                 window.location.href = '/home';

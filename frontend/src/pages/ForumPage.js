@@ -11,8 +11,7 @@ const ForumPage = () => {
         <div>
             <GlobalNavbar />
             <Container className="my-5">
-                <CreatePostForm />
-                <Paginator />
+
                 <AnswerForum />
             </Container>
         </div>

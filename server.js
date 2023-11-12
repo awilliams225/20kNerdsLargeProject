@@ -51,7 +51,7 @@ app.post("/api/generateToken", (req, res) => {
       userId: objId
   } 
 
-  const token = jwt.sign(data, jwtSecretKey); 
+  const token = jwt.sign(data, jwtSecretKey, { expiresIn: "24h" }); 
 
   ret = { token: token };
 
@@ -81,7 +81,33 @@ app.get("/api/validateToken", (req, res) => {
 // in progress Email verification
 app.post('/api/registerWithEmail', async (req, res, next) =>
 {
-  const { email } = req.body;
+  const { email, userId } = req.body;
+
+  objId = new ObjectId(userId);
+
+  let jwtSecretKey = process.env.JWT_SECRET_KEY; 
+  let data = { 
+      time: Date(), 
+      userId: objId
+  } 
+
+  const token = jwt.sign(data, jwtSecretKey, { expiresIn: "1h" }); 
+
+  const newRequest = { userId, token };
+
+  var error = '';
+
+  try
+  {
+    const db = client.db('COP4331_LargeProject');
+    const result = db.collection('EmailVerificationRequests').insertOne(newRequest);
+  }
+  catch(e)
+  {
+    error = e.toString();
+    return res.status(500).json({ error })
+  }
+
 	let config = {
     service : 'gmail',
     auth : {
@@ -107,7 +133,7 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
             button: {
                 color: '#22BC66', // Optional action button color
                 text: 'Confirm your account',
-                link: 'http://localhost:3000/emailverified'
+                link: 'http://localhost:3000/emailverified' + token
             }
         },
         outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'
@@ -138,7 +164,17 @@ app.post('/api/forgotPassword', async (req, res, next) =>
 {
   const { userId, email } = req.body;
 
-  const newRequest = { userId };
+  objId = new ObjectId(userId);
+
+  let jwtSecretKey = process.env.JWT_SECRET_KEY; 
+  let data = { 
+      time: Date(), 
+      userId: objId
+  } 
+
+  const token = jwt.sign(data, jwtSecretKey, { expiresIn: "1h" }); 
+
+  const newRequest = { userId, token };
   var error = '';
 
   try
@@ -177,7 +213,7 @@ app.post('/api/forgotPassword', async (req, res, next) =>
             button: {
                 color: '#22BC66', // Optional action button color
                 text: 'Change password',
-                link: 'http://localhost:3000/changepassword'
+                link: 'http://localhost:3000/changepassword' + token
             }
         },
         outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'
@@ -203,20 +239,103 @@ app.post('/api/forgotPassword', async (req, res, next) =>
 
 });
 
-app.post('/api/grabUserByPassRequest', async (req, res, next) => {
+app.post('/api/grabUserByEmailVerificationRequest', async (req, res, next) => {
+  let tokenHeaderKey = process.env.TOKEN_HEADER_KEY; 
+  let jwtSecretKey = process.env.JWT_SECRET_KEY; 
 
   var error = '';
-  const { requestId } = req.body;
-
-  var objId = new ObjectId(requestId);
+  const { token } = req.body;
 
   var id = -1;
   var result = [];
 
+  try
+  {
+    const verified = jwt.verify(token, jwtSecretKey);
+
+    if (!verified)
+    {
+      error = "Token not valid"
+      return res.status(401).send(error); 
+    }
+  }
+  catch (e)
+  {
+    return res.status(401).send(e);
+  }
+
   try 
   {
     const db = client.db('COP4331_LargeProject');
-    result = await db.collection('PassChangeRequests').find({_id:objId}).toArray();
+    result = await db.collection('EmailVerificationRequests').find({token: token}).toArray();
+  }
+  catch (e)
+  {
+    error = e.toString();
+  }
+
+  if( result.length > 0 )
+  {
+    id = result[0].userId;
+  }
+  
+  var ret = { userId: id, error: error };
+  res.status(200).json(ret);
+})
+
+app.post('/api/makeUserRegistered', async (req, res, next) => {
+  var error = '';
+  const { userId } = req.body;
+
+  var objId = new ObjectId(userId);
+  
+  try {
+    const db = client.db('COP4331_LargeProject');
+    db.collection('Users').updateOne( { _id:objId },
+    {
+      $set: {
+        Registered: true
+      }
+    })
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { error: error };
+  res.status(200).json(ret);
+})
+
+app.post('/api/grabUserByPassRequest', async (req, res, next) => {
+
+  let tokenHeaderKey = process.env.TOKEN_HEADER_KEY; 
+  let jwtSecretKey = process.env.JWT_SECRET_KEY; 
+
+  var error = '';
+  const { token } = req.body;
+
+  var id = -1;
+  var result = [];
+
+  try
+  {
+    const verified = jwt.verify(token, jwtSecretKey);
+
+    if (!verified)
+    {
+      error = "Token not valid"
+      return res.status(401).send(error); 
+    }
+  }
+  catch (e)
+  {
+    return res.status(401).send(e);
+  }
+
+  try 
+  {
+    const db = client.db('COP4331_LargeProject');
+    result = await db.collection('PassChangeRequests').find({token: token}).toArray();
   }
   catch (e)
   {

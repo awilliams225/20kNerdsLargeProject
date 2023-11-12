@@ -9,7 +9,7 @@ export default function ChangePasswordForm() {
     const [oldPass, setOldPass] = useState('');
     const [newPass, setNewPass] = useState('');
 
-    const { requestId } = useParams();
+    const { token } = useParams();
 
     const app_name = 'fight-or-flight-20k-5991cb1c14ef'
     function buildPath(route) {
@@ -26,8 +26,10 @@ export default function ChangePasswordForm() {
     useEffect(() => {
 
         const grabUser = async () => {
-            var obj = { requestId: requestId };
+            var obj = { token: token };
             var js = JSON.stringify(obj);
+
+            console.log(token);
 
             const response = await fetch(buildPath("api/grabUserByPassRequest"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 
@@ -39,7 +41,7 @@ export default function ChangePasswordForm() {
                 setId(json.userId);
             }
             else {
-                console.log(response.text);
+                console.log(response);
             }
         }
 
@@ -56,7 +58,7 @@ export default function ChangePasswordForm() {
         const response = await fetch(buildPath("api/changePassword"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 
         if (response.status === 200) {
-            console.log("Password hass been changed!");
+            console.log("Password has been changed!");
         }
         else {
             console.log(response.text);

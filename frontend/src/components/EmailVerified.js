@@ -1,7 +1,13 @@
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router';
 
 export default function EmailVerified() {
+
+    const [userId, setId] = useState('');
+
+    const { token } = useParams();
 
     const app_name = 'fight-or-flight-20k-5991cb1c14ef'
     function buildPath(route) {
@@ -9,9 +15,46 @@ export default function EmailVerified() {
             return 'https://' + app_name + '.herokuapp.com/' + route;
         }
         else {
-            return 'http://localhost:3000/' + route;
+            return 'http://localhost:5000/' + route;
         }
     }
+
+    useEffect(() => {
+
+        const verifyUser = async () => {
+            var obj = { token: token };
+            var js = JSON.stringify(obj);
+
+            console.log(token);
+
+            const response = await fetch(buildPath("api/grabUserByEmailVerificationRequest"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
+
+            if (response.status === 200) {
+                const json = await response.json();
+
+                console.log(json.userId);
+
+                obj = { userId: json.userId };
+                js = JSON.stringify(obj);
+
+                const regResponse = await fetch(buildPath("api/makeUserRegistered"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
+
+                if (regResponse.status === 200) {
+                    console.log("User is registered now!");
+                }
+                else {
+                    console.log(regResponse);
+                }
+            }
+            else {
+                console.log(response);
+            }
+
+        }
+
+        verifyUser();
+
+    })
 
     return (
         <>

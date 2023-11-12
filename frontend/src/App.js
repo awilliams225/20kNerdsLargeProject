@@ -19,8 +19,8 @@ function App() {
         <Route path="/home/:page?/" element={<QuestionPage />}/>
         <Route path="/question/:questionSlug/:page?/" element={<ForumPage />}/>
         <Route path="/question/:questionSlug/post/:slug/:page?/" element={<PostPage />}/>
-        <Route path="/changepassword/:requestId" element={<ChangePasswordPage/>} />
-        <Route path="/emailverified" element={<EmailRegisteredPage />} />
+        <Route path="/changepassword/:token" element={<ChangePasswordPage/>} />
+        <Route path="/emailverified/:token" element={<EmailRegisteredPage />} />
       </Routes>
     </BrowserRouter>
   );

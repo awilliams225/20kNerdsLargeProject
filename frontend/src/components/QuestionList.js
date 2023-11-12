@@ -9,8 +9,8 @@ export default function QuestionList() {
 
     const [questions, setQuestions] = useState({});
     const [numQuestions, setNumQuestions] = useState({});
-    const [loading, setQuestionsLoading] = useState(true);
-    const [loadingPagination, setPaginationLoading] = useState(true);
+    const [questionsLoading, setQuestionsLoading] = useState(true);
+    const [paginationLoading, setPaginationLoading] = useState(true);
 
     const questionsPerPage = 5;
 
@@ -69,7 +69,7 @@ export default function QuestionList() {
     }, [page]);
 
     const renderQuestions = () => {
-        if (loading || loadingPagination) {
+        if (questionsLoading || paginationLoading) {
             return <Spinner animation="border" />;
         }
         else {

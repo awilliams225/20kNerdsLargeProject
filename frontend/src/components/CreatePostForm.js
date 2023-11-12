@@ -45,8 +45,6 @@ export default function CreatePostForm(props) {
         var obj = { userId: userId, slug: slugify(formData.title), content: formData.content, title: formData.title, questionSlug: questionSlug };
         var js = JSON.stringify(obj);
 
-        console.log(js);
-
         const response = await fetch(buildPath('api/addPost'), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 
         if (response != null) {

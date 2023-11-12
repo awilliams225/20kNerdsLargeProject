@@ -43,10 +43,12 @@ app.post("/api/generateToken", (req, res) => {
 
   const { userId } = req.body;
 
+  var objId = new ObjectId(userId);
+
   let jwtSecretKey = process.env.JWT_SECRET_KEY; 
   let data = { 
       time: Date(), 
-      userId: userId
+      userId: objId
   } 
 
   const token = jwt.sign(data, jwtSecretKey); 

@@ -31,10 +31,11 @@ function App() {
             setAppLoading(true);
 
             const token = localStorage.getItem('token');
-            const tokenJs = JSON.parse(token);
             if (!token) {
+                setAppLoading(false);
                 return;
             }
+            const tokenJs = JSON.parse(token);
 
             try {
                 const response = await fetch(buildPath('api/validateToken'), { method: 'GET', headers: {'twentythousand_header_key': tokenJs.token} })

@@ -665,6 +665,33 @@ app.post('/api/postsByQuestion/:pageNum', async (req, res, next) => {
 
 });
 
+// returns all replies by UserID. Also sends back the textList and slugList individually sorted by their index.
+app.post('/api/replies/grabRepliesbyUserID', async (req, res, next) => {
+
+  var error = '';
+  var replyList = [];
+  var textList = [];
+  var slugList = [];
+
+  const { userID } = req.body;
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    replyList = await db.collection('Replies').find({UserID:userID}).toArray();
+
+    for (i = 0; i < replyList.length; i++)
+    {
+      textList[i] = replyList[i].text;
+      slugList[i] = replyList[i].slug;
+    }
+  }
+  catch (e) {
+    error = e.toString();
+  }
+  var ret = { fullList: replyList, textList:textList, slugList:slugList, error:''};
+  res.status(200).json(ret);
+});
+
 // Adds new reply to collection
 app.post('/api/addReply', async (req, res, next) => {
   

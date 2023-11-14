@@ -665,6 +665,50 @@ app.post('/api/postsByQuestion/:pageNum', async (req, res, next) => {
 
 });
 
+// Adds new reply to collection
+app.post('/api/addReply', async (req, res, next) => {
+  
+  var error = '';
+
+  const { userId, text, slug, postId } = req.body;
+
+  const newReply = { UserID:userId, text:text, slug:slug, PostID:postId}
+
+  try 
+  {
+    const db = client.db('COP4331_LargeProject');
+    const result = db.collection('Replies').insertOne(newReply);
+  }
+  catch(e)
+  {
+    error = e.toString();
+  }
+
+  var ret = { error:error};
+  res.status(200).json(ret);
+});
+
+// Returns list of all replies associated with postid
+app.post('/api/replies/getPostID', async (req, res, next) => {
+  var error = '';
+  var result = null;
+
+  const { postId } = req.body;
+
+  try
+  {
+    const db = client.db('COP4331_LargeProject');
+    result = await db.collection('Replies').find({PostID:postId}).toArray();
+  }
+  catch(e)
+  {
+    error = e.toString();
+  }
+  
+  var ret = { postList: result, error: error }
+  res.status(200).json(ret);
+})
+
 ///////////////////////////////////////////////////
 // For Heroku deployment
 

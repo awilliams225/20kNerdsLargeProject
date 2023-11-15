@@ -213,7 +213,7 @@ app.post('/api/forgotPassword', async (req, res, next) =>
             button: {
                 color: '#22BC66', // Optional action button color
                 text: 'Change password',
-                link: 'http://localhost:3000/changepassword' + token
+                link: 'http://localhost:3000/changepassword/' + token
             }
         },
         outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'
@@ -715,24 +715,24 @@ app.post('/api/addReply', async (req, res, next) => {
   res.status(200).json(ret);
 });
 
-// Returns list of all replies associated with postid
-app.post('/api/replies/getPostID', async (req, res, next) => {
+// Returns list of all replies associated with slug
+app.post('/api/replies/getByPostSlug', async (req, res, next) => {
   var error = '';
   var result = null;
 
-  const { postId } = req.body;
+  const { slug } = req.body;
 
   try
   {
     const db = client.db('COP4331_LargeProject');
-    result = await db.collection('Replies').find({PostID:postId}).toArray();
+    result = await db.collection('Replies').find({ slug: slug}).toArray();
   }
   catch(e)
   {
     error = e.toString();
   }
   
-  var ret = { postList: result, error: error }
+  var ret = { replyList: result, error: error }
   res.status(200).json(ret);
 })
 

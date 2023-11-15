@@ -3,7 +3,6 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { useNavigate } from 'react-router-dom';
-
 export default function GlobalNavbar() {
 
     const app_name = 'fight-or-flight-20k-5991cb1c14ef'

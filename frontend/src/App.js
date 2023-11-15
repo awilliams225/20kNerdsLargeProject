@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import './App.css';
 
+import ReplyPage from './pages/ReplyPage';
 import PostPage from './pages/PostPage';
-import ForumPage from './pages/ForumPage';
 import LoginPage from './pages/LoginPage';
 import CardPage from './pages/CardPage';
 import QuestionPage from './pages/QuestionPage';
@@ -84,8 +84,8 @@ function App() {
                         <Route path="/" element={handleLoginPage()} />
                         <Route path="/cards/" element={protectElement(<CardPage />)} />
                         <Route path="/home/:page?/" element={protectElement(<QuestionPage />)} />
-                        <Route path="/question/:questionSlug/:page?/" element={protectElement(<ForumPage />)} />
-                        <Route path="/question/:questionSlug/post/:slug/:page?/" element={protectElement(<PostPage />)} />
+                        <Route path="/question/:questionSlug/:page?/" element={protectElement(<PostPage />)} />
+                        <Route path="/question/:questionSlug/post/:slug/:page?/" element={protectElement(<ReplyPage />)} />
                         <Route path="/changepassword/:token" element={protectElement(<ChangePasswordPage />)} />
                         <Route path="/emailverified/:token" element={protectElement(<EmailRegisteredPage />)} />
                     </Routes>

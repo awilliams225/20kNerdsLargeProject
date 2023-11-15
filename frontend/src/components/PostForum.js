@@ -7,7 +7,7 @@ import ReactMarkdown from "react-markdown";
 import Paginator from '../components/Paginator';
 import CreatePostForm from '../components/CreatePostForm';
 
-export default function AnswerForum() {
+export default function PostForum() {
 
     const { questionSlug, page = '1' } = useParams();
 

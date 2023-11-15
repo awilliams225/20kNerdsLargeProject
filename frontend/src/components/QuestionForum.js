@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from "react-router-dom";
 import Paginator from '../components/Paginator';
 
-export default function QuestionList() {
+export default function QuestionForum() {
 
     const [questions, setQuestions] = useState({});
     const [numQuestions, setNumQuestions] = useState({});

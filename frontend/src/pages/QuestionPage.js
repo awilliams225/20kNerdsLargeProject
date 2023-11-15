@@ -1,7 +1,7 @@
 import React from 'react';
 
 import GlobalNavbar from '../components/GlobalNavbar';
-import QuestionList from '../components/QuestionList';
+import QuestionForum from '../components/QuestionForum';
 import ChooseAnswer from '../components/ChooseAnswer';
 
 const QuestionPage = () => {
@@ -9,7 +9,7 @@ const QuestionPage = () => {
         <div>
             <GlobalNavbar />
             <ChooseAnswer />
-            <QuestionList />
+            <QuestionForum />
         </div>
     );
 }

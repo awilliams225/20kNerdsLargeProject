@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ForgotPasswordModal from '../components/ForgotPasswordModal'
 
 export default function Login() {
 
@@ -71,6 +72,8 @@ export default function Login() {
                     ref={(c) => loginPassword = c} /><br />
                 <input type="submit" id="loginButton" class="buttons" value="Do It"
                     onClick={doLogin} />
+                <br />
+                <ForgotPasswordModal />
             </form>
             <span id="loginResult">{message}</span>
         </div>

@@ -86,7 +86,7 @@ function App() {
                         <Route path="/home/:page?/" element={protectElement(<QuestionPage />)} />
                         <Route path="/question/:questionSlug/:page?/" element={protectElement(<PostPage />)} />
                         <Route path="/question/:questionSlug/post/:slug/" element={protectElement(<ReplyPage />)} />
-                        <Route path="/changepassword/:token" element={protectElement(<ChangePasswordPage />)} />
+                        <Route path="/changepassword/:token" element={<ChangePasswordPage />} />
                         <Route path="/emailverified/:token" element={<EmailRegisteredPage />} />
                     </Routes>
                 </BrowserRouter>

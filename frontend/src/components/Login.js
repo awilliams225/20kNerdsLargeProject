@@ -48,7 +48,7 @@ export default function Login() {
                 localStorage.setItem('token', JSON.stringify(tokenData));
 
                 setMessage('');
-                window.location.href = '/home';
+                window.location.href = '/home/';
             }
         }
         catch (e) {

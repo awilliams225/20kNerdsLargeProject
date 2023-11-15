@@ -381,7 +381,7 @@ app.post('/api/register', async (req, res, next) =>
 	
   const { username, password, email } = req.body;
 
-  const newUser = {Username:username, Password:password, Email:email, Answers:[]};
+  const newUser = {Username:username, Password:password, Email:email};
   var error = '';
 
   try
@@ -495,7 +495,7 @@ app.post('/api/addPost', async (req, res, next) => {
 
   const { userId, slug, content, title, questionSlug } = req.body;
 
-  const newPost = { UserId:userId, Slug:slug, Content:content, Title:title, QuestionSlug:questionSlug, Comments: []}
+  const newPost = { UserId:userId, Slug:slug, Content:content, Title:title, QuestionSlug:questionSlug}
 
   try 
   {
@@ -532,27 +532,27 @@ app.post('/api/getPosts', async (req, res, next) => {
   res.status(200).json(ret);
 })
 
-// Returns markdown post contents associated with post slug
+// Returns title and markdown content associated with post slug
 app.get('/api/posts/:slug', async (req, res, next) => 
 {
   // incoming: Slug
-  // outgoing: Markdown post
+  // outgoing: Title + Markdown content
 	
   var error = '';
 
   const slug = req.params.slug;
 
   const db = client.db('COP4331_LargeProject');
-  const results = await db.collection('Post').find({Slug:slug}).toArray();
+  const document = await db.collection('Post').find({Slug:slug}).next();
 
-  var content = '';
+  var result = '';
 
-  if( results.length > 0 )
+  if( document != null )
   {
-    content = results[0].Content;
+    result = {Title: document.Title, Content: document.Content}
   }
 
-  var ret = { Content:content, error:error};
+  var ret = { Result:result, error:error};
   res.status(200).json(ret);
 });
 

@@ -19,14 +19,14 @@ export default function Paginator(props) {
 
     return (
         <>
-            <Pagination className="mt-3" onChange={props.updatePaginator}>
+            <Pagination className="mt-3">
                 <Pagination.First disabled={activePage === 1} href={"1"} />
                 <Pagination.Prev disabled={activePage === 1} href={"" + (activePage - 1)} />
 
                 {items}
 
-                <Pagination.Next disabled={activePage === numPages} href={"" + (activePage + 1)} />
-                <Pagination.Last disabled={activePage === numPages} href={"" + numPages} />
+                <Pagination.Next disabled={activePage === numPages || numPages === 0} href={"" + (activePage + 1)} />
+                <Pagination.Last disabled={activePage === numPages || numPages === 0} href={"" + numPages} />
             </Pagination>
         </>
     )

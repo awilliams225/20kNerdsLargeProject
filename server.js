@@ -697,9 +697,8 @@ app.post('/api/addReply', async (req, res, next) => {
   
   var error = '';
 
-  const { userId, text, slug, postId } = req.body;
-
-  const newReply = { UserID:userId, text:text, slug:slug, PostID:postId}
+  const { userID, text, slug } = req.body;
+  const newReply = { UserID:userID, text:text, slug:slug}
 
   try 
   {

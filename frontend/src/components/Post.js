@@ -49,7 +49,7 @@ export default function Post() {
                 <>
                     <Card>
                         <Card.Header>
-                            <ReactMarkdown children={post.Result.Title}></ReactMarkdown>
+                            <Card.Title><ReactMarkdown children={post.Result.Title}></ReactMarkdown></Card.Title>
                         </Card.Header>
                         <Card.Body>
                             <ReactMarkdown children={post.Result.Content}></ReactMarkdown>

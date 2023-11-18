@@ -1,13 +1,13 @@
 import { useParams } from "react-router-dom";
 import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
-
+import Card from 'react-bootstrap/Card';
 
 export default function Post() {
     const { questionSlug, slug } = useParams();
 
     const [post, setPost] = useState({});
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const app_name = 'fight-or-flight-20k-5991cb1c14ef'
     function buildPath(route) {
@@ -47,7 +47,15 @@ export default function Post() {
         else {
             return (
                 <>
-                    <ReactMarkdown children={post.Content}></ReactMarkdown>
+                    <Card>
+                        <Card.Header>
+                            <ReactMarkdown children={post.Result.Title}></ReactMarkdown>
+                        </Card.Header>
+                        <Card.Body>
+                            <ReactMarkdown children={post.Result.Content}></ReactMarkdown>
+                        </Card.Body>
+                    </Card>
+
                 </>
             )
         }

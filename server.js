@@ -381,7 +381,7 @@ app.post('/api/register', async (req, res, next) =>
 	
   const { username, password, email } = req.body;
 
-  const newUser = {Username:username, Password:password, Email:email};
+  const newUser = {Username:username, Password:password, Email:email, Answers: []};
   var error = '';
 
   try
@@ -734,6 +734,35 @@ app.post('/api/replies/getByPostSlug', async (req, res, next) => {
   var ret = { replyList: result, error: error }
   res.status(200).json(ret);
 })
+
+// Adds an answer to the database
+app.post('/api/answers/addAnswer', async(req, res, next) => {
+  var error = '';
+  var result = null;
+
+  const obj = { response, stance, questionId, userId } = req.body;
+
+  var userObjId = new ObjectId(userId);
+  var questionObjId = new ObjectId(questionId);
+
+  const newAnswer = { response, stance, questionObjId, userObjId }
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    const addResult = await db.collection('Answer').insertOne(newAnswer);
+    const updResult = await db.collection('Users').updateOne( { _id:userObjId }, {
+      $push: { Answers: questionObjId }
+    })
+  }
+  catch(e) {
+    error = e.toString();
+  }
+
+  var ret = { error: error }
+  res.status(200).json(ret);
+})
+
+app.post('/api/answers/getAnswerBy')
 
 ///////////////////////////////////////////////////
 // For Heroku deployment

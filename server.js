@@ -511,7 +511,7 @@ app.post('/api/addPost', async (req, res, next) => {
   res.status(200).json(ret);
 });
 
-// Returns list of all posts associated with quesion
+// Returns list of all posts associated with question
 app.post('/api/getPosts', async (req, res, next) => {
   var error = '';
   var result = null;
@@ -762,7 +762,26 @@ app.post('/api/answers/addAnswer', async(req, res, next) => {
   res.status(200).json(ret);
 })
 
-app.post('/api/answers/getAnswerBy')
+app.post('/api/answers/getUserAnswer', async (req, res, next) => {
+  var error = '';
+  var result = null;
+
+  const { userId, questionId } = req.body;
+
+  var userObjId = new ObjectId(userId);
+  var questionObjId = new ObjectId(questionId);
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    result = await db.collection('Answer').findOne({ question: questionObjId, user: userObjId })
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { answer: result, error: error };
+  res.status(200).json(ret);
+})
 
 ///////////////////////////////////////////////////
 // For Heroku deployment

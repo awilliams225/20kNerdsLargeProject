@@ -248,6 +248,7 @@ app.post('/api/forgotPassword', async (req, res, next) =>
 
 });
 
+// Invoked once user clicks on email link, verifies email and deletes request object
 app.post('/api/grabUserByEmailVerificationRequest', async (req, res, next) => {
   let tokenHeaderKey = process.env.TOKEN_HEADER_KEY; 
   let jwtSecretKey = process.env.JWT_SECRET_KEY; 
@@ -256,7 +257,7 @@ app.post('/api/grabUserByEmailVerificationRequest', async (req, res, next) => {
   const { token } = req.body;
 
   var id = -1;
-  var result = [];
+  var result = {};
 
   try
   {
@@ -275,19 +276,21 @@ app.post('/api/grabUserByEmailVerificationRequest', async (req, res, next) => {
 
   try 
   {
+    const query = {token: token};
     const db = client.db('COP4331_LargeProject');
-    result = await db.collection('EmailVerificationRequests').find({token: token}).toArray();
+    result = await db.collection('EmailVerificationRequests').findOne(query);
+    const deleted = await db.collection('EmailVerificationRequests').deleteOne(query);
   }
   catch (e)
   {
     error = e.toString();
   }
 
-  if( result.length > 0 )
+  if(result)
   {
-    id = result[0].userId;
+    id = result.userId;
   }
-  
+
   var ret = { userId: id, error: error };
   res.status(200).json(ret);
 })
@@ -315,6 +318,7 @@ app.post('/api/makeUserRegistered', async (req, res, next) => {
   res.status(200).json(ret);
 })
 
+// Invoked when user clicks on email link, deletes password change request oject
 app.post('/api/grabUserByPassRequest', async (req, res, next) => {
 
   let tokenHeaderKey = process.env.TOKEN_HEADER_KEY; 
@@ -324,7 +328,7 @@ app.post('/api/grabUserByPassRequest', async (req, res, next) => {
   const { token } = req.body;
 
   var id = -1;
-  var result = [];
+  var result = {};
 
   try
   {
@@ -343,17 +347,19 @@ app.post('/api/grabUserByPassRequest', async (req, res, next) => {
 
   try 
   {
+    const query = { token: token };
     const db = client.db('COP4331_LargeProject');
-    result = await db.collection('PassChangeRequests').find({token: token}).toArray();
+    result = await db.collection('PassChangeRequests').findOne(query);
+    const deleted = db.collection('PassChangeRequests').deleteOne(query);
   }
   catch (e)
   {
     error = e.toString();
   }
 
-  if( result.length > 0 )
+  if( result)
   {
-    id = result[0].userId;
+    id = result.userId;
   }
   
   var ret = { userId: id, error: error };

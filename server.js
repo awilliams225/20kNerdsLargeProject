@@ -59,19 +59,28 @@ app.post("/api/generateToken", (req, res) => {
 });
 
 
-app.get("/api/validateToken", (req, res) => { 
+app.post("/api/validateToken", (req, res) => { 
 
   let tokenHeaderKey = process.env.TOKEN_HEADER_KEY; 
   let jwtSecretKey = process.env.JWT_SECRET_KEY; 
+
+  const { userId } = req.body;
 
   try { 
       const token = req.header(tokenHeaderKey); 
 
       const verified = jwt.verify(token, jwtSecretKey); 
-      if(verified){ 
-          return res.send({ "message": "Successfully Verified"}); 
-      }else{ 
-          return res.status(401).send(error); 
+      if (verified){ 
+          console.log(verified.userId);
+          if (verified.userId === userId){
+            return res.send({ "message": "Successfully Verified"}); 
+          }
+          else {
+            return res.status(401).send({ "error": "userId does not match"} );
+          }
+      }
+      else {  
+          return res.status(401).send({ "error": "token was not verified" }); 
       } 
   } catch (error) { 
       return res.status(401).send(error); 

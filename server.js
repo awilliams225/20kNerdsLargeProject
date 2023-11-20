@@ -492,10 +492,23 @@ app.post('/api/numPosts', async (req, res, next) => {
 app.post('/api/addPost', async (req, res, next) => {
   
   var error = '';
+  var answer = null;
 
-  const { userId, slug, content, title, questionSlug } = req.body;
+  const { userId, slug, content, title, questionSlug, answerId } = req.body;
 
-  const newPost = { UserId:userId, Slug:slug, Content:content, Title:title, QuestionSlug:questionSlug}
+  const answerObjId = new ObjectId(answerId);
+
+  try
+  {
+    const db = client.db('COP4331_LargeProject');
+    answer = await db.collection('Answer').findOne({ _id:answerObjId }) 
+  }
+  catch (e)
+  {
+    error = e.toString();
+  }
+
+  const newPost = { UserId:userId, Slug:slug, Content:content, Title:title, QuestionSlug:questionSlug, Answer:answer }
 
   try 
   {
@@ -516,12 +529,21 @@ app.post('/api/getPosts', async (req, res, next) => {
   var error = '';
   var result = null;
 
-  const { questionSlug } = req.body;
+  const { questionSlug, stance, response } = req.body;
 
   try
   {
     const db = client.db('COP4331_LargeProject');
-    result = await db.collection('Post').find({QuestionSlug:questionSlug}).toArray();
+    if (stance === "fight") {
+      result = await db.collection('Post').find({ 
+        $and: [ { QuestionSlug: questionSlug }, { 'Answer.stance': 'fight' } ]
+       }).toArray();
+    }
+    else if (stance === "flight") {
+      result = await db.collection('Post').find({
+        $and: [ { QuestionSlug: questionSlug }, { 'Answer.stance': 'flight' }, { 'Answer.response': response } ]
+      }).toArray();
+    }
   }
   catch(e)
   {
@@ -745,7 +767,7 @@ app.post('/api/answers/addAnswer', async(req, res, next) => {
   var userObjId = new ObjectId(userId);
   var questionObjId = new ObjectId(questionId);
 
-  const newAnswer = { response, stance, questionObjId, userObjId }
+  const newAnswer = { response, stance, question: questionObjId, user: userObjId }
 
   try {
     const db = client.db('COP4331_LargeProject');

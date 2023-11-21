@@ -71,7 +71,6 @@ app.post("/api/validateToken", (req, res) => {
 
       const verified = jwt.verify(token, jwtSecretKey); 
       if (verified){ 
-          console.log(verified.userId);
           if (verified.userId === userId){
             return res.send({ "message": "Successfully Verified"}); 
           }

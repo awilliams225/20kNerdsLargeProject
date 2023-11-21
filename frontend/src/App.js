@@ -37,16 +37,25 @@ function App() {
             }
             const tokenJs = JSON.parse(token);
 
-            try {
-                const response = await fetch(buildPath('api/validateToken'), { method: 'GET', headers: {'twentythousand_header_key': tokenJs.token} })
+            const userData = localStorage.getItem('user_data');
+            if (!userData) {
+                setAppLoading(false);
+                return;
+            }
+            const userId = JSON.parse(userData).id;
+    
+            var obj = { userId: userId };
+            var js = JSON.stringify(obj);
 
-                if (response != null) {
-                    const json = await response.json();
-                    
+            try {
+                const response = await fetch(buildPath('api/validateToken'), { method: 'POST', body: js, headers: {'twentythousand_header_key': tokenJs.token, 'Content-Type': 'application/json'} })
+
+                if (response.status === 401) {
+                    console.log("An error occurred while validating your user");
+                } else if (response.status !== 200) {
+                    console.log("An unknown error occurred while validating your login");
+                } else {
                     setIsValidated(true);
-                }
-                else {
-                    console.log("Response is null");
                 }
             } catch(e) {
                 alert(e.toString());

@@ -57,11 +57,11 @@ export default function CreatePostForm(props) {
 
     return (
         <>
-            <Button onClick={handleShow}>
+            <Button variant="primary-fight" onClick={handleShow}>
                 Create Post
             </Button>
-            <Modal show={show} data-bs-theme="dark">
-                <Card bg="dark">
+            <Modal show={show}>
+                <Card>
                     <Card.Header>Create a Post</Card.Header>
                     <Card.Body>
                         <Form className="m-3" onSubmit={handleSubmit}>
@@ -73,8 +73,8 @@ export default function CreatePostForm(props) {
                                 <Form.Label>Post Content</Form.Label>
                                 <Form.Control name="content" as="textarea" placeholder="Explain your answer..." onChange={handleChange} />
                             </Form.Group>
-                            <Button variant="danger me-3" onClick={handleClose}>Discard</Button>
-                            <Button variant="primary" type="submit">Publish</Button>
+                            <Button variant="danger-fight me-3" onClick={handleClose}>Discard</Button>
+                            <Button variant="primary-fight" type="submit">Publish</Button>
                         </Form>
                     </Card.Body>
                 </Card>

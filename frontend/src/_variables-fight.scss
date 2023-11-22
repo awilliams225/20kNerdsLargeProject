@@ -1,0 +1,55 @@
+@import "../node_modules/bootstrap/scss/functions";
+@import "../node_modules/bootstrap/scss/variables";
+
+$primary-fight: #fe4e00;
+$secondary-fight: #382727;
+$tertiary-fight: #f05941;
+$success-fight: #9ade7b;
+$info-fight: #ff8f8f;
+$warning-fight: $gray-600;
+$danger-fight: $black;
+$light-fight: #f07841;
+$dark-fight: #5a0606;
+
+$primary-text-emphasis-fight:        tint-color($primary-fight, 40%) !default;
+$secondary-text-emphasis-fight:      tint-color($secondary-fight, 40%) !default;
+$success-text-emphasis-fight:        tint-color($success-fight, 40%) !default;
+$info-text-emphasis-fight:           tint-color($info-fight, 40%) !default;
+$warning-text-emphasis-fight:        tint-color($warning-fight, 40%) !default;
+$danger-text-emphasis-fight:         tint-color($danger-fight, 40%) !default;
+$light-text-emphasis-fight:          tint-color($light-fight, 40%) !default;
+$dark-text-emphasis-fight:           tint-color($dark-fight, 40%) !default;
+
+$primary-bg-subtle-fight:            shade-color($primary-fight, 80%) !default;
+$secondary-bg-subtle-fight:          shade-color($secondary-fight, 80%) !default;
+$success-bg-subtle-fight:            shade-color($success-fight, 80%) !default;
+$info-bg-subtle-fight:               shade-color($info-fight, 80%) !default;
+$warning-bg-subtle-fight:            shade-color($warning-fight, 80%) !default;
+$danger-bg-subtle-fight:             shade-color($danger-fight, 80%) !default;
+$light-bg-subtle-fight:              shade-color($light-fight, 80%) !default;
+$dark-bg-subtle-fight:               shade-color($dark-fight, 80%) !default;
+
+$primary-border-subtle-fight:        shade-color($primary-fight, 40%) !default;
+$secondary-border-subtle-fight:      shade-color($secondary-fight, 40%) !default;
+$success-border-subtle-fight:        shade-color($success-fight, 40%) !default;
+$info-border-subtle-fight:           shade-color($info-fight, 40%) !default;
+$warning-border-subtle-fight:        shade-color($warning-fight, 40%) !default;
+$danger-border-subtle-fight:         shade-color($danger-fight, 40%) !default;
+$light-border-subtle-fight:          shade-color($light-fight, 40%) !default;
+$dark-border-subtle-fight:           shade-color($dark-fight, 40%) !default;
+
+$body-color-fight:                   $light-fight !default;
+$body-bg-fight:                      $dark-fight !default;
+$body-secondary-color-fight:         shade-color($secondary-fight, 40%) !default;
+$body-secondary-bg-fight:            $secondary-fight !default;
+$body-tertiary-color-fight:          shade-color($tertiary-fight, 40%) !default;
+$body-tertiary-bg-fight:             $tertiary-fight !default;
+$body-emphasis-color-fight:          $white !default;
+$border-color-fight:                 $gray-700 !default;
+$border-color-translucent-fight:     rgba($white, .15) !default;
+$headings-color-fight:               inherit !default;
+$link-color-fight:                   tint-color($primary-fight, 40%) !default;
+$link-hover-color-fight:             shift-color($link-color-fight, -$link-shade-percentage) !default;
+$code-color-fight:                   tint-color($code-color, 40%) !default;
+$mark-color-fight:                   $body-color-fight !default;
+$mark-bg-fight:                      $yellow-800 !default;

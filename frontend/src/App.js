@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 import ReplyPage from './pages/ReplyPage';
 import PostPage from './pages/PostPage';
@@ -69,7 +69,12 @@ function App() {
 
     const protectElement = (element) => {
         if (isValidated) {
-            return element;
+            document.body.style.backgroundColor = "#f07841";
+            return (
+                <div data-bs-theme="fight">
+                    {element}
+                </div>
+            );
         } else {
             return (<Navigate to="/" />);
         }

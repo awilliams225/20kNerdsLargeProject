@@ -60,7 +60,7 @@ export default function ReplyForum() {
                     <CreateReplyForm slug={slug} />
                     <ListGroup>
                         {replyList.map((reply) => (
-                            <ListGroup.Item variant="dark">
+                            <ListGroup.Item>
                                 <Card>
                                     <Card.Body>
                                         <Card.Title>{reply.text}</Card.Title>

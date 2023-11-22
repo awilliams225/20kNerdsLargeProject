@@ -593,12 +593,12 @@ app.get('/api/posts/:slug', async (req, res, next) =>
 });
 
 // Returns list of posts associated with given user ID
-app.get('/api/users/:UserId', async (req, res, next) => {
+app.post('/api/posts/getPostsByUser', async (req, res, next) => {
 
   var error = '';
   var postsList = [];
 
-  const userId = req.params.UserId;
+  const { userId } = req.body;
 
   try {
     const db = client.db('COP4331_LargeProject');

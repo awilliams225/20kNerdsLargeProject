@@ -74,12 +74,13 @@ export default function QuestionForum() {
         }
         else {
             var questionList = questions.question;
+            console.log(questionList);
             return (
                 <>
                     <Paginator activePage={page} numPages={Math.ceil(numQuestions / questionsPerPage)}/>
                     <ListGroup>
                         {questionList.map((question) => (
-                            <ListGroup.Item action variant="dark" href={"/question/" + question.slug + "/"}>
+                            <ListGroup.Item action href={"/question/" + question.slug + "/"}>
                                 <Card>
                                     <Card.Body>
                                         <Card.Title>{question.text}</Card.Title>

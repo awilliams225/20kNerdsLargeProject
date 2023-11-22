@@ -23,7 +23,7 @@ export default function GlobalNavbar() {
     }
 
     return (
-        <Navbar expand="lg" bg="dark" data-bs-theme="dark">
+        <Navbar expand="lg" bg="dark">
             <Container>
                 <Nav className="me-auto">
                     <Nav.Link href="/home/">Home</Nav.Link>

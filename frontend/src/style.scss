@@ -1,0 +1,64 @@
+@import "../node_modules/bootstrap/scss/functions";
+@import "../node_modules/bootstrap/scss/variables";
+@import "../node_modules/bootstrap/scss/variables-dark";
+@import "./variables-fight";
+@import "./variables-flight";
+
+$fight-colors: (
+    "primary-fight": $primary-fight,
+    "secondary-fight": $secondary-fight,
+    "tertiary-fight": $tertiary-fight,
+    "success-fight": $success-fight,
+    "info-fight": $info-fight,
+    "warning-fight": $warning-fight,
+    "danger-fight": $danger-fight,
+    "light-fight": $light-fight,
+    "dark-fight": $dark-fight,
+);
+$theme-colors: map-merge($theme-colors, $fight-colors);
+
+$flight-colors: (
+    "primary-flight": $primary-flight,
+    "secondary-flight": $secondary-flight,
+    "tertiary-flight": $tertiary-flight,
+    "dark-flight": $dark-flight,
+    "dark-alt-flight": $dark-alt-flight
+);
+$theme-colors: map-merge($theme-colors, $flight-colors);
+
+[data-bs-theme="fight"] {
+
+    --#{$prefix}body-color: #{$body-color-fight};
+    --#{$prefix}body-color-rgb: #{to-rgb($body-color-fight)};
+    --#{$prefix}body-bg: #{$body-bg-fight};
+    --#{$prefix}body-bg-rgb: #{to-rgb($body-bg-fight)};
+
+    --#{$prefix}emphasis-color: #{$body-emphasis-color-fight};
+    --#{$prefix}emphasis-color-rgb: #{to-rgb($body-emphasis-color-fight)};
+
+    --#{$prefix}secondary-color: #{$body-secondary-color-fight};
+    --#{$prefix}secondary-color-rgb: #{to-rgb($body-secondary-color-fight)};
+    --#{$prefix}secondary-bg: #{$body-secondary-bg-fight};
+    --#{$prefix}secondary-bg-rgb: #{to-rgb($body-secondary-bg-fight)};
+
+    --#{$prefix}tertiary-color: #{$body-tertiary-color-fight};
+    --#{$prefix}tertiary-color-rgb: #{to-rgb($body-tertiary-color-fight)};
+    --#{$prefix}tertiary-bg: #{$body-tertiary-bg-fight};
+    --#{$prefix}tertiary-bg-rgb: #{to-rgb($body-tertiary-bg-fight)};
+
+    --#{$prefix}heading-color: #{$headings-color-fight};
+
+    --#{$prefix}link-color: #{$link-color-fight};
+    --#{$prefix}link-hover-color: #{$link-hover-color-fight};
+    --#{$prefix}link-color-rgb: #{to-rgb($link-color-fight)};
+    --#{$prefix}link-hover-color-rgb: #{to-rgb($link-hover-color-fight)};
+
+    --#{$prefix}code-color: #{$code-color-fight};
+    --#{$prefix}highlight-color: #{$mark-color-fight};
+    --#{$prefix}highlight-bg: #{$mark-bg-fight};
+
+    --#{$prefix}border-color: #{$border-color-fight};
+    --#{$prefix}border-color-translucent: #{$border-color-translucent-fight};
+}
+
+@import "../node_modules/bootstrap/scss/bootstrap";

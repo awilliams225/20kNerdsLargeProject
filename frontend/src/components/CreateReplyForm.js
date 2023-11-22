@@ -58,16 +58,16 @@ export default function CreateReplyForm(props) {
             <Button onClick={handleShow}>
                 Reply
             </Button>
-            <Modal show={show} data-bs-theme="dark">
-                <Card bg="dark">
+            <Modal show={show}>
+                <Card>
                     <Card.Header>Send reply</Card.Header>
                     <Card.Body>
                         <Form className="m-3" onSubmit={handleSubmit}>
                             <Form.Group className="mb-5" controlId="formText">
                                 <Form.Control name="text" as="textarea" placeholder="Respond with something cool..." onChange={handleChange} />
                             </Form.Group>
-                            <Button variant="danger me-3" onClick={handleClose}>Cancel</Button>
-                            <Button variant="primary" type="submit">Reply</Button>
+                            <Button variant="warning-fight me-3" onClick={handleClose}>Cancel</Button>
+                            <Button variant="primary-fight" type="submit">Reply</Button>
                         </Form>
                     </Card.Body>
                 </Card>

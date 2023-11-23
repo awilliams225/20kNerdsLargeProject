@@ -7,6 +7,9 @@ export default function Login() {
     var loginPassword;
 
     const [message, setMessage] = useState('');
+    const [password, setPassword] = useState('');
+    const [username, setUsername] = useState('');
+    const [passValid, setPassValid] = useState(false);
 
     const app_name = 'fight-or-flight-20k-5991cb1c14ef'
     function buildPath(route) {
@@ -21,7 +24,15 @@ export default function Login() {
     const doLogin = async event => {
         event.preventDefault();
 
-        var obj = { login: loginName.value, password: loginPassword.value };
+        const validSpan = document.getElementById('passValidSpan');
+
+        if (!passValid)
+        {
+            validSpan.innerHTML = 'This password is invalid!';
+            return;
+        }
+
+        var obj = { login: username, password: password };
         var js = JSON.stringify(obj);
 
         try {
@@ -58,6 +69,67 @@ export default function Login() {
         }
     };
 
+    const handleUsernameChange = (event) => {
+        setUsername(event.target.value);
+    }
+
+    const handlePasswordChange = (event) => {
+        var pass = event.target.value;
+
+        const lengthSpan = document.getElementById('passLengthSpan');
+        const upperSpan = document.getElementById('passUpperSpan');
+        const lowerSpan = document.getElementById('passLowerSpan');
+        const numSpan = document.getElementById('passNumberSpan');
+        const specialSpan = document.getElementById('passSpecialSpan');
+
+        const upperCheck = /[A-Z]/g
+        const lowerCheck = /[a-z]/g
+        const numCheck = /[0-9]/g
+        const specialCheck = /[!@#$%^&*]/g
+        const allCheck =  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&^])[A-Za-z\d@.#$!%*?&]{8,15}$/;
+
+        if (pass.length < 8) {
+            lengthSpan.innerHTML = '* Please make password 8 characters or more';
+            setPassValid(false);
+        }
+        else
+            lengthSpan.innerHTML = '';
+
+        if (!pass.match(upperCheck)) {
+            upperSpan.innerHTML = '* Please include at least 1 uppercase letter';
+            setPassValid(false);
+        }
+        else
+            upperSpan.innerHTML = '';
+
+        if (!pass.match(lowerCheck)) {
+            lowerSpan.innerHTML = '* Please include at least 1 lowercase letter';
+            setPassValid(false);
+        }
+        else
+            lowerSpan.innerHTML = '';
+
+        if (!pass.match(numCheck)) {
+            numSpan.innerHTML = '* Please include at least 1 number';
+            setPassValid(false);
+        }
+        else
+            numSpan.innerHTML = '';        
+
+        if (!pass.match(specialCheck)) {
+            specialSpan.innerHTML = '* Please include at least 1 special character';
+            setPassValid(false);
+        }
+        else
+            specialSpan.innerHTML = '';   
+
+        if (pass.match(allCheck)) {
+            console.log("Hello???");
+            setPassValid(true);
+        }
+
+    }
+
     return (
         <div id="LoginDiv" style={{
             backgroundColor: '#1A1A20', height: '50vh', width: '75%',
@@ -67,13 +139,19 @@ export default function Login() {
             <form onSubmit={doLogin} style={{}}>
                 <h2 style={{ color: '#FFFFFF' }}>Login</h2>
                 <input type="text" id="loginName" placeholder="Username"
-                    ref={(c) => loginName = c} /><br />
+                    onChange={handleUsernameChange} /><br />
                 <input type="password" id="loginPassword" placeholder="Password"
-                    ref={(c) => loginPassword = c} /><br />
+                    onChange={handlePasswordChange} /><br />
                 <input type="submit" id="loginButton" class="buttons" value="Do It"
                     onClick={doLogin} />
                 <br />
                 <ForgotPasswordModal />
+                <span className='text-light small' id='passValidSpan'></span><br />
+                <span className='text-light small' id='passLengthSpan'></span><br />
+                <span className='text-light small' id='passUpperSpan'></span><br />
+                <span className='text-light small' id='passLowerSpan'></span><br />
+                <span className='text-light small' id='passNumberSpan'></span><br />
+                <span className='text-light small' id='passSpecialSpan'></span><br />
             </form>
             <span id="loginResult">{message}</span>
         </div>

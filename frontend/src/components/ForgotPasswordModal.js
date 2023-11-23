@@ -58,10 +58,10 @@ export default function ForgotPasswordModal() {
 
     return (
         <>
-        <Button onClick={handleShow}>
-            Forgot Password
+        <Button className='mt-2' variant='outline-secondary' onClick={handleShow}>
+            Forgot Password?
         </Button>
-        <Modal show={show} data-bs-theme="dark">
+        <Modal show={show} onHide={handleClose} data-bs-theme="dark">
                 <Card bg="dark">
                     <Card.Header>Forgot your password?</Card.Header>
                     <Card.Body>
@@ -72,6 +72,7 @@ export default function ForgotPasswordModal() {
                             </Form.Group>
                         </Form>
                         <Button variant="primary" onClick={handleClick}>Send Email</Button>
+                        <Button variant="danger" className='ms-2' onClick={handleClose}>Close</Button>
                         <span id='forgPassSpan'>{ spanText }</span>
                     </Card.Body>
                 </Card>

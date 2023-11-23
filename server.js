@@ -592,21 +592,31 @@ app.get('/api/posts/:slug', async (req, res, next) =>
   res.status(200).json(ret);
 });
 
-// Returns list of posts associated with given user ID
-app.post('/api/posts/getPostsByUser', async (req, res, next) => {
+// Returns paginated list of posts associated with given user ID
+app.post('/api/posts/getPostsByUser/:pageNum', async (req, res, next) => {
 
   var error = '';
   var postsList = [];
 
-  const { userId } = req.body;
+  const { userId, postsPerPage } = req.body;
+
+  const pageNum = parseInt(req.params.pageNum); 
 
   try {
+
+    const query = {
+      $and: [
+        { "UserId": { $exists: true } },
+        { "UserId": userId }
+      ]
+    };
+
     const db = client.db('COP4331_LargeProject');
     const posts = db.collection("Post");
 
-    const query = { UserId: userId };
+    const toSkip = (pageNum - 1) * parseInt(postsPerPage);
 
-    postsList = await posts.find(query).toArray();
+    postsList = await posts.find(query).skip(toSkip).limit(parseInt(postsPerPage)).toArray();
 
 
   }
@@ -674,7 +684,7 @@ app.post('/api/questions/:pageNum', async (req, res, next) => {
 
 
 // Returns paginated list of posts associated with question
-app.post('/api/postsByQuestion/:pageNum', async (req, res, next) => {
+app.post('/api/getPostsByQuestion/:pageNum', async (req, res, next) => {
 
   var error = '';
   var postList = [];
@@ -684,12 +694,20 @@ app.post('/api/postsByQuestion/:pageNum', async (req, res, next) => {
   const pageNum = parseInt(req.params.pageNum);
 
   try {
+
+    const query = {
+      $and: [
+        { "QuestionSlug": { $exists: true } },
+        { "QuestionSlug": questionSlug }
+      ]
+    };
+
     const db = client.db('COP4331_LargeProject');
     const posts = db.collection("Post");
 
     const toSkip = (pageNum - 1) * postsPerPage ;
 
-    postList = await posts.find({ QuestionSlug: questionSlug }).skip(toSkip).limit(parseInt(postsPerPage)).toArray();
+    postList = await posts.find(query).skip(toSkip).limit(parseInt(postsPerPage)).toArray();
 
   }
   catch (e) {
@@ -725,6 +743,41 @@ app.post('/api/replies/grabRepliesbyUserID', async (req, res, next) => {
     error = e.toString();
   }
   var ret = { fullList: replyList, textList:textList, slugList:slugList, error:''};
+  res.status(200).json(ret);
+});
+
+
+// Returns paginated list of replies by UserID. 
+app.post('/api/replies/getRepliesbyUserID/:pageNum', async (req, res, next) => {
+
+  var error = '';
+  var replyList = [];
+
+  const { UserID , repliesPerPage} = req.body;
+
+  const pageNum = parseInt(req.params.pageNum);
+
+  try {
+
+    const query = {
+      $and: [
+        { "UserID": { $exists: true } },
+        { "UserID": UserID }
+      ]
+    };
+
+    const db = client.db('COP4331_LargeProject');
+    const replies = db.collection('Replies');
+
+    const toSkip = (pageNum - 1) * parseInt(repliesPerPage);
+    
+    replyList = await replies.find(query).skip(toSkip).limit(parseInt(repliesPerPage)).toArray();
+
+  }
+  catch (e) {
+    error = e.toString();
+  }
+  var ret = { list: replyList, error: '' };
   res.status(200).json(ret);
 });
 

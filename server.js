@@ -15,6 +15,7 @@ const path = require('path');
 const Mailgen = require('mailgen');
 const EMAIL = process.env.EMAIL;
 const PASSWORD = process.env.PASSWORD;
+const bcrypt = require('bcrypt');
 
 const PORT = process.env.PORT || 5000;
 
@@ -212,18 +213,27 @@ app.post('/api/register', async (req, res, next) =>
 {
 	
   const { username, password, email } = req.body;
-
-  const newUser = {Username:username, Password:password, Email:email, Answers:[]};
   var error = '';
 
+  const db = client.db('COP4331_LargeProject');
   try
   {
-    const db = client.db('COP4331_LargeProject');
-    const result = db.collection('Users').insertOne(newUser);
+    const results = await db.collection('Users').find({Username:username}).toArray();
+    if (results.length > 0)
+    {
+      error = 'Username already taken';
+    }
+    else
+    {
+      const salt = await bcrypt.genSalt(10);
+      const hashPassword = await bcrypt.hash(password, salt);
+      const newUser = {Username:username, Password:hashPassword, Email:email, Answers:[]};
+      const db = client.db('COP4331_LargeProject');
+      const result = db.collection('Users').insertOne(newUser);
+    }
   }
   catch(e)
   {
-    console.log("Hello!");
     error = e.toString();
   }
 
@@ -239,16 +249,35 @@ app.post('/api/login', async (req, res, next) =>
   const { login, password } = req.body;
 
   const db = client.db('COP4331_LargeProject');
-  const results = await db.collection('Users').find({Username:login,Password:password}).toArray();
-
-  var id = -1;
-
-  if( results.length > 0 )
+  try
   {
-    id = results[0]._id;
+    const results = await db.collection('Users').find({Username:login}).toArray();
+
+    var id = -1;
+
+    if( results.length > 0 )
+    {
+      const compare = await bcrypt.compare(password, results[0].Password)
+      if (compare)
+      {
+        id = results[0]._id;
+      }
+      else
+      {
+        error = 'Incorrect password!';
+      }
+    }
+    else
+    {
+      error = 'No User with that Username found!';
+    }
+  }
+  catch(e)
+  {
+    error = e.toString();
   }
 
-  var ret = { id:id, error:''};
+  var ret = { id:id, error:error};
   res.status(200).json(ret);
 });
 

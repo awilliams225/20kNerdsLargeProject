@@ -3,17 +3,15 @@ import Modal from 'react-bootstrap/Modal';
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import slugify from 'react-slugify';
 
 
-export default function CreatePostForm(props) {
+export default function CreateReplyForm(props) {
 
-    const questionSlug = props.questionSlug;
+    const slug = props.slug;
 
     const [show, setShow] = useState(false);
     const [formData, setFormData] = useState({
-        title: '',
-        content: ''
+        text: ''
     })
 
     const handleClose = () => setShow(false);
@@ -42,10 +40,10 @@ export default function CreatePostForm(props) {
         }
         let userId = JSON.parse(userData).id;
 
-        var obj = { userId: userId, slug: slugify(formData.title), content: formData.content, title: formData.title, questionSlug: questionSlug };
+        var obj = { userId: userId, text: formData.text, slug: slug };
         var js = JSON.stringify(obj);
 
-        const response = await fetch(buildPath('api/addPost'), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
+        const response = await fetch(buildPath('api/addReply'), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 
         if (response != null) {
             const json = await response.json();
@@ -57,24 +55,19 @@ export default function CreatePostForm(props) {
 
     return (
         <>
-            <Button variant="primary-fight" onClick={handleShow}>
-                Create Post
+            <Button onClick={handleShow}>
+                Reply
             </Button>
             <Modal show={show}>
                 <Card>
-                    <Card.Header>Create a Post</Card.Header>
+                    <Card.Header>Send reply</Card.Header>
                     <Card.Body>
                         <Form className="m-3" onSubmit={handleSubmit}>
-                            <Form.Group className="mb-5" controlId="formTitle">
-                                <Form.Label>Post Title</Form.Label>
-                                <Form.Control name="title" type="text" placeholder="Write a witty title..." onChange={handleChange} />
+                            <Form.Group className="mb-5" controlId="formText">
+                                <Form.Control name="text" as="textarea" placeholder="Respond with something cool..." onChange={handleChange} />
                             </Form.Group>
-                            <Form.Group className="mb-5" controlId="formContent">
-                                <Form.Label>Post Content</Form.Label>
-                                <Form.Control name="content" as="textarea" placeholder="Explain your answer..." onChange={handleChange} />
-                            </Form.Group>
-                            <Button variant="danger-fight me-3" onClick={handleClose}>Discard</Button>
-                            <Button variant="primary-fight" type="submit">Publish</Button>
+                            <Button variant="warning-fight me-3" onClick={handleClose}>Cancel</Button>
+                            <Button variant="primary-fight" type="submit">Reply</Button>
                         </Form>
                     </Card.Body>
                 </Card>

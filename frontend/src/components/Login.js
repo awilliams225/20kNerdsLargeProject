@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
+import ForgotPasswordModal from '../components/ForgotPasswordModal'
 
 export default function Login() {
 
-    var loginName;
-    var loginPassword;
-
     const [message, setMessage] = useState('');
+    const [password, setPassword] = useState('');
+    const [username, setUsername] = useState('');
 
     const app_name = 'fight-or-flight-20k-5991cb1c14ef'
     function buildPath(route) {
@@ -20,7 +20,7 @@ export default function Login() {
     const doLogin = async event => {
         event.preventDefault();
 
-        var obj = { login: loginName.value, password: loginPassword.value };
+        var obj = { login: username, password: password };
         var js = JSON.stringify(obj);
 
         try {
@@ -33,11 +33,22 @@ export default function Login() {
                 setMessage('User/Password combination incorrect');
             }
             else {
-                var user = { firstName: res.firstName, lastName: res.lastName, id: res.id }
+                var user = { firstName: res.firstName, lastName: res.lastName, id: res.id };
                 localStorage.setItem('user_data', JSON.stringify(user));
 
+                var tokenObj = { userId: res.id };
+                var tokenJs = JSON.stringify(tokenObj);
+
+                const tokenResponse = await fetch(buildPath('api/generateToken'),
+                    { method: 'POST', body: tokenJs, headers: { 'Content-Type': 'application/json' } });
+                
+                var tokenRes = JSON.parse(await tokenResponse.text());
+
+                var tokenData = { token: tokenRes.token };
+                localStorage.setItem('token', JSON.stringify(tokenData));
+
                 setMessage('');
-                window.location.href = '/home';
+                window.location.href = '/home/';
             }
         }
         catch (e) {
@@ -45,6 +56,14 @@ export default function Login() {
             return;
         }
     };
+
+    const handleUsernameChange = (event) => {
+        setUsername(event.target.value);
+    }
+
+    const handlePasswordChange = (event) => {
+       setPassword(event.target.value);
+    }
 
     return (
         <div id="LoginDiv" style={{
@@ -55,11 +74,13 @@ export default function Login() {
             <form onSubmit={doLogin} style={{}}>
                 <h2 style={{ color: '#FFFFFF' }}>Login</h2>
                 <input type="text" id="loginName" placeholder="Username"
-                    ref={(c) => loginName = c} /><br />
+                    onChange={handleUsernameChange} /><br />
                 <input type="password" id="loginPassword" placeholder="Password"
-                    ref={(c) => loginPassword = c} /><br />
+                    onChange={handlePasswordChange} /><br />
                 <input type="submit" id="loginButton" class="buttons" value="Do It"
                     onClick={doLogin} />
+                <br />
+                <ForgotPasswordModal />
             </form>
             <span id="loginResult">{message}</span>
         </div>

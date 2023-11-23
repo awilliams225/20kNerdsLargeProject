@@ -4,6 +4,8 @@ const MongoClient = require('mongodb').MongoClient;
 const client = new MongoClient(url);
 client.connect();
 
+const ObjectId = require('mongodb').ObjectId;
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -41,13 +43,15 @@ app.post("/api/generateToken", (req, res) => {
 
   const { userId } = req.body;
 
+  var objId = new ObjectId(userId);
+
   let jwtSecretKey = process.env.JWT_SECRET_KEY; 
   let data = { 
       time: Date(), 
-      userId: userId
+      userId: objId
   } 
 
-  const token = jwt.sign(data, jwtSecretKey); 
+  const token = jwt.sign(data, jwtSecretKey, { expiresIn: "24h" }); 
 
   ret = { token: token };
 
@@ -55,19 +59,27 @@ app.post("/api/generateToken", (req, res) => {
 });
 
 
-app.get("/api/validateToken", (req, res) => { 
+app.post("/api/validateToken", (req, res) => { 
 
   let tokenHeaderKey = process.env.TOKEN_HEADER_KEY; 
   let jwtSecretKey = process.env.JWT_SECRET_KEY; 
+
+  const { userId } = req.body;
 
   try { 
       const token = req.header(tokenHeaderKey); 
 
       const verified = jwt.verify(token, jwtSecretKey); 
-      if(verified){ 
-          return res.send({ "message": "Successfully Verified"}); 
-      }else{ 
-          return res.status(401).send(error); 
+      if (verified){ 
+          if (verified.userId === userId){
+            return res.send({ "message": "Successfully Verified"}); 
+          }
+          else {
+            return res.status(401).send({ "error": "userId does not match"} );
+          }
+      }
+      else {  
+          return res.status(401).send({ "error": "token was not verified" }); 
       } 
   } catch (error) { 
       return res.status(401).send(error); 
@@ -77,7 +89,33 @@ app.get("/api/validateToken", (req, res) => {
 // in progress Email verification
 app.post('/api/registerWithEmail', async (req, res, next) =>
 {
-  const { email } = req.body;
+  const { email, userId } = req.body;
+
+  objId = new ObjectId(userId);
+
+  let jwtSecretKey = process.env.JWT_SECRET_KEY; 
+  let data = { 
+      time: Date(), 
+      userId: objId
+  } 
+
+  const token = jwt.sign(data, jwtSecretKey, { expiresIn: "1h" }); 
+
+  const newRequest = { userId, token };
+
+  var error = '';
+
+  try
+  {
+    const db = client.db('COP4331_LargeProject');
+    const result = db.collection('EmailVerificationRequests').insertOne(newRequest);
+  }
+  catch(e)
+  {
+    error = e.toString();
+    return res.status(500).json({ error })
+  }
+
 	let config = {
     service : 'gmail',
     auth : {
@@ -103,7 +141,7 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
             button: {
                 color: '#22BC66', // Optional action button color
                 text: 'Confirm your account',
-                link: 'http://localhost:3000/emailverified'
+                link: 'http://localhost:3000/emailverified' + token
             }
         },
         outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'
@@ -132,7 +170,32 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
 // email verification for forgot password
 app.post('/api/forgotPassword', async (req, res, next) =>
 {
-  const { email } = req.body;
+  const { userId, email } = req.body;
+
+  objId = new ObjectId(userId);
+
+  let jwtSecretKey = process.env.JWT_SECRET_KEY; 
+  let data = { 
+      time: Date(), 
+      userId: objId
+  } 
+
+  const token = jwt.sign(data, jwtSecretKey, { expiresIn: "1h" }); 
+
+  const newRequest = { userId, token };
+  var error = '';
+
+  try
+  {
+    const db = client.db('COP4331_LargeProject');
+    const result = db.collection('PassChangeRequests').insertOne(newRequest);
+  }
+  catch(e)
+  {
+    error = e.toString();
+    return res.status(500).json({ error })
+  }
+
 	let config = {
     service : 'gmail',
     auth : {
@@ -158,7 +221,7 @@ app.post('/api/forgotPassword', async (req, res, next) =>
             button: {
                 color: '#22BC66', // Optional action button color
                 text: 'Change password',
-                link: 'http://localhost:3000/changepassword'
+                link: 'http://localhost:3000/changepassword/' + token
             }
         },
         outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'
@@ -207,13 +270,178 @@ app.post('/api/changePassword', async (req, res, next) => {
 
 });
 
+app.post('/api/changePassword', async (req, res, next) => {
+
+  var error = '';
+  const { username, newPassword } = req.body;
+  
+  try {
+    const db = client.db('COP4331_LargeProject');
+    db.collection('Users').updateOne( { Username:username },
+    {
+      $set: {
+        Password: newPassword
+      }
+    })
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { newPassword: newPassword, error: error };
+  res.status(200).json(ret);
+
+});
+
+// Invoked once user clicks on email link, verifies email and deletes request object
+app.post('/api/grabUserByEmailVerificationRequest', async (req, res, next) => {
+  let tokenHeaderKey = process.env.TOKEN_HEADER_KEY; 
+  let jwtSecretKey = process.env.JWT_SECRET_KEY; 
+
+  var error = '';
+  const { token } = req.body;
+
+  var id = -1;
+  var result = {};
+
+  try
+  {
+    const verified = jwt.verify(token, jwtSecretKey);
+
+    if (!verified)
+    {
+      error = "Token not valid"
+      return res.status(401).send(error); 
+    }
+  }
+  catch (e)
+  {
+    return res.status(401).send(e);
+  }
+
+  try 
+  {
+    const query = {token: token};
+    const db = client.db('COP4331_LargeProject');
+    result = await db.collection('EmailVerificationRequests').findOne(query);
+    const deleted = await db.collection('EmailVerificationRequests').deleteOne(query);
+  }
+  catch (e)
+  {
+    error = e.toString();
+  }
+
+  if(result)
+  {
+    id = result.userId;
+  }
+
+  var ret = { userId: id, error: error };
+  res.status(200).json(ret);
+})
+
+app.post('/api/makeUserRegistered', async (req, res, next) => {
+  var error = '';
+  const { userId } = req.body;
+
+  var objId = new ObjectId(userId);
+  
+  try {
+    const db = client.db('COP4331_LargeProject');
+    db.collection('Users').updateOne( { _id:objId },
+    {
+      $set: {
+        Registered: true
+      }
+    })
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { error: error };
+  res.status(200).json(ret);
+})
+
+// Invoked when user clicks on email link, deletes password change request oject
+app.post('/api/grabUserByPassRequest', async (req, res, next) => {
+
+  let tokenHeaderKey = process.env.TOKEN_HEADER_KEY; 
+  let jwtSecretKey = process.env.JWT_SECRET_KEY; 
+
+  var error = '';
+  const { token } = req.body;
+
+  var id = -1;
+  var result = {};
+
+  try
+  {
+    const verified = jwt.verify(token, jwtSecretKey);
+
+    if (!verified)
+    {
+      error = "Token not valid"
+      return res.status(401).send(error); 
+    }
+  }
+  catch (e)
+  {
+    return res.status(401).send(e);
+  }
+
+  try 
+  {
+    const query = { token: token };
+    const db = client.db('COP4331_LargeProject');
+    result = await db.collection('PassChangeRequests').findOne(query);
+    const deleted = db.collection('PassChangeRequests').deleteOne(query);
+  }
+  catch (e)
+  {
+    error = e.toString();
+  }
+
+  if( result)
+  {
+    id = result.userId;
+  }
+  
+  var ret = { userId: id, error: error };
+  res.status(200).json(ret);
+})
+
+app.post('/api/changePassword', async (req, res, next) => {
+
+  var error = '';
+  const { userId, oldPassword, newPassword } = req.body;
+
+  var objId = new ObjectId(userId);
+  
+  try {
+    const db = client.db('COP4331_LargeProject');
+    db.collection('Users').updateOne( { _id:objId, Password:oldPassword },
+    {
+      $set: {
+        Password: newPassword
+      }
+    })
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { newPassword: newPassword, error: error };
+  res.status(200).json(ret);
+
+});
 
 app.post('/api/register', async (req, res, next) =>
 {
 	
   const { username, password, email } = req.body;
 
-  const newUser = {Username:username, Password:password, Email:email, Answers:[]};
+  const newUser = {Username:username, Password:password, Email:email, Answers: []};
   var error = '';
 
   try
@@ -223,7 +451,6 @@ app.post('/api/register', async (req, res, next) =>
   }
   catch(e)
   {
-    console.log("Hello!");
     error = e.toString();
   }
 
@@ -325,10 +552,23 @@ app.post('/api/numPosts', async (req, res, next) => {
 app.post('/api/addPost', async (req, res, next) => {
   
   var error = '';
+  var answer = null;
 
-  const { userId, slug, content, title, questionSlug } = req.body;
+  const { userId, slug, content, title, questionSlug, answerId } = req.body;
 
-  const newPost = { UserId:userId, Slug:slug, Content:content, Title:title, QuestionSlug:questionSlug, Comments: []}
+  const answerObjId = new ObjectId(answerId);
+
+  try
+  {
+    const db = client.db('COP4331_LargeProject');
+    answer = await db.collection('Answer').findOne({ _id:answerObjId }) 
+  }
+  catch (e)
+  {
+    error = e.toString();
+  }
+
+  const newPost = { UserId:userId, Slug:slug, Content:content, Title:title, QuestionSlug:questionSlug, Answer:answer }
 
   try 
   {
@@ -344,17 +584,26 @@ app.post('/api/addPost', async (req, res, next) => {
   res.status(200).json(ret);
 });
 
-// Returns list of all posts associated with quesion
+// Returns list of all posts associated with question
 app.post('/api/getPosts', async (req, res, next) => {
   var error = '';
   var result = null;
 
-  const { questionSlug } = req.body;
+  const { questionSlug, stance, response } = req.body;
 
   try
   {
     const db = client.db('COP4331_LargeProject');
-    result = await db.collection('Post').find({QuestionSlug:questionSlug}).toArray();
+    if (stance === "fight") {
+      result = await db.collection('Post').find({ 
+        $and: [ { QuestionSlug: questionSlug }, { 'Answer.stance': 'fight' } ]
+       }).toArray();
+    }
+    else if (stance === "flight") {
+      result = await db.collection('Post').find({
+        $and: [ { QuestionSlug: questionSlug }, { 'Answer.stance': 'flight' }, { 'Answer.response': response } ]
+      }).toArray();
+    }
   }
   catch(e)
   {
@@ -365,45 +614,55 @@ app.post('/api/getPosts', async (req, res, next) => {
   res.status(200).json(ret);
 })
 
-// Returns markdown post contents associated with post slug
+// Returns title and markdown content associated with post slug
 app.get('/api/posts/:slug', async (req, res, next) => 
 {
   // incoming: Slug
-  // outgoing: Markdown post
+  // outgoing: Title + Markdown content
 	
   var error = '';
 
   const slug = req.params.slug;
 
   const db = client.db('COP4331_LargeProject');
-  const results = await db.collection('Post').find({Slug:slug}).toArray();
+  const document = await db.collection('Post').find({Slug:slug}).next();
 
-  var content = '';
+  var result = '';
 
-  if( results.length > 0 )
+  if( document != null )
   {
-    content = results[0].Content;
+    result = {Title: document.Title, Content: document.Content}
   }
 
-  var ret = { Content:content, error:error};
+  var ret = { Result:result, error:error};
   res.status(200).json(ret);
 });
 
-// Returns list of posts associated with given user ID
-app.get('/api/users/:UserId', async (req, res, next) => {
+// Returns paginated list of posts associated with given user ID
+app.post('/api/posts/getPostsByUser/:pageNum', async (req, res, next) => {
 
   var error = '';
   var postsList = [];
 
-  const userId = req.params.UserId;
+  const { userId, postsPerPage } = req.body;
+
+  const pageNum = parseInt(req.params.pageNum); 
 
   try {
+
+    const query = {
+      $and: [
+        { "UserId": { $exists: true } },
+        { "UserId": userId }
+      ]
+    };
+
     const db = client.db('COP4331_LargeProject');
     const posts = db.collection("Post");
 
-    const query = { UserId: userId };
+    const toSkip = (pageNum - 1) * parseInt(postsPerPage);
 
-    postsList = await posts.find(query).toArray();
+    postsList = await posts.find(query).skip(toSkip).limit(parseInt(postsPerPage)).toArray();
 
 
   }
@@ -471,7 +730,7 @@ app.post('/api/questions/:pageNum', async (req, res, next) => {
 
 
 // Returns paginated list of posts associated with question
-app.post('/api/postsByQuestion/:pageNum', async (req, res, next) => {
+app.post('/api/getPostsByQuestion/:pageNum', async (req, res, next) => {
 
   var error = '';
   var postList = [];
@@ -481,12 +740,20 @@ app.post('/api/postsByQuestion/:pageNum', async (req, res, next) => {
   const pageNum = parseInt(req.params.pageNum);
 
   try {
+
+    const query = {
+      $and: [
+        { "QuestionSlug": { $exists: true } },
+        { "QuestionSlug": questionSlug }
+      ]
+    };
+
     const db = client.db('COP4331_LargeProject');
     const posts = db.collection("Post");
 
     const toSkip = (pageNum - 1) * postsPerPage ;
 
-    postList = await posts.find({ QuestionSlug: questionSlug }).skip(toSkip).limit(parseInt(postsPerPage)).toArray();
+    postList = await posts.find(query).skip(toSkip).limit(parseInt(postsPerPage)).toArray();
 
   }
   catch (e) {
@@ -497,6 +764,159 @@ app.post('/api/postsByQuestion/:pageNum', async (req, res, next) => {
   res.status(200).json(ret);
 
 });
+
+// returns all replies by UserID. Also sends back the textList and slugList individually sorted by their index.
+app.post('/api/replies/grabRepliesbyUserID', async (req, res, next) => {
+
+  var error = '';
+  var replyList = [];
+  var textList = [];
+  var slugList = [];
+
+  const { userID } = req.body;
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    replyList = await db.collection('Replies').find({UserID:userID}).toArray();
+
+    for (i = 0; i < replyList.length; i++)
+    {
+      textList[i] = replyList[i].text;
+      slugList[i] = replyList[i].slug;
+    }
+  }
+  catch (e) {
+    error = e.toString();
+  }
+  var ret = { fullList: replyList, textList:textList, slugList:slugList, error:''};
+  res.status(200).json(ret);
+});
+
+
+// Returns paginated list of replies by UserID. 
+app.post('/api/replies/getRepliesbyUserID/:pageNum', async (req, res, next) => {
+
+  var error = '';
+  var replyList = [];
+
+  const { UserID , repliesPerPage} = req.body;
+
+  const pageNum = parseInt(req.params.pageNum);
+
+  try {
+
+    const query = {
+      $and: [
+        { "UserID": { $exists: true } },
+        { "UserID": UserID }
+      ]
+    };
+
+    const db = client.db('COP4331_LargeProject');
+    const replies = db.collection('Replies');
+
+    const toSkip = (pageNum - 1) * parseInt(repliesPerPage);
+    
+    replyList = await replies.find(query).skip(toSkip).limit(parseInt(repliesPerPage)).toArray();
+
+  }
+  catch (e) {
+    error = e.toString();
+  }
+  var ret = { list: replyList, error: '' };
+  res.status(200).json(ret);
+});
+
+// Adds new reply to collection
+app.post('/api/addReply', async (req, res, next) => {
+  
+  var error = '';
+
+  const { userID, text, slug } = req.body;
+  const newReply = { UserID:userID, text:text, slug:slug}
+
+  try 
+  {
+    const db = client.db('COP4331_LargeProject');
+    const result = db.collection('Replies').insertOne(newReply);
+  }
+  catch(e)
+  {
+    error = e.toString();
+  }
+
+  var ret = { error:error};
+  res.status(200).json(ret);
+});
+
+// Returns list of all replies associated with slug
+app.post('/api/replies/getByPostSlug', async (req, res, next) => {
+  var error = '';
+  var result = null;
+
+  const { slug } = req.body;
+
+  try
+  {
+    const db = client.db('COP4331_LargeProject');
+    result = await db.collection('Replies').find({ slug: slug}).toArray();
+  }
+  catch(e)
+  {
+    error = e.toString();
+  }
+  
+  var ret = { replyList: result, error: error }
+  res.status(200).json(ret);
+})
+
+// Adds an answer to the database
+app.post('/api/answers/addAnswer', async(req, res, next) => {
+  var error = '';
+  var result = null;
+
+  const obj = { response, stance, questionId, userId } = req.body;
+
+  var userObjId = new ObjectId(userId);
+  var questionObjId = new ObjectId(questionId);
+
+  const newAnswer = { response, stance, question: questionObjId, user: userObjId }
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    const addResult = await db.collection('Answer').insertOne(newAnswer);
+    const updResult = await db.collection('Users').updateOne( { _id:userObjId }, {
+      $push: { Answers: questionObjId }
+    })
+  }
+  catch(e) {
+    error = e.toString();
+  }
+
+  var ret = { error: error }
+  res.status(200).json(ret);
+})
+
+app.post('/api/answers/getUserAnswer', async (req, res, next) => {
+  var error = '';
+  var result = null;
+
+  const { userId, questionId } = req.body;
+
+  var userObjId = new ObjectId(userId);
+  var questionObjId = new ObjectId(questionId);
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    result = await db.collection('Answer').findOne({ question: questionObjId, user: userObjId })
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { answer: result, error: error };
+  res.status(200).json(ret);
+})
 
 ///////////////////////////////////////////////////
 // For Heroku deployment

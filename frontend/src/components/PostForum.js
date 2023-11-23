@@ -4,13 +4,19 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import { useParams } from "react-router-dom";
 import React, { useState, useEffect } from 'react';
 import ReactMarkdown from "react-markdown";
+import Paginator from '../components/Paginator';
+import CreatePostForm from '../components/CreatePostForm';
 
-export default function AnswerForum() {
+export default function PostForum() {
 
-    const { questionSlug } = useParams();
+    const { questionSlug, page = '1' } = useParams();
 
     const [posts, setPosts] = useState({});
-    const [loading, setLoading] = useState(true);
+    const [numPosts, setNumPosts] = useState({});
+    const [postsLoading, setPostsLoading] = useState(true);
+    const [paginationLoading, setPaginationLoading] = useState(true);
+
+    const postsPerPage = 5;
 
     const app_name = 'fight-or-flight-20k-5991cb1c14ef'
     function buildPath(route) {
@@ -24,22 +30,39 @@ export default function AnswerForum() {
 
     useEffect(() => {
         const grabForum = async () => {
-            setLoading(true);
+            setPostsLoading(true);
 
-            console.log(questionSlug);
-            var obj = { questionSlug: questionSlug };
+            var obj = { questionSlug: questionSlug, postsPerPage: parseInt(postsPerPage) };
             var js = JSON.stringify(obj);
 
-            console.log(js);
-
-            const response = await fetch(buildPath('api/getPosts'), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
+            const response = await fetch(buildPath("api/postsByQuestion/" + page), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 
             if (response != null) {
                 const json = await response.json();
 
                 setPosts(json);
 
-                setLoading(false);
+                setPostsLoading(false);
+            }
+            else {
+                console.log("Response is null");
+            }
+        }
+
+        const grabNumPosts = async () => {
+            setPaginationLoading(true);
+
+            var obj = { questionSlug: questionSlug };
+            var js = JSON.stringify(obj);
+
+            const response = await fetch(buildPath("api/numPosts"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
+
+            if (response != null) {
+                const json = await response.json();
+
+                setNumPosts(json.numPosts);
+
+                setPaginationLoading(false);
             }
             else {
                 console.log("Response is null");
@@ -47,19 +70,23 @@ export default function AnswerForum() {
         }
 
         grabForum();
-    }, [questionSlug]);
+        grabNumPosts();
+    }, [questionSlug, page]);
 
     const renderForum = () => {
-        if (loading) {
+        if (postsLoading || paginationLoading) {
             return <Spinner animation="border" />;
         }
         else {
-            var postList = posts.postList;
+            var postList = posts.posts;
+            console.log(postList);
             return (
                 <>
+                    <CreatePostForm questionSlug={questionSlug} />
+                    <Paginator activePage={page} numPages={Math.ceil(numPosts / postsPerPage)} />
                     <ListGroup className="mt-3">
                         {postList.map((post) => (
-                            <ListGroup.Item action variant="dark" href={"post/" + post.Slug + "/"} className="my-1">
+                            <ListGroup.Item action href={"post/" + post.Slug + "/"} className="my-1">
                                 <Card>
                                     <Card.Body>
                                         <Card.Title>{post.Title}</Card.Title>

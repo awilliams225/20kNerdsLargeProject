@@ -5,12 +5,12 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from "react-router-dom";
 import Paginator from '../components/Paginator';
 
-export default function QuestionList() {
+export default function QuestionForum() {
 
     const [questions, setQuestions] = useState({});
     const [numQuestions, setNumQuestions] = useState({});
-    const [loading, setQuestionsLoading] = useState(true);
-    const [loadingPagination, setPaginationLoading] = useState(true);
+    const [questionsLoading, setQuestionsLoading] = useState(true);
+    const [paginationLoading, setPaginationLoading] = useState(true);
 
     const questionsPerPage = 5;
 
@@ -69,17 +69,18 @@ export default function QuestionList() {
     }, [page]);
 
     const renderQuestions = () => {
-        if (loading || loadingPagination) {
+        if (questionsLoading || paginationLoading) {
             return <Spinner animation="border" />;
         }
         else {
             var questionList = questions.question;
+            console.log(questionList);
             return (
                 <>
                     <Paginator activePage={page} numPages={Math.ceil(numQuestions / questionsPerPage)}/>
                     <ListGroup>
                         {questionList.map((question) => (
-                            <ListGroup.Item action variant="dark" href={"/question/" + question.slug + "/"}>
+                            <ListGroup.Item action href={"/question/" + question.slug + "/"}>
                                 <Card>
                                     <Card.Body>
                                         <Card.Title>{question.text}</Card.Title>

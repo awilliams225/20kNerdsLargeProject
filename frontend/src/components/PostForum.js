@@ -79,6 +79,7 @@ export default function PostForum() {
         }
         else {
             var postList = posts.posts;
+            console.log(postList);
             return (
                 <>
                     <CreatePostForm questionSlug={questionSlug} />

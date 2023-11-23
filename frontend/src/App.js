@@ -9,6 +9,9 @@ import CardPage from './pages/CardPage';
 import QuestionPage from './pages/QuestionPage';
 import ChangePasswordPage from './pages/ChangePasswordPage';
 import EmailRegisteredPage from './pages/EmailRegisteredPage';
+import ProfileMainPage from './pages/ProfileMainPage';
+import ProfilePostPage from './pages/ProfilePostPage';
+import ProfileReplyPage from './pages/ProfileReplyPage';
 import Spinner from 'react-bootstrap/Spinner';
 
 function App() {
@@ -100,6 +103,9 @@ function App() {
                         <Route path="/home/:page?/" element={protectElement(<QuestionPage />)} />
                         <Route path="/question/:questionSlug/:page?/" element={protectElement(<PostPage />)} />
                         <Route path="/question/:questionSlug/post/:slug/" element={protectElement(<ReplyPage />)} />
+                        <Route path="/user/:userId/" element={protectElement(<ProfileMainPage />)} />
+                        <Route path="/user/:userId/posts/:page?/" element={protectElement(<ProfilePostPage />)} />
+                        <Route path="/user/:userId/replies/:page?/" element={protectElement(<ProfileReplyPage />)} />
                         <Route path="/changepassword/:token" element={<ChangePasswordPage />} />
                         <Route path="/emailverified/:token" element={<EmailRegisteredPage />} />
                     </Routes>

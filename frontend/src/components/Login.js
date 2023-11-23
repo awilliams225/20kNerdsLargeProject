@@ -82,7 +82,7 @@ export default function Login() {
                 <br />
                 <ForgotPasswordModal />
             </form>
-            <span id="loginResult">{message}</span>
+            <span className='text-light' id="loginResult">{message}</span>
         </div>
     );
 }

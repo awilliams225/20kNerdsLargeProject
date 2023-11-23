@@ -112,9 +112,10 @@ export default function Register() {
             specialSpan.innerHTML = '';   
 
         if (pass.match(allCheck)) {
-            console.log("Hello???");
             setPassValid(true);
         }
+
+        setPassword(pass);
 
     }
 

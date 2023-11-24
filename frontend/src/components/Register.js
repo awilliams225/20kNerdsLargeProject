@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
+import { Eye, EyeFill, EyeSlashFill } from 'react-bootstrap-icons';
+import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup';
+import Button from 'react-bootstrap/Button';
 
 export default function Register() {
 
     const [message, setMessage] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
+    const [showPass, setShowPass] = useState(false);
     const [email, setEmail] = useState('');
     const [passValid, setPassValid] = useState(false);
 
@@ -127,30 +132,35 @@ export default function Register() {
         setEmail(event.target.value);
     }
 
+    const showPassClick = (event) => {
+        setShowPass((prev) => !prev);
+    }
+
     return (
         <div id="RegisterDiv" style={{
             backgroundColor: '#4BBCD5', height: '50vh', width: '75%',
             borderRadius: '0px 15px 15px 0px', marginLeft: 0, marginTop: '10vh',
             textAlign: 'center', padding: '5vh'
         }}>
-            <form onSubmit={doRegister} style={{}}>
-                <h2 style={{ color: '#FFFFFF' }}>Sign Up</h2>
-                <input type="text" id="registerName" placeholder="Username"
-                    onChange={handleUsernameChange} /><br />
-                <input type="email" id="registerEmail" placeholder="Email"
-                    onChange={handleEmailChange} /><br />
-                <input type="password" id="registerPassword" placeholder="Password"
-                    onChange={handlePasswordChange} /><br />
-                <input type="submit" id="lregisterButton" class="buttons" value="Create Account"
-                    onClick={doRegister} /> <br/>
-                <span className='text-light small' id='passValidSpan'></span><br />
-                <span className='text-light small' id='passLengthSpan'></span><br />
-                <span className='text-light small' id='passUpperSpan'></span><br />
-                <span className='text-light small' id='passLowerSpan'></span><br />
-                <span className='text-light small' id='passNumberSpan'></span><br />
-                <span className='text-light small' id='passSpecialSpan'></span><br />
-            </form>
+            <h2 className='h2'>Signup</h2>
+            <Form>
+                <Form.Control type='username' placeholder='Username' onChange={handleUsernameChange}/>
+                <InputGroup className='mt-2'>
+                    <Form.Control type={showPass ? 'text' : 'password'} placeholder='Password' onChange={handlePasswordChange} />
+                    <InputGroup.Text onClick={showPassClick}>
+                        { showPass ? <EyeSlashFill/> : <EyeFill /> }
+                    </InputGroup.Text>
+                </InputGroup>
+                <Form.Control className='mt-2' type='email' placeholder='Email' onChange={handleEmailChange}/>
+                <Button className='mt-2' variant='primary' onClick={doRegister}>Register</Button>
+            </Form>
             <span id="registerResult">{message}</span>
+            <span className='text-light small' id='passValidSpan'></span><br />
+            <span className='text-light small' id='passLengthSpan'></span><br />
+            <span className='text-light small' id='passUpperSpan'></span><br />
+            <span className='text-light small' id='passLowerSpan'></span><br />
+            <span className='text-light small' id='passNumberSpan'></span><br />
+            <span className='text-light small' id='passSpecialSpan'></span><br />
         </div>
     );
 }

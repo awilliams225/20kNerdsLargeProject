@@ -1,16 +1,156 @@
-import React, { useState } from 'react';
+//import React, { useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
-import ToggleButton from 'react-bootstrap/ToggleButton'
-import ButtonGroup from 'react-bootstrap/ToggleButtonGroup'
+import ToggleButton from 'react-bootstrap/ToggleButton';
+import ButtonGroup from 'react-bootstrap/ToggleButtonGroup';
+
+import Card from 'react-bootstrap/Card';
+import Spinner from 'react-bootstrap/Spinner';
+import ListGroup from 'react-bootstrap/ListGroup';
+import React, { useState, useEffect } from 'react';
+import { useParams } from "react-router-dom";
+import Paginator from '../components/Paginator';
 
 
 export default function ChooseAnswer() {
     const [active, setActive] = useState("");
     const [checked, setChecked] = useState(false);
     const [radioValue, setRadioValue] = useState('');
+
+    const [questions, setQuestions] = useState({});
+    const [numQuestions, setNumQuestions] = useState({});
+    const [questionsLoading, setQuestionsLoading] = useState(true);
+    const [paginationLoading, setPaginationLoading] = useState(true);
+    const [randLoading, setRandLoading] = useState(true);
+
+    const [stance, setStance] = useState("fight");
+    const [currQuestion, setCurrQuestion] = useState({});
+
+    const questionsPerPage = 5;
+
+    const { page = '1' } = useParams();
+
+    const app_name = 'fight-or-flight-20k-5991cb1c14ef'
+    function buildPath(route) {
+        if (process.env.NODE_ENV === 'production') {
+            return 'https://' + app_name + '.herokuapp.com/' + route;
+        }
+        else {
+            return 'http://localhost:5000/' + route;
+        }
+    }
+
+    var name = "Cats Or Dogs";
+
+    useEffect(() => {
+        const grabQuestions = async () => {
+            setQuestionsLoading(true);
+
+            var obj = { questionPerPage: parseInt(questionsPerPage) };
+            var js = JSON.stringify(obj);
+
+            const response = await fetch(buildPath("api/questions/" + page), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
+
+            if (response != null) {
+                const json = await response.json();
+
+                setQuestions(json);
+
+                setQuestionsLoading(false);
+            }
+            else {
+                console.log("Response is null");
+            }
+        }
+
+        const grabNumQuestions = async () => {
+            setPaginationLoading(true);
+
+            const response = await fetch(buildPath("api/numQuestions"), { method: 'POST',  headers: { 'Content-Type': 'application/json' } });
+
+            if (response != null) {
+                const json = await response.json();
+
+                setNumQuestions(json.numQuestions);
+
+                setPaginationLoading(false);
+            }
+            else {
+                console.log("Response is null");
+            }
+        }
+
+        const grabRandQuestion = async () => {
+            setRandLoading(true);
+
+            const response = await fetch(buildPath("api/questions/getRandom"), { method: 'GET', headers: { 'Content-Type': 'application/json' } });
+
+            if (response != null) {
+                const json = await response.json();
+                console.log(json);
+                setCurrQuestion(json.question);
+                setRandLoading(false);
+            }
+            else {
+                console.log("Response is null");
+            }
+        }
+
+        grabQuestions();
+        grabNumQuestions();
+        grabRandQuestion();
+    }, [page]);
+
+    function questionName() {
+        if (1)
+            return "cats";
+        else
+            return "dogs";
+    }
+
+    function printResponses(side) {
+        if (randLoading) {
+            return <Spinner animation="border" />;
+        }
+        else {
+            if (side == 0)
+                return <h4>{currQuestion.responses[0]}</h4>;
+            else
+                return <h4>{currQuestion.responses[1]}</h4>;
+        }
+    }
+
+    const renderQuestions = () => {
+        if (questionsLoading || paginationLoading) {
+            return <Spinner animation="border" />;
+        }
+        else {
+            var questionList = questions.question;
+
+            console.log(questions);
+            //alert(name)
+
+            return (
+                <>
+                    <Paginator activePage={page} numPages={Math.ceil(numQuestions / questionsPerPage)}/>
+                    <ListGroup>
+                        {questionList.map((question) => (
+                            <ListGroup.Item action variant="dark" onClick={(e) => setCurrQuestion(question)}>
+                                <Card>
+                                    <Card.Body>
+                                        <Card.Title>{question.text}</Card.Title>
+                                    </Card.Body>
+                                </Card>
+                            </ListGroup.Item>
+                        ))}
+                    </ListGroup>
+                </>
+            )
+        }
+    }
+
 
     return (
         <Container fluid style={{ backgroundColor: '#CDD1D5', height: '50vh' }}>
@@ -29,7 +169,7 @@ export default function ChooseAnswer() {
                     checked={radioValue === 1}
                     onChange={(e) => setRadioValue(e.currentTarget.value)}
                 >
-                    Cats!
+                    {printResponses(0)}
                 </ToggleButton>
                 <ToggleButton className="d-flex align-items-center justify-content-center"
                     style={{
@@ -45,7 +185,7 @@ export default function ChooseAnswer() {
                     checked={radioValue === 2}
                     onChange={(e) => setRadioValue(e.currentTarget.value)}
                 >
-                    Dogs!
+                    {printResponses(1)}
                 </ToggleButton>
             </ButtonGroup>
             <Row className="d-flex align-items-center justify-content-center">
@@ -54,8 +194,9 @@ export default function ChooseAnswer() {
                         backgroundColor: 'white', width: '60vw',
                         borderRadius: '15px', textAlign: 'center', height: '10vh', marginTop: '-60vh',
                         position: 'absolute'
-                    }}>
-                    <h3>Cats or Dogs?</h3>
+                    }}
+                >
+                    <h3>{currQuestion.text}</h3>
                 </div>
             </Row>
             <Row>
@@ -87,6 +228,9 @@ export default function ChooseAnswer() {
                     </Button>
                 </Col>
             </Row>
+            <div>
+                {renderQuestions()}
+            </div>
         </Container>
     );
 }

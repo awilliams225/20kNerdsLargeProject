@@ -103,13 +103,6 @@ export default function ChooseAnswer() {
         grabRandQuestion();
     }, [page]);
 
-    function questionName() {
-        if (1)
-            return "cats";
-        else
-            return "dogs";
-    }
-
     function printResponses(side) {
         if (randLoading) {
             return <Spinner animation="border" />;
@@ -151,6 +144,44 @@ export default function ChooseAnswer() {
         }
     }
 
+    const changeStance = () => {
+        if (stance === "fight")
+            setStance("flight");
+        else
+            setStance("fight");
+    }
+
+    const submitAnswer = async () => {
+
+        const userData = localStorage.getItem('user_data');
+        const userId = JSON.parse(userData).id;
+
+        console.log('Answer: ' + radioValue);
+        console.log('Stance: ' + stance);
+        console.log('QuestionId: ' + currQuestion._id);
+        console.log('UserId: ' + userId);
+
+        const obj = { response: radioValue - 1, stance: stance, questionId: currQuestion._id, userId: userId }
+
+        var js = JSON.stringify(obj);
+
+        try {
+            const response = await fetch(buildPath('api/answers/addAnswer'),
+            { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' }});
+
+            if (response.status === 200)
+            {
+                var res = JSON.parse(await response.text());
+
+                console.log("Question successfully answered!");
+            }
+        }
+        catch (e) {
+            console.log(e.toString());
+            return;
+        }
+
+    }
 
     return (
         <Container fluid style={{ backgroundColor: '#CDD1D5', height: '50vh' }}>
@@ -209,7 +240,7 @@ export default function ChooseAnswer() {
                     </Button>
                 </Col>
                 <Col className="d-flex align-items-center justify-content-center">
-                    <Button style={{ width: '40vw', height: '10vh', borderRadius: 0 }}
+                    <Button style={{ width: '40vw', height: '10vh', borderRadius: 0 }} onClick={submitAnswer}
                         variant="dark"
                         key={3}
                         //className={(active != "1" || active != "2") ? "active" : undefined}
@@ -223,9 +254,9 @@ export default function ChooseAnswer() {
                     <Button style={{
                         width: '75%', height: '10vh', marginLeft: '-4vw',
                         borderRadius: 0
-                    }} variant='light'>
-                        FLIGHT MODE
-                    </Button>
+                    }} variant='light' onClick={changeStance} >
+                        { stance.toUpperCase() } MODE
+                    </Button> 
                 </Col>
             </Row>
             <div>

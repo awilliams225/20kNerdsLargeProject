@@ -24,9 +24,11 @@ export default function ChooseAnswer() {
     const [questionsLoading, setQuestionsLoading] = useState(true);
     const [paginationLoading, setPaginationLoading] = useState(true);
     const [randLoading, setRandLoading] = useState(true);
+    const [responsesLoading, setResponsesLoading] = useState(false);
 
     const [stance, setStance] = useState("fight");
     const [currQuestion, setCurrQuestion] = useState({});
+    const [alreadyAnswered, setAlreadyAnswered] = useState(false);
 
     const questionsPerPage = 5;
 
@@ -41,8 +43,6 @@ export default function ChooseAnswer() {
             return 'http://localhost:5000/' + route;
         }
     }
-
-    var name = "Cats Or Dogs";
 
     useEffect(() => {
         const grabQuestions = async () => {
@@ -89,7 +89,6 @@ export default function ChooseAnswer() {
 
             if (response != null) {
                 const json = await response.json();
-                console.log(json);
                 setCurrQuestion(json.question);
                 setRandLoading(false);
             }
@@ -104,7 +103,7 @@ export default function ChooseAnswer() {
     }, [page]);
 
     function printResponses(side) {
-        if (randLoading) {
+        if (randLoading || responsesLoading) {
             return <Spinner animation="border" />;
         }
         else {
@@ -115,6 +114,52 @@ export default function ChooseAnswer() {
         }
     }
 
+    const checkAnswered = async (question) => {
+        
+        setResponsesLoading(true);
+
+        const userData = localStorage.getItem('user_data');
+        const userId = JSON.parse(userData).id;
+
+        const obj = { userId: userId, questionId: question._id }
+
+        var js = JSON.stringify(obj);
+
+        try {
+            const response = await fetch(buildPath('api/answers/getUserAnswer'),
+            {method: 'POST', body:js, headers: { 'Content-Type': 'application/json' }});
+
+            if (response.status === 200)
+            {
+
+                var res = await response.json();
+
+                if (res.answer != null)
+                    setAlreadyAnswered(true);
+                else
+                    setAlreadyAnswered(false);
+
+                setResponsesLoading(false);
+            }
+            else
+            {
+                console.log("Response not successful");
+            }
+        }
+        catch (e) {
+            console.log("Error checking answer");
+        }
+
+    }
+
+    const selectQuestion = async (question) => {
+         
+        await checkAnswered(question);
+
+        setCurrQuestion(question);
+
+    }
+
     const renderQuestions = () => {
         if (questionsLoading || paginationLoading) {
             return <Spinner animation="border" />;
@@ -122,15 +167,12 @@ export default function ChooseAnswer() {
         else {
             var questionList = questions.question;
 
-            console.log(questions);
-            //alert(name)
-
             return (
                 <>
                     <Paginator activePage={page} numPages={Math.ceil(numQuestions / questionsPerPage)}/>
                     <ListGroup>
                         {questionList.map((question) => (
-                            <ListGroup.Item action variant="dark" onClick={(e) => setCurrQuestion(question)}>
+                            <ListGroup.Item action variant="dark" onClick={async (e) => await selectQuestion(question)}>
                                 <Card>
                                     <Card.Body>
                                         <Card.Title>{question.text}</Card.Title>
@@ -200,7 +242,7 @@ export default function ChooseAnswer() {
                     checked={radioValue === 1}
                     onChange={(e) => setRadioValue(e.currentTarget.value)}
                 >
-                    {printResponses(0)}
+                    { printResponses(0)}
                 </ToggleButton>
                 <ToggleButton className="d-flex align-items-center justify-content-center"
                     style={{
@@ -216,7 +258,7 @@ export default function ChooseAnswer() {
                     checked={radioValue === 2}
                     onChange={(e) => setRadioValue(e.currentTarget.value)}
                 >
-                    {printResponses(1)}
+                    { printResponses(1) }
                 </ToggleButton>
             </ButtonGroup>
             <Row className="d-flex align-items-center justify-content-center">
@@ -240,14 +282,14 @@ export default function ChooseAnswer() {
                     </Button>
                 </Col>
                 <Col className="d-flex align-items-center justify-content-center">
-                    <Button style={{ width: '40vw', height: '10vh', borderRadius: 0 }} onClick={submitAnswer}
+                    <Button style={{ width: '40vw', height: '10vh', borderRadius: 0 }} onClick={submitAnswer} disabled={ alreadyAnswered ? true : false }
                         variant="dark"
                         key={3}
                         //className={(active != "1" || active != "2") ? "active" : undefined}
                         id={"3"}
                         active={radioValue === ''}
                     >
-                        Submit
+                        { alreadyAnswered ? 'CHANGE' : 'SUBMIT' }
                     </Button>
                 </Col>
                 <Col className="d-flex align-items-center justify-content-start">

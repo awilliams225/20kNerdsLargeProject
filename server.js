@@ -948,6 +948,28 @@ app.post('/api/answers/getUserAnswer', async (req, res, next) => {
   res.status(200).json(ret);
 })
 
+app.post('/api/users/getAnsweredQuestions', async (req, res, next) => {
+  var error = '';
+  var result = null;
+  var questionIds = null;
+
+  const { userId } = req.body;
+
+  var userObjId = new ObjectId(userId);
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    result = await db.collection('Users').findOne({ _id: userObjId });
+    questionIds = result.Answers;
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { questionIds: questionIds };
+  res.status(200).json(ret);
+})
+
 ///////////////////////////////////////////////////
 // For Heroku deployment
 

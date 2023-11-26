@@ -29,6 +29,7 @@ export default function ChooseAnswer() {
     const [stance, setStance] = useState("fight");
     const [currQuestion, setCurrQuestion] = useState({});
     const [alreadyAnswered, setAlreadyAnswered] = useState(false);
+    const [answers, setAnswers] = useState([]);
 
     const questionsPerPage = 5;
 
@@ -45,6 +46,26 @@ export default function ChooseAnswer() {
     }
 
     useEffect(() => {
+        const grabAnswers = async () => {
+
+            const userData = localStorage.getItem('user_data');
+            const userId = JSON.parse(userData).id;
+
+            var obj = { userId: userId };
+            var js = JSON.stringify(obj);
+
+            const response = await fetch(buildPath("api/users/getAnsweredQuestions"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' }});
+
+            if (response != null) {
+                const json = await response.json();
+
+                setAnswers(json.questionIds);
+            }
+            else {
+                console.log("Response is null");
+            }
+        }
+
         const grabQuestions = async () => {
             setQuestionsLoading(true);
 
@@ -97,6 +118,7 @@ export default function ChooseAnswer() {
             }
         }
 
+        grabAnswers();
         grabQuestions();
         grabNumQuestions();
         grabRandQuestion();
@@ -172,7 +194,7 @@ export default function ChooseAnswer() {
                     <Paginator activePage={page} numPages={Math.ceil(numQuestions / questionsPerPage)}/>
                     <ListGroup>
                         {questionList.map((question) => (
-                            <ListGroup.Item action variant="dark" onClick={async (e) => await selectQuestion(question)}>
+                            <ListGroup.Item action variant={ answers.includes(question._id) ? "tertiary" : "dark" } onClick={async (e) => await selectQuestion(question)}>
                                 <Card>
                                     <Card.Body>
                                         <Card.Title>{question.text}</Card.Title>
@@ -198,11 +220,6 @@ export default function ChooseAnswer() {
         const userData = localStorage.getItem('user_data');
         const userId = JSON.parse(userData).id;
 
-        console.log('Answer: ' + radioValue);
-        console.log('Stance: ' + stance);
-        console.log('QuestionId: ' + currQuestion._id);
-        console.log('UserId: ' + userId);
-
         const obj = { response: radioValue - 1, stance: stance, questionId: currQuestion._id, userId: userId }
 
         var js = JSON.stringify(obj);
@@ -216,6 +233,14 @@ export default function ChooseAnswer() {
                 var res = JSON.parse(await response.text());
 
                 console.log("Question successfully answered!");
+
+                var newArr = answers;
+                newArr.push(currQuestion._id);
+                setAnswers(newArr);
+
+                renderQuestions();
+
+                setAlreadyAnswered(true);
             }
         }
         catch (e) {

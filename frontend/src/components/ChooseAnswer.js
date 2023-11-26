@@ -313,6 +313,7 @@ export default function ChooseAnswer() {
                         //className={(active != "1" || active != "2") ? "active" : undefined}
                         id={"3"}
                         active={radioValue === ''}
+                        href={"question/" + currQuestion.slug} 
                     >
                         { alreadyAnswered ? 'CHANGE' : 'SUBMIT' }
                     </Button>
@@ -320,8 +321,10 @@ export default function ChooseAnswer() {
                 <Col className="d-flex align-items-center justify-content-start">
                     <Button style={{
                         width: '75%', height: '10vh', marginLeft: '-4vw',
-                        borderRadius: 0
-                    }} variant='light' onClick={changeStance} >
+                        borderRadius: 0}} 
+                        variant='light' 
+                        onClick={changeStance}
+                    >
                         { stance.toUpperCase() } MODE
                     </Button> 
                 </Col>

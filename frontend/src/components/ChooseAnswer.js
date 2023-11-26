@@ -110,6 +110,7 @@ export default function ChooseAnswer() {
 
             if (response != null) {
                 const json = await response.json();
+                await checkAnswered(json.question);
                 setCurrQuestion(json.question);
                 setRandLoading(false);
             }

@@ -13,6 +13,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from "react-router-dom";
 import Paginator from '../components/Paginator';
 
+import { useNavigate } from 'react-router-dom';
+
 
 export default function ChooseAnswer() {
     const [active, setActive] = useState("");
@@ -30,6 +32,8 @@ export default function ChooseAnswer() {
     const [currQuestion, setCurrQuestion] = useState({});
     const [alreadyAnswered, setAlreadyAnswered] = useState(false);
     const [answers, setAnswers] = useState([]);
+
+    const navigate = useNavigate();
 
     const questionsPerPage = 5;
 
@@ -251,6 +255,12 @@ export default function ChooseAnswer() {
 
     }
 
+    const goToForum = () => {
+
+        navigate('/question/' + currQuestion.slug + '/' + 1, { relative: false, replace: true });
+
+    }
+
     return (
         <Container fluid style={{ backgroundColor: '#CDD1D5', height: '50vh' }}>
             <ButtonGroup name="options" type="radio">
@@ -308,15 +318,14 @@ export default function ChooseAnswer() {
                     </Button>
                 </Col>
                 <Col className="d-flex align-items-center justify-content-center">
-                    <Button style={{ width: '40vw', height: '10vh', borderRadius: 0 }} onClick={submitAnswer} disabled={ alreadyAnswered ? true : false }
+                    <Button style={{ width: '40vw', height: '10vh', borderRadius: 0 }} onClick={ alreadyAnswered ? goToForum : submitAnswer}
                         variant="dark"
                         key={3}
                         //className={(active != "1" || active != "2") ? "active" : undefined}
                         id={"3"}
                         active={radioValue === ''}
-                        href={"question/" + currQuestion.slug} 
                     >
-                        { alreadyAnswered ? 'CHANGE' : 'SUBMIT' }
+                        { alreadyAnswered ? 'GO TO FORUM' : 'SUBMIT' }
                     </Button>
                 </Col>
                 <Col className="d-flex align-items-center justify-content-start">

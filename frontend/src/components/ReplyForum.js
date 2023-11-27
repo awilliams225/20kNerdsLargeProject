@@ -55,12 +55,13 @@ export default function ReplyForum() {
         }
         else {
             var replyList = replies.replyList;
+            console.log(replyList);
             return (
                 <>
                     <CreateReplyForm slug={slug} />
-                    <ListGroup>
+                    <ListGroup className="mt-3">
                         {replyList.map((reply) => (
-                            <ListGroup.Item>
+                            <ListGroup.Item className="my-3 shadow border-5">
                                 <Card>
                                     <Card.Body>
                                         <Card.Title>{reply.text}</Card.Title>

@@ -1,13 +1,13 @@
 import React from 'react';
 
 import GlobalNavbar from '../components/GlobalNavbar';
-import ChooseAnswer from '../components/ChooseAnswer';
+import QuestionForum from '../components/QuestionForum';
 
 const QuestionPage = () => {
     return (
         <div>
             <GlobalNavbar />
-            <ChooseAnswer />
+            <QuestionForum />
         </div>
     );
 }

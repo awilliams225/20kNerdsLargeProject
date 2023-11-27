@@ -711,7 +711,7 @@ app.get('/api/questions/getQuestion/:slug', async (req, res, next) => {
   var error = '';
 
   const slug = req.params.slug;
-  const question = null;
+  var question = null;
 
   try {
     const db = client.db('COP4331_LargeProject');
@@ -789,26 +789,42 @@ app.post('/api/getPostsByQuestion/:pageNum', async (req, res, next) => {
   var error = '';
   var postList = [];
 
-  const { questionSlug, postsPerPage } = req.body;
+  const { questionSlug, stance, response, postsPerPage } = req.body;
 
   const pageNum = parseInt(req.params.pageNum);
 
   try {
 
-    const query = {
+    const fightQuery = {
       $and: [
         { "QuestionSlug": { $exists: true } },
-        { "QuestionSlug": questionSlug }
+        { "QuestionSlug": questionSlug },
+        { "Answer.stance": "fight" }
       ]
     };
+
+    const flightQuery = {
+      $and: [
+        { "QuestionSlug": { $exists: true } },
+        { "QuestionSlug": questionSlug },
+        { 'Answer.stance': 'flight' }, 
+        { 'Answer.response': response }
+      ]
+    }
 
     const db = client.db('COP4331_LargeProject');
     const posts = db.collection("Post");
 
-    const toSkip = (pageNum - 1) * postsPerPage ;
+    const toSkip = (pageNum - 1) * postsPerPage;
 
-    postList = await posts.find(query).skip(toSkip).limit(parseInt(postsPerPage)).toArray();
-
+    if (stance === "fight")
+    {
+      postList = await posts.find(fightQuery).skip(toSkip).limit(parseInt(postsPerPage)).toArray();
+    }
+    else if (stance === "flight")
+    {
+      postList = await posts.find(flightQuery).skip(toSkip).limit(parseInt(postsPerPage)).toArray();
+    }
   }
   catch (e) {
     error = e.toString();

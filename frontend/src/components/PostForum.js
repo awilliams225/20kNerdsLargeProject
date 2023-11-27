@@ -88,8 +88,12 @@ export default function PostForum() {
                         {postList.map((post) => (
                             <ListGroup.Item action href={"post/" + post.Slug + "/"} className="my-3 shadow border-5">
                                 <Card>
-                                    <Card.Body>
+                                    <Card.Header>
                                         <Card.Title>{post.Title}</Card.Title>
+                                        Posted by <a href={"/user/" + post.UserId + "/"}>{post.Username}</a> at {post.Timestamp}
+                                    </Card.Header>
+                                    <Card.Body>
+                                        
                                         <Card.Text>
                                             <ReactMarkdown children={post.Content}></ReactMarkdown>
                                         </Card.Text>

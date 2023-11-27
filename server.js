@@ -705,6 +705,31 @@ app.post('/api/posts/getPostsByUser/:pageNum', async (req, res, next) => {
 
 });
 
+app.get('/api/questions/getText/:slug', async (req, res, next) => {
+  
+  var error = '';
+  var text = null;
+
+  const slug = req.params.slug;
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    const questions = db.collection("Questions");
+
+    const query = {slug: slug};
+
+    question = await questions.findOne(query);
+
+    text = question.text;
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { text: text, error: error };
+  res.status(200).json(ret);
+})
+
 // Returns one random question
 app.get('/api/questions/getRandom', async (req, res, next) => {
 

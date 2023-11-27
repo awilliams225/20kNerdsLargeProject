@@ -255,33 +255,12 @@ app.post('/api/changePassword', async (req, res, next) => {
   
   try {
     const db = client.db('COP4331_LargeProject');
+    const salt = await bcrypt.genSalt(10);
+    const hashPassword = await bcrypt.hash(newPassword, salt);
     db.collection('Users').updateOne( { Username:username },
     {
       $set: {
-        Password: newPassword
-      }
-    })
-  }
-  catch (e) {
-    error = e.toString();
-  }
-
-  var ret = { newPassword: newPassword, error: error };
-  res.status(200).json(ret);
-
-});
-
-app.post('/api/changePassword', async (req, res, next) => {
-
-  var error = '';
-  const { username, newPassword } = req.body;
-  
-  try {
-    const db = client.db('COP4331_LargeProject');
-    db.collection('Users').updateOne( { Username:username },
-    {
-      $set: {
-        Password: newPassword
+        Password: hashPassword
       }
     })
   }

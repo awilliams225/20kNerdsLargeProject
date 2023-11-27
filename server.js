@@ -706,6 +706,35 @@ app.post('/api/posts/getPostsByUser/:pageNum', async (req, res, next) => {
 
 });
 
+// Counts  number of posts from given user
+app.post('/api/posts/countPostsByUser', async (req, res, next) => {
+
+  var error = '';
+  var count = 0;
+  const {UserId} = req.body;
+
+
+  try{
+    const query = {
+      $and: [
+        { "UserID": { $exists: true } },
+        { "UserID": UserID }
+      ]
+    };
+
+    const db = client.db('COP4331_LargeProject');
+    const posts = db.collection("Post");
+
+    count = await posts.countDocuments(query);
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { postsCount: count, error: error };
+  res.status(200).json(ret);
+});
+
 app.get('/api/questions/getQuestion/:slug', async (req, res, next) => {
   
   var error = '';
@@ -878,6 +907,36 @@ app.post('/api/replies/getRepliesbyUserID/:pageNum', async (req, res, next) => {
     error = e.toString();
   }
   var ret = { list: replyList, error: '' };
+  res.status(200).json(ret);
+});
+
+// Counts  number of replies from given user
+app.post('/api/posts/countRepliesByUser', async (req, res, next) => {
+
+  var error = '';
+  var count = 0;
+  const { UserID } = req.body;
+
+
+  try {
+
+    const query = {
+      $and: [
+        { "UserID": { $exists: true } },
+        { "UserID": UserID }
+      ]
+    };
+
+    const db = client.db('COP4331_LargeProject');
+    const replies = db.collection("Replies");
+
+    count = await replies.countDocuments(query);
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { repliesCount: count, error: error };
   res.status(200).json(ret);
 });
 

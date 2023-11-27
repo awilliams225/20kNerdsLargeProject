@@ -16,10 +16,27 @@ class RegistrationPage extends StatefulWidget {
   _RegisterPageState createState() => _RegisterPageState();
 }
 
+Future<void> sendEmail() async {
+  final response = await http.post(
+    Uri.parse(
+        'https://fight-or-flight-20k-5991cb1c14ef.herokuapp.com/api/registerWithEmail'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'email': Emailcontroller.text,
+    }),
+  );
+  Map<String, dynamic> jsonMap = jsonDecode(response.body);
+  if (response.statusCode == 201) {
+    print("in here");
+  } else {
+    // The request failed or the response is not a 200 Created status.
+    print("response was not 200 inside sendEmail");
+  }
+}
+
 Future<void> postData() async {
-  print('${Usernamecontroller.text}');
-  print('${Passwordcontroller.text}');
-  print('${Emailcontroller.text}');
   final response = await http.post(
     Uri.parse(
         'https://fight-or-flight-20k-5991cb1c14ef.herokuapp.com/api/register'),
@@ -40,6 +57,7 @@ Future<void> postData() async {
     //message to register?
     //move to home screen, save user id
     print(jsonMap);
+    //sendEmail();
   } else {
     // The request failed or the response is not a 201 Created status.
     print('Request failed with status: ${response.statusCode}');
@@ -123,16 +141,14 @@ class _RegisterPageState extends State<RegistrationPage> {
                     borderRadius: BorderRadius.circular(50),
 
                   ),
-                  child:  MaterialButton(onPressed: () {
-                    Navigator.pop(context);
-                  }, child:Text(
-                    "Join the Fight!", style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18,
-                    color: Colors.white,
-                  ),
-                  ),
-                )),
+                child: Text(
+    "Join the Fight!", style: TextStyle(
+    fontWeight: FontWeight.w600,
+    fontSize: 18,
+    color: Colors.white,
+    ),
+    ),),
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[

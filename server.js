@@ -551,24 +551,41 @@ app.post('/api/numQuestions', async (req, res, next) =>
   res.status(200).json(ret);
 });
 
-// Returns number of posts associated with given question slug
+// Returns number of posts for given question slug and stance conditions (fight or flight)
 app.post('/api/numPosts', async (req, res, next) => {
 
   var result = 0;
   var error = '';
 
-  const { questionSlug } = req.body;
+  const { questionSlug, stance, response} = req.body;
 
   try {
 
-   const query = {
+    const fightQuery = {
       $and: [
         { "QuestionSlug": { $exists: true } },
-        { "QuestionSlug": questionSlug }
+        { "QuestionSlug": questionSlug },
+        { "Answer.stance": "fight" }
       ]
     };
+
+    const flightQuery = {
+      $and: [
+        { "QuestionSlug": { $exists: true } },
+        { "QuestionSlug": questionSlug },
+        { 'Answer.stance': 'flight' },
+        { 'Answer.response': response }
+      ]
+    }
+
     const db = client.db('COP4331_LargeProject');
-    result = await db.collection('Post').countDocuments(query);
+    const posts = db.collection("Post");
+
+    if(stance === "fight")
+      result = await posts.countDocuments(fightQuery); 
+    else if (stance === "flight")
+      result = await posts.countDocuments(flightQuery);
+
   }
   catch (e) {
     error = e.toString();
@@ -704,6 +721,35 @@ app.post('/api/posts/getPostsByUser/:pageNum', async (req, res, next) => {
   var ret = { list: postsList, error: error };
   res.status(200).json(ret);
 
+});
+
+// Counts  number of posts from given user
+app.post('/api/posts/countPostsByUser', async (req, res, next) => {
+
+  var error = '';
+  var count = 0;
+  const {UserId} = req.body;
+
+
+  try{
+    const query = {
+      $and: [
+        { "UserID": { $exists: true } },
+        { "UserID": UserID }
+      ]
+    };
+
+    const db = client.db('COP4331_LargeProject');
+    const posts = db.collection("Post");
+
+    count = await posts.countDocuments(query);
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { postsCount: count, error: error };
+  res.status(200).json(ret);
 });
 
 app.get('/api/questions/getQuestion/:slug', async (req, res, next) => {
@@ -894,6 +940,36 @@ app.post('/api/replies/getRepliesbyUserID/:pageNum', async (req, res, next) => {
     error = e.toString();
   }
   var ret = { list: replyList, error: '' };
+  res.status(200).json(ret);
+});
+
+// Counts  number of replies from given user
+app.post('/api/posts/countRepliesByUser', async (req, res, next) => {
+
+  var error = '';
+  var count = 0;
+  const { UserID } = req.body;
+
+
+  try {
+
+    const query = {
+      $and: [
+        { "UserID": { $exists: true } },
+        { "UserID": UserID }
+      ]
+    };
+
+    const db = client.db('COP4331_LargeProject');
+    const replies = db.collection("Replies");
+
+    count = await replies.countDocuments(query);
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { repliesCount: count, error: error };
   res.status(200).json(ret);
 });
 

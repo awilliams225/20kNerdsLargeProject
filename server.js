@@ -583,22 +583,30 @@ app.post('/api/addPost', async (req, res, next) => {
   
   var error = '';
   var answer = null;
-
+  var timestamp = new Date(Date.now());
+  var numReplies = 0;
+  var username = '';
   const { userId, slug, content, title, questionSlug, answerId } = req.body;
 
   const answerObjId = new ObjectId(answerId);
-
+  const userObjID = new ObjectId(userId);
   try
   {
     const db = client.db('COP4331_LargeProject');
-    answer = await db.collection('Answer').findOne({ _id:answerObjId }) 
+    answer = await db.collection('Answer').findOne({ _id:answerObjId });
+    numReplies = await db.collection('Replies').countDocuments({ slug:slug });
+    const results = await db.collection('Users').find({ _id:userObjID }).toArray();
+    if( results.length > 0 )
+    {
+      username = results[0].Username;
+    }
   }
   catch (e)
   {
     error = e.toString();
   }
 
-  const newPost = { UserId:userId, Slug:slug, Content:content, Title:title, QuestionSlug:questionSlug, Answer:answer }
+  const newPost = { UserId:userId, Username:username, numReplies:numReplies, Timestamp:timestamp, Slug:slug, Content:content, Title:title, QuestionSlug:questionSlug, Answer:answer}
 
   try 
   {

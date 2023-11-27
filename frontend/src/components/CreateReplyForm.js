@@ -55,7 +55,7 @@ export default function CreateReplyForm(props) {
 
     return (
         <>
-            <Button variant="primary-fight" className="shadow" onClick={handleShow}>
+            <Button variant="primary-fight" onClick={handleShow}>
                 Reply
             </Button>
             <Modal show={show} data-bs-theme="fight">

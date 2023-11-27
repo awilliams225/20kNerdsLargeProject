@@ -51,7 +51,7 @@ export default function Post() {
                     <Card className="mb-3 shadow border-5">
                         <Card.Header>
                             <Card.Title>{post.Result.Title}</Card.Title>
-                            Posted by <a href={"/user/" + post.Result.UserId + "/"}>{post.Result.Username}</a> at {post.Result.Timestamp}
+                            Posted by <a href={"/user/" + post.Result.UserId + "/"}>{post.Result.Username}</a> on {new Date(post.Result.Timestamp).toDateString()}
                         </Card.Header>
                         <Card.Body>
                             <ReactMarkdown children={post.Result.Content}></ReactMarkdown>

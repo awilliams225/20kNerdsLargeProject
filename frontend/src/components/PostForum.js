@@ -90,7 +90,7 @@ export default function PostForum() {
                                 <Card>
                                     <Card.Header>
                                         <Card.Title>{post.Title}</Card.Title>
-                                        Posted by <a href={"/user/" + post.UserId + "/"}>{post.Username}</a> at {post.Timestamp}
+                                        Posted by <a href={"/user/" + post.UserId + "/"}>{post.Username}</a> on {new Date(post.Timestamp).toDateString()}
                                     </Card.Header>
                                     <Card.Body>
                                         

@@ -60,18 +60,18 @@ export default function CreatePostForm(props) {
             <Button variant="primary-fight" onClick={handleShow}>
                 Create Post
             </Button>
-            <Modal show={show}>
+            <Modal show={show} data-bs-theme="fight">
                 <Card>
                     <Card.Header>Create a Post</Card.Header>
                     <Card.Body>
                         <Form className="m-3" onSubmit={handleSubmit}>
                             <Form.Group className="mb-5" controlId="formTitle">
                                 <Form.Label>Post Title</Form.Label>
-                                <Form.Control name="title" type="text" placeholder="Write a witty title..." onChange={handleChange} />
+                                <Form.Control required name="title" type="text" placeholder="Write a witty title..." onChange={handleChange} />
                             </Form.Group>
                             <Form.Group className="mb-5" controlId="formContent">
                                 <Form.Label>Post Content</Form.Label>
-                                <Form.Control name="content" as="textarea" placeholder="Explain your answer..." onChange={handleChange} />
+                                <Form.Control required name="content" as="textarea" placeholder="Explain your answer..." onChange={handleChange} />
                             </Form.Group>
                             <Button variant="danger-fight me-3" onClick={handleClose}>Discard</Button>
                             <Button variant="primary-fight" type="submit">Publish</Button>

@@ -663,14 +663,7 @@ app.get('/api/posts/:slug', async (req, res, next) =>
   const slug = req.params.slug;
 
   const db = client.db('COP4331_LargeProject');
-  const document = await db.collection('Post').find({Slug:slug}).next();
-
-  var result = '';
-
-  if( document != null )
-  {
-    result = {Title: document.Title, Content: document.Content}
-  }
+  const result = await db.collection('Post').find({Slug:slug}).next();
 
   var ret = { Result:result, error:error};
   res.status(200).json(ret);

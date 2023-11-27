@@ -35,7 +35,7 @@ export default function PostForum() {
             var obj = { questionSlug: questionSlug, postsPerPage: parseInt(postsPerPage) };
             var js = JSON.stringify(obj);
 
-            const response = await fetch(buildPath("api/postsByQuestion/" + page), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
+            const response = await fetch(buildPath("api/getPostsByQuestion/" + page), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 
             if (response != null) {
                 const json = await response.json();
@@ -86,7 +86,7 @@ export default function PostForum() {
                     <Paginator activePage={page} numPages={Math.ceil(numPosts / postsPerPage)} />
                     <ListGroup className="mt-3">
                         {postList.map((post) => (
-                            <ListGroup.Item action href={"post/" + post.Slug + "/"} className="my-1">
+                            <ListGroup.Item action href={"post/" + post.Slug + "/"} className="my-3 shadow border-5">
                                 <Card>
                                     <Card.Body>
                                         <Card.Title>{post.Title}</Card.Title>

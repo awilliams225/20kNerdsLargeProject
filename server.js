@@ -713,6 +713,29 @@ app.post('/api/posts/getPostsByUser/:pageNum', async (req, res, next) => {
 
 });
 
+app.get('/api/questions/getQuestion/:slug', async (req, res, next) => {
+  
+  var error = '';
+
+  const slug = req.params.slug;
+  const question = null;
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    const questions = db.collection("Questions");
+
+    const query = {slug: slug};
+
+    question = await questions.findOne(query);
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { question: question, error: error };
+  res.status(200).json(ret);
+})
+
 // Returns one random question
 app.get('/api/questions/getRandom', async (req, res, next) => {
 
@@ -870,12 +893,20 @@ app.post('/api/addReply', async (req, res, next) => {
   
   var error = '';
 
-  const { userID, text, slug } = req.body;
-  const newReply = { UserID:userID, text:text, slug:slug}
+  const { userID, text, slug, response } = req.body;
+
+  const date = new Date(Date.now());
+  const userObjId = new ObjectId(userID);
+
+  const newReply = { UserID:userID, text:text, slug:slug, timestamp:date, response:response }
 
   try 
   {
     const db = client.db('COP4331_LargeProject');
+
+    const user = await db.collection('Users').findOne({ _id: userObjId });
+    newReply.username = user.Username;
+
     const result = db.collection('Replies').insertOne(newReply);
   }
   catch(e)

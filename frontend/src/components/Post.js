@@ -47,7 +47,7 @@ export default function Post() {
         else {
             return (
                 <>
-                    <Card>
+                    <Card className="mb-3 shadow border-5">
                         <Card.Header>
                             <Card.Title><ReactMarkdown children={post.Result.Title}></ReactMarkdown></Card.Title>
                         </Card.Header>

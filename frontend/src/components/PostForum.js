@@ -35,7 +35,7 @@ export default function PostForum() {
             var obj = { questionSlug: questionSlug, postsPerPage: parseInt(postsPerPage) };
             var js = JSON.stringify(obj);
 
-            const response = await fetch(buildPath("api/postsByQuestion/" + page), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
+            const response = await fetch(buildPath("api/getPostsByQuestion/" + page), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 
             if (response != null) {
                 const json = await response.json();

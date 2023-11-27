@@ -705,12 +705,12 @@ app.post('/api/posts/getPostsByUser/:pageNum', async (req, res, next) => {
 
 });
 
-app.get('/api/questions/getText/:slug', async (req, res, next) => {
+app.get('/api/questions/getQuestion/:slug', async (req, res, next) => {
   
   var error = '';
-  var text = null;
 
   const slug = req.params.slug;
+  const question = null;
 
   try {
     const db = client.db('COP4331_LargeProject');
@@ -719,14 +719,12 @@ app.get('/api/questions/getText/:slug', async (req, res, next) => {
     const query = {slug: slug};
 
     question = await questions.findOne(query);
-
-    text = question.text;
   }
   catch (e) {
     error = e.toString();
   }
 
-  var ret = { text: text, error: error };
+  var ret = { question: question, error: error };
   res.status(200).json(ret);
 })
 
@@ -887,12 +885,20 @@ app.post('/api/addReply', async (req, res, next) => {
   
   var error = '';
 
-  const { userID, text, slug } = req.body;
-  const newReply = { UserID:userID, text:text, slug:slug}
+  const { userID, text, slug, response } = req.body;
+
+  const date = new Date(Date.now());
+  const userObjId = new ObjectId(userID);
+
+  const newReply = { UserID:userID, text:text, slug:slug, timestamp:date, response:response }
 
   try 
   {
     const db = client.db('COP4331_LargeProject');
+
+    const user = await db.collection('Users').findOne({ _id: userObjId });
+    newReply.username = user.Username;
+
     const result = db.collection('Replies').insertOne(newReply);
   }
   catch(e)

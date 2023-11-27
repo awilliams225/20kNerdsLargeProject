@@ -263,11 +263,12 @@ export default function ChooseAnswer() {
 
     return (
         <Container fluid style={{ backgroundColor: '#CDD1D5', height: '50vh' }}>
+            <Row>
             <ButtonGroup name="options" type="radio">
                 <ToggleButton className="d-flex align-items-center justify-content-center"
                     style={{
-                        height: '40vh', width: '52vw', borderRadius: '0',
-                        marginLeft: '-5vw', position: 'relative', zIndex:'0'
+                        height: '40vh', width: '50vw', borderRadius: '0', padding: '5vw',
+                        marginLeft: '-2vw', position: 'relative', zIndex:'0'
                     }}
                     key={1}
                     id={"radio-1"}
@@ -282,8 +283,8 @@ export default function ChooseAnswer() {
                 </ToggleButton>
                 <ToggleButton className="d-flex align-items-center justify-content-center"
                     style={{
-                        height: '40vh', width: '52vw', borderRadius: '0',
-                        marginRight: '-15vw', position: 'relative', zIndex:'0'
+                        height: '40vh', width: '50vw', borderRadius: '0', padding: '5vw',
+                        marginRight: '-2vw', position: 'relative', zIndex:'0'
                     }}
                     key={2}
                     id={"radio-2"}
@@ -297,6 +298,7 @@ export default function ChooseAnswer() {
                     { printResponses(1) }
                 </ToggleButton>
             </ButtonGroup>
+            </Row>
             <Row className="d-flex align-items-center justify-content-center">
                 <div className="d-flex align-items-center justify-content-center"
                     style={{
@@ -308,17 +310,18 @@ export default function ChooseAnswer() {
                     <h3>{currQuestion.text}</h3>
                 </div>
             </Row>
-            <Row>
-                <Col className="d-flex align-items-center justify-content-end">
+            <Row className="d-flex align-items-center justify-content-center">
                     <Button style={{
-                        width: '75%', height: '10vh', marginRight: '-4vw',
-                        borderRadius: 0
-                    }} variant='light'>
-                        Cancel
+                        width: '25%', height: '10vh', borderRadius: 0
+                    }} 
+                        variant='light'
+                    >
+                        CANCEL
                     </Button>
-                </Col>
-                <Col className="d-flex align-items-center justify-content-center">
-                    <Button style={{ width: '40vw', height: '10vh', borderRadius: 0 }} onClick={ alreadyAnswered ? goToForum : submitAnswer}
+                    <Button style={{ 
+                        width: '35%', height: '10vh', borderRadius: 0 
+                    }} 
+                        onClick={ alreadyAnswered ? goToForum : submitAnswer}
                         variant="dark"
                         key={3}
                         //className={(active != "1" || active != "2") ? "active" : undefined}
@@ -327,17 +330,14 @@ export default function ChooseAnswer() {
                     >
                         { alreadyAnswered ? 'GO TO FORUM' : 'SUBMIT' }
                     </Button>
-                </Col>
-                <Col className="d-flex align-items-center justify-content-start">
                     <Button style={{
-                        width: '75%', height: '10vh', marginLeft: '-4vw',
-                        borderRadius: 0}} 
+                        width: '25%', height: '10vh', borderRadius: 0
+                    }} 
                         variant='light' 
-                        onClick={changeStance}
+                        onClick={ changeStance }
                     >
                         { stance.toUpperCase() } MODE
                     </Button> 
-                </Col>
             </Row>
             <div>
                 {renderQuestions()}

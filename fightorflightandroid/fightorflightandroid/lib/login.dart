@@ -1,3 +1,4 @@
+import 'package:fightorflightandroid/password.dart';
 import 'package:flutter/material.dart';
 import 'package:fightorflightandroid/register.dart';
 import 'package:fightorflightandroid/loggedin.dart';
@@ -13,9 +14,9 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+//  int userId = 0;
+//  int get userId1 => userId;
   Future<void> postData() async {
-    print('${Usernamecontroller.text}');
-    print('${Passwordcontroller.text}');
     final response = await http.post(
       Uri.parse(
           'https://fight-or-flight-20k-5991cb1c14ef.herokuapp.com/api/login'),
@@ -29,13 +30,16 @@ class _LoginPageState extends State<LoginPage> {
     );
     Map<String, dynamic> jsonMap = jsonDecode(response.body);
     if (jsonMap['id'] != -1) {
+      String userId = jsonMap['id'];
       print(jsonMap['id']);
+  //    userId =jsonMap['id'];
+
       // The request was successful. You can parse the response here.
       print('Response data: ${response.body}');
       //message to login?
       //move to next screen, save user id
-      print(jsonMap);
-      Navigator.push(context, MaterialPageRoute(builder: (context) => LoggedinPage()));
+    //  print(jsonMap);
+      Navigator.push(context, MaterialPageRoute(builder: (context) => LoggedinPage(userId: userId)));
 
     } else {
       // The request failed or the response is not a 200 Created status.
@@ -46,14 +50,12 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Color(0xffF34213),
+      backgroundColor: Color(0xffC80202),
       body: Container(
-        height: MediaQuery
-            .of(context)
-            .size
-            .height,
-        width: double.infinity,
-        decoration: BoxDecoration(color: Color(0xff817D8E)),
+        margin: EdgeInsets.only(left: 50, right: 50, top: 80, bottom: 80),
+        height: MediaQuery.of(context).size.height,
+        width: double.infinity/2,
+        decoration: BoxDecoration(color: Color(0xff8545D7), borderRadius: BorderRadius.circular(20)),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
@@ -62,13 +64,15 @@ class _LoginPageState extends State<LoginPage> {
               children: <Widget>[
                 Column(
                   children: <Widget>[
-                    Row(children:[
-                    IconButton(
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children:[
+                  /*  IconButton(
                       onPressed: () {
                         Navigator.pop(context);
                       },
                       icon: Icon(Icons.arrow_back_ios, size: 20, color: Colors.black),
-                    ),
+                    ),*/
                     Text("Login",
                         style: TextStyle(fontSize: 30,
                             fontWeight: FontWeight.bold,
@@ -76,19 +80,30 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(height: 20)
                   ],
                 ),
+
+                //Username textfield
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 40),
                   child: Column(
                     children: <Widget>[
-                      TextField(controller: Usernamecontroller,
-                         onSubmitted: (text) {
-                            setState(() {
-                              Username = Usernamecontroller.text;
-                            });
-                          },
-                          decoration: InputDecoration(
-                            labelText: 'Username',
-                          )),
+                      Container(
+                          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
+                          child:
+                            TextField(controller: Usernamecontroller,
+                               onSubmitted: (text) {
+                                  setState(() {
+                                    Username = Usernamecontroller.text;
+                                  });
+                                },
+                                decoration: InputDecoration(
+                                  labelText: ' Username',
+                                )
+                            )
+                      ),
+                    SizedBox(height:10),
+                    Container(
+                      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
+                      child:
                       TextField(controller: Passwordcontroller,
                           onSubmitted: (text) {
                             setState(() {
@@ -96,25 +111,20 @@ class _LoginPageState extends State<LoginPage> {
                             });
                           },
                           decoration: InputDecoration(
-                            labelText: 'Password',
+                            labelText: ' Password',
                           )
-                      ), //in// utFile(label: "Password", obscureText: true)
+                      )), //in// utFile(label: "Password", obscureText: true)
                     ],
                   ),
                 ),
-                Padding(padding:
-                EdgeInsets.symmetric(horizontal: 40),
+
+                //Password textfield
+                Padding(padding: EdgeInsets.symmetric(horizontal: 40),
                   child: Container(
                     padding: EdgeInsets.only(top: 3, left: 3),
                     decoration:
                     BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        border: Border(
-                          bottom: BorderSide(color: Colors.black),
-                          top: BorderSide(color: Colors.black),
-                          left: BorderSide(color: Colors.black),
-                          right: BorderSide(color: Colors.black),
-                        )
+                        borderRadius: BorderRadius.circular(20),
                     ),
                     child: MaterialButton(
                         minWidth: double.infinity,
@@ -122,36 +132,51 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: () {
                           postData();
                         },
-                        color: Color(0xff0095FF),
+                        color: Color(0xff9e8cb6),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50),
                         ),
-                        child: Text(
+                        child: Center( child: Text(
                           "Take Me To The Fight!", style: TextStyle(
                           fontWeight: FontWeight.w600,
-                          fontSize: 18,
+                          fontSize: 16,
                           color: Colors.white,
                         ),
-                        )
+                        ))
                     ),
                   ),
                 ),
-                Row(
+                Column(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    Text("New to Fight or Flight?", style: TextStyle(color: Colors.white,
+                      Text("New to Fight or Flight?", style: TextStyle(color: Colors.white,
                         fontWeight: FontWeight.w300,
-                        fontSize: 16)),
-                    MaterialButton(onPressed: () {
+                        fontSize: 14)),
+                    InkWell(
+                    onTap: () {
                       Navigator.push(context, MaterialPageRoute(
                           builder: (context) => RegistrationPage()));
-                    }, child:
+                    },
+                        child:
                     Text("Register Now!", style: TextStyle(
                       fontWeight: FontWeight.w500,
                       color: Colors.white,
                       fontSize: 18,
-                    )))
+                    ))),
+                    InkWell(
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(
+                              builder: (context) => PasswordPage()));
+                        },
+                        child:
+
+                        Text("Forgot your password?", style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                          fontSize: 18,
+                        )))
                   ],
                 ),
               ],

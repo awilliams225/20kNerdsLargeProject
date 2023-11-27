@@ -551,24 +551,41 @@ app.post('/api/numQuestions', async (req, res, next) =>
   res.status(200).json(ret);
 });
 
-// Returns number of posts associated with given question slug
+// Returns number of posts for given question slug and stance conditions (fight or flight)
 app.post('/api/numPosts', async (req, res, next) => {
 
   var result = 0;
   var error = '';
 
-  const { questionSlug } = req.body;
+  const { questionSlug, stance, response} = req.body;
 
   try {
 
-   const query = {
+    const fightQuery = {
       $and: [
         { "QuestionSlug": { $exists: true } },
-        { "QuestionSlug": questionSlug }
+        { "QuestionSlug": questionSlug },
+        { "Answer.stance": "fight" }
       ]
     };
+
+    const flightQuery = {
+      $and: [
+        { "QuestionSlug": { $exists: true } },
+        { "QuestionSlug": questionSlug },
+        { 'Answer.stance': 'flight' },
+        { 'Answer.response': response }
+      ]
+    }
+
     const db = client.db('COP4331_LargeProject');
-    result = await db.collection('Post').countDocuments(query);
+    const posts = db.collection("Post");
+
+    if(stance === "fight")
+      result = await posts.countDocuments(fightQuery); 
+    else if (stance === "flight")
+      result = await posts.countDocuments(flightQuery);
+
   }
   catch (e) {
     error = e.toString();

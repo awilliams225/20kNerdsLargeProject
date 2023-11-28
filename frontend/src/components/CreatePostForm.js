@@ -9,6 +9,7 @@ import slugify from 'react-slugify';
 export default function CreatePostForm(props) {
 
     const questionSlug = props.questionSlug;
+    const answerId = props.answerId;
 
     const [show, setShow] = useState(false);
     const [formData, setFormData] = useState({
@@ -42,7 +43,7 @@ export default function CreatePostForm(props) {
         }
         let userId = JSON.parse(userData).id;
 
-        var obj = { userId: userId, slug: slugify(formData.title), content: formData.content, title: formData.title, questionSlug: questionSlug };
+        var obj = { userId: userId, slug: slugify(formData.title), content: formData.content, title: formData.title, questionSlug: questionSlug, answerId: answerId };
         var js = JSON.stringify(obj);
 
         const response = await fetch(buildPath('api/addPost'), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });

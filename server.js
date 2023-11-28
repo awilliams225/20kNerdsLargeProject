@@ -944,7 +944,7 @@ app.post('/api/replies/getRepliesByUserID/:pageNum', async (req, res, next) => {
 });
 
 // Counts  number of replies from given user
-app.post('/api/posts/countRepliesByUser', async (req, res, next) => {
+app.post('/api/replies/countRepliesByUser', async (req, res, next) => {
 
   var error = '';
   var count = 0;

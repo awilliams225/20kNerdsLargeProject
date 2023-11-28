@@ -85,6 +85,7 @@ export default function ReplyForum() {
                                 <Card>
                                     <Card.Body>
                                         <Card.Title>{reply.text}</Card.Title>
+                                        Posted by <a href={"/user/" + reply.userId + "/"}>{reply.username}</a> on {new Date(reply.timestamp).toDateString()} 
                                     </Card.Body>
                                 </Card>
                             </ListGroup.Item>

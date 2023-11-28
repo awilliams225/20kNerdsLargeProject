@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import ForgotPasswordModal from '../components/ForgotPasswordModal'
+import { Eye, EyeFill, EyeSlashFill } from 'react-bootstrap-icons';
+import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup';
+import Button from 'react-bootstrap/Button';
 
 export default function Login() {
 
     const [message, setMessage] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
+    const [showPass, setShowPass] = useState(false);
 
     const app_name = 'fight-or-flight-20k-5991cb1c14ef'
     function buildPath(route) {
@@ -65,23 +70,28 @@ export default function Login() {
        setPassword(event.target.value);
     }
 
+    const showPassClick = (event) => {
+        setShowPass((prev) => !prev);
+    }
+
     return (
         <div id="LoginDiv" style={{
             backgroundColor: '#1A1A20', height: '50vh', width: '75%',
             borderRadius: '15px 0px 0px 15px', textAlign: 'center',
             padding: '5vh', marginLeft: 'auto', marginRight: 0, marginTop: '10vh'
         }}>
-            <form onSubmit={doLogin} style={{}}>
-                <h2 style={{ color: '#FFFFFF' }}>Login</h2>
-                <input type="text" id="loginName" placeholder="Username"
-                    onChange={handleUsernameChange} /><br />
-                <input type="password" id="loginPassword" placeholder="Password"
-                    onChange={handlePasswordChange} /><br />
-                <input type="submit" id="loginButton" class="buttons" value="Do It"
-                    onClick={doLogin} />
-                <br />
-                <ForgotPasswordModal />
-            </form>
+            <h2 className='h2 text-white'>Login</h2>
+            <Form>
+                <Form.Control type='username' placeholder='Username' onChange={handleUsernameChange} />
+                <InputGroup className='mt-2'>
+                    <Form.Control type={showPass ? 'text' : 'password'} placeholder='Password' onChange={handlePasswordChange} />
+                    <InputGroup.Text onClick={showPassClick}>
+                        { showPass ? <EyeSlashFill/> : <EyeFill /> }
+                    </InputGroup.Text>
+                </InputGroup>
+                <Button className='mt-2' variant='primary' onClick={doLogin}>Login</Button>
+            </Form>
+            <ForgotPasswordModal />
             <span className='text-light' id="loginResult">{message}</span>
         </div>
     );

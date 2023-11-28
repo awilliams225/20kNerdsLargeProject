@@ -530,24 +530,41 @@ app.post('/api/numQuestions', async (req, res, next) =>
   res.status(200).json(ret);
 });
 
-// Returns number of posts associated with given question slug
+// Returns number of posts for given question slug and stance conditions (fight or flight)
 app.post('/api/numPosts', async (req, res, next) => {
 
   var result = 0;
   var error = '';
 
-  const { questionSlug } = req.body;
+  const { questionSlug, stance, response} = req.body;
 
   try {
 
-   const query = {
+    const fightQuery = {
       $and: [
         { "QuestionSlug": { $exists: true } },
-        { "QuestionSlug": questionSlug }
+        { "QuestionSlug": questionSlug },
+        { "Answer.stance": "fight" }
       ]
     };
+
+    const flightQuery = {
+      $and: [
+        { "QuestionSlug": { $exists: true } },
+        { "QuestionSlug": questionSlug },
+        { 'Answer.stance': 'flight' },
+        { 'Answer.response': response }
+      ]
+    }
+
     const db = client.db('COP4331_LargeProject');
-    result = await db.collection('Post').countDocuments(query);
+    const posts = db.collection("Post");
+
+    if(stance === "fight")
+      result = await posts.countDocuments(fightQuery); 
+    else if (stance === "flight")
+      result = await posts.countDocuments(flightQuery);
+
   }
   catch (e) {
     error = e.toString();
@@ -562,22 +579,30 @@ app.post('/api/addPost', async (req, res, next) => {
   
   var error = '';
   var answer = null;
-
+  var timestamp = new Date(Date.now());
+  var numReplies = 0;
+  var username = '';
   const { userId, slug, content, title, questionSlug, answerId } = req.body;
 
   const answerObjId = new ObjectId(answerId);
-
+  const userObjID = new ObjectId(userId);
   try
   {
     const db = client.db('COP4331_LargeProject');
-    answer = await db.collection('Answer').findOne({ _id:answerObjId }) 
+    answer = await db.collection('Answer').findOne({ _id:answerObjId });
+    numReplies = await db.collection('Replies').countDocuments({ slug:slug });
+    const results = await db.collection('Users').find({ _id:userObjID }).toArray();
+    if( results.length > 0 )
+    {
+      username = results[0].Username;
+    }
   }
   catch (e)
   {
     error = e.toString();
   }
 
-  const newPost = { UserId:userId, Slug:slug, Content:content, Title:title, QuestionSlug:questionSlug, Answer:answer }
+  const newPost = { UserId:userId, Username:username, numReplies:numReplies, Timestamp:timestamp, Slug:slug, Content:content, Title:title, QuestionSlug:questionSlug, Answer:answer}
 
   try 
   {
@@ -634,14 +659,7 @@ app.get('/api/posts/:slug', async (req, res, next) =>
   const slug = req.params.slug;
 
   const db = client.db('COP4331_LargeProject');
-  const document = await db.collection('Post').find({Slug:slug}).next();
-
-  var result = '';
-
-  if( document != null )
-  {
-    result = {Title: document.Title, Content: document.Content}
-  }
+  const result = await db.collection('Post').find({Slug:slug}).next();
 
   var ret = { Result:result, error:error};
   res.status(200).json(ret);
@@ -683,6 +701,58 @@ app.post('/api/posts/getPostsByUser/:pageNum', async (req, res, next) => {
   res.status(200).json(ret);
 
 });
+
+// Counts  number of posts from given user
+app.post('/api/posts/countPostsByUser', async (req, res, next) => {
+
+  var error = '';
+  var count = 0;
+  const {UserId} = req.body;
+
+
+  try{
+    const query = {
+      $and: [
+        { "UserID": { $exists: true } },
+        { "UserID": UserID }
+      ]
+    };
+
+    const db = client.db('COP4331_LargeProject');
+    const posts = db.collection("Post");
+
+    count = await posts.countDocuments(query);
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { postsCount: count, error: error };
+  res.status(200).json(ret);
+});
+
+app.get('/api/questions/getQuestion/:slug', async (req, res, next) => {
+  
+  var error = '';
+
+  const slug = req.params.slug;
+  var question = null;
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    const questions = db.collection("Questions");
+
+    const query = {slug: slug};
+
+    question = await questions.findOne(query);
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { question: question, error: error };
+  res.status(200).json(ret);
+})
 
 // Returns one random question
 app.get('/api/questions/getRandom', async (req, res, next) => {
@@ -744,26 +814,42 @@ app.post('/api/getPostsByQuestion/:pageNum', async (req, res, next) => {
   var error = '';
   var postList = [];
 
-  const { questionSlug, postsPerPage } = req.body;
+  const { questionSlug, stance, response, postsPerPage } = req.body;
 
   const pageNum = parseInt(req.params.pageNum);
 
   try {
 
-    const query = {
+    const fightQuery = {
       $and: [
         { "QuestionSlug": { $exists: true } },
-        { "QuestionSlug": questionSlug }
+        { "QuestionSlug": questionSlug },
+        { "Answer.stance": "fight" }
       ]
     };
+
+    const flightQuery = {
+      $and: [
+        { "QuestionSlug": { $exists: true } },
+        { "QuestionSlug": questionSlug },
+        { 'Answer.stance': 'flight' }, 
+        { 'Answer.response': response }
+      ]
+    }
 
     const db = client.db('COP4331_LargeProject');
     const posts = db.collection("Post");
 
-    const toSkip = (pageNum - 1) * postsPerPage ;
+    const toSkip = (pageNum - 1) * postsPerPage;
 
-    postList = await posts.find(query).skip(toSkip).limit(parseInt(postsPerPage)).toArray();
-
+    if (stance === "fight")
+    {
+      postList = await posts.find(fightQuery).skip(toSkip).limit(parseInt(postsPerPage)).toArray();
+    }
+    else if (stance === "flight")
+    {
+      postList = await posts.find(flightQuery).skip(toSkip).limit(parseInt(postsPerPage)).toArray();
+    }
   }
   catch (e) {
     error = e.toString();
@@ -836,21 +922,61 @@ app.post('/api/replies/getRepliesbyUserID/:pageNum', async (req, res, next) => {
   res.status(200).json(ret);
 });
 
+// Counts  number of replies from given user
+app.post('/api/posts/countRepliesByUser', async (req, res, next) => {
+
+  var error = '';
+  var count = 0;
+  const { UserID } = req.body;
+
+
+  try {
+
+    const query = {
+      $and: [
+        { "UserID": { $exists: true } },
+        { "UserID": UserID }
+      ]
+    };
+
+    const db = client.db('COP4331_LargeProject');
+    const replies = db.collection("Replies");
+
+    count = await replies.countDocuments(query);
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { repliesCount: count, error: error };
+  res.status(200).json(ret);
+});
+
 // Adds new reply to collection
 app.post('/api/addReply', async (req, res, next) => {
   
   var error = '';
 
-  const { userID, text, slug } = req.body;
-  const newReply = { UserID:userID, text:text, slug:slug}
+  const { userId, text, slug, response } = req.body;
+
+  const date = new Date(Date.now());
+  const userObjId = new ObjectId(userId);
+
+  const newReply = { userId:userId, text:text, slug:slug, timestamp:date, response:response }
 
   try 
   {
     const db = client.db('COP4331_LargeProject');
+
+    const user = await db.collection('Users').findOne({ _id: userObjId });
+    newReply.username = user.Username;
+
     const result = db.collection('Replies').insertOne(newReply);
   }
   catch(e)
   {
+    console.log(e);
+
     error = e.toString();
   }
 
@@ -924,6 +1050,28 @@ app.post('/api/answers/getUserAnswer', async (req, res, next) => {
   }
 
   var ret = { answer: result, error: error };
+  res.status(200).json(ret);
+})
+
+app.post('/api/users/getAnsweredQuestions', async (req, res, next) => {
+  var error = '';
+  var result = null;
+  var questionIds = null;
+
+  const { userId } = req.body;
+
+  var userObjId = new ObjectId(userId);
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    result = await db.collection('Users').findOne({ _id: userObjId });
+    questionIds = result.Answers;
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { questionIds: questionIds };
   res.status(200).json(ret);
 })
 

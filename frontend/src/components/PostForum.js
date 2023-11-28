@@ -15,6 +15,8 @@ export default function PostForum() {
     const [numPosts, setNumPosts] = useState({});
     const [postsLoading, setPostsLoading] = useState(true);
     const [paginationLoading, setPaginationLoading] = useState(true);
+    const [answer, setAnswer] = useState({});
+    const [answerReceived, setAnswerReceived] = useState(null);
 
     const postsPerPage = 5;
 
@@ -28,17 +30,62 @@ export default function PostForum() {
         }
     }
 
+    const grabAnswer = async () => {
+            
+        const userData = localStorage.getItem('user_data');
+        const userId = JSON.parse(userData).id;
+
+        var question = null;
+
+        const questResponse = await fetch (buildPath("api/questions/getQuestion/" + questionSlug), { method: 'GET', headers: { 'Content-Type': 'application/json' } });
+
+        if (questResponse != null) {
+            const questJson = await questResponse.json();
+
+            question = questJson.question;
+
+            var obj = { userId: userId, questionId: question._id };
+            var js = JSON.stringify(obj);
+
+            const answerResponse = await fetch (buildPath("api/answers/getUserAnswer"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
+
+            if (answerResponse != null) {
+                const answerJson = await answerResponse.json();
+
+                const answer = answerJson.answer;
+
+                setAnswer(answer);
+
+                setAnswerReceived(true);
+            }
+        }
+    }
+
+    const runEffect = async () => {
+        await grabAnswer();
+        console.log("Answer grabbed");
+    }
+
     useEffect(() => {
+        runEffect();
+    }, [])
+
+    useEffect(() => {
+
         const grabForum = async () => {
             setPostsLoading(true);
 
-            var obj = { questionSlug: questionSlug, postsPerPage: parseInt(postsPerPage) };
+            var obj = { questionSlug: questionSlug, postsPerPage: parseInt(postsPerPage), stance: answer.stance, response: answer.response };
             var js = JSON.stringify(obj);
 
-            const response = await fetch(buildPath("api/postsByQuestion/" + page), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
+            console.log(answer);
+
+            const response = await fetch(buildPath("api/getPostsByQuestion/" + page), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 
             if (response != null) {
                 const json = await response.json();
+
+                console.log(json);
 
                 setPosts(json);
 
@@ -52,13 +99,17 @@ export default function PostForum() {
         const grabNumPosts = async () => {
             setPaginationLoading(true);
 
-            var obj = { questionSlug: questionSlug };
+            var obj = { questionSlug: questionSlug, stance: answer.stance, response: answer.response };
             var js = JSON.stringify(obj);
+
+            console.log(answer);
 
             const response = await fetch(buildPath("api/numPosts"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 
             if (response != null) {
                 const json = await response.json();
+
+                console.log(json.numPosts);
 
                 setNumPosts(json.numPosts);
 
@@ -69,9 +120,15 @@ export default function PostForum() {
             }
         }
 
-        grabForum();
-        grabNumPosts();
-    }, [questionSlug, page]);
+        console.log(answerReceived);
+
+        if (answerReceived) {
+            console.log("Hello?");
+            grabForum();
+            grabNumPosts();
+        }
+
+    }, [questionSlug, page, answerReceived]);
 
     const renderForum = () => {
         if (postsLoading || paginationLoading) {
@@ -79,17 +136,20 @@ export default function PostForum() {
         }
         else {
             var postList = posts.posts;
-            console.log(postList);
             return (
                 <>
-                    <CreatePostForm questionSlug={questionSlug} />
+                    <CreatePostForm questionSlug={questionSlug} answerId={answer._id} />
                     <Paginator activePage={page} numPages={Math.ceil(numPosts / postsPerPage)} />
                     <ListGroup className="mt-3">
                         {postList.map((post) => (
-                            <ListGroup.Item action href={"post/" + post.Slug + "/"} className="my-1">
+                            <ListGroup.Item action href={"post/" + post.Slug + "/"} className="my-3 shadow border-5">
                                 <Card>
-                                    <Card.Body>
+                                    <Card.Header>
                                         <Card.Title>{post.Title}</Card.Title>
+                                        Posted by <a href={"/user/" + post.UserId + "/"}>{post.Username}</a> on {new Date(post.Timestamp).toDateString()}
+                                    </Card.Header>
+                                    <Card.Body>
+                                        
                                         <Card.Text>
                                             <ReactMarkdown children={post.Content}></ReactMarkdown>
                                         </Card.Text>

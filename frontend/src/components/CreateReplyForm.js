@@ -40,7 +40,7 @@ export default function CreateReplyForm(props) {
         }
         let userId = JSON.parse(userData).id;
 
-        var obj = { userId: userId, text: formData.text, slug: slug };
+        var obj = { userId: userId, text: formData.text, slug: slug, response: null };
         var js = JSON.stringify(obj);
 
         const response = await fetch(buildPath('api/addReply'), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
@@ -55,16 +55,16 @@ export default function CreateReplyForm(props) {
 
     return (
         <>
-            <Button onClick={handleShow}>
+            <Button variant="primary-fight" onClick={handleShow}>
                 Reply
             </Button>
-            <Modal show={show}>
+            <Modal show={show} data-bs-theme="fight">
                 <Card>
                     <Card.Header>Send reply</Card.Header>
                     <Card.Body>
                         <Form className="m-3" onSubmit={handleSubmit}>
                             <Form.Group className="mb-5" controlId="formText">
-                                <Form.Control name="text" as="textarea" placeholder="Respond with something cool..." onChange={handleChange} />
+                                <Form.Control required name="text" as="textarea" placeholder="Respond with something cool..." onChange={handleChange} />
                             </Form.Group>
                             <Button variant="warning-fight me-3" onClick={handleClose}>Cancel</Button>
                             <Button variant="primary-fight" type="submit">Reply</Button>

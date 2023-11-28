@@ -4,6 +4,8 @@
 @import "./variables-fight";
 @import "./variables-flight";
 
+$box-shadow: 10px 10px rgba($black, .3);
+
 $fight-colors: (
     "primary-fight": $primary-fight,
     "secondary-fight": $secondary-fight,

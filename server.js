@@ -1008,7 +1008,7 @@ app.post('/api/replies/getByPostSlug', async (req, res, next) => {
 // Adds an answer to the database
 app.post('/api/answers/addAnswer', async(req, res, next) => {
   var error = '';
-  var result = null;
+  var addResult = null;
 
   const obj = { response, stance, questionId, userId } = req.body;
 
@@ -1019,7 +1019,7 @@ app.post('/api/answers/addAnswer', async(req, res, next) => {
 
   try {
     const db = client.db('COP4331_LargeProject');
-    const addResult = await db.collection('Answer').insertOne(newAnswer);
+    addResult = await db.collection('Answer').insertOne(newAnswer);
     const updResult = await db.collection('Users').updateOne( { _id:userObjId }, {
       $push: { Answers: questionObjId }
     })
@@ -1028,7 +1028,7 @@ app.post('/api/answers/addAnswer', async(req, res, next) => {
     error = e.toString();
   }
 
-  var ret = { error: error }
+  var ret = { answerId: addResult.insertedId.toString(), error: error }
   res.status(200).json(ret);
 })
 

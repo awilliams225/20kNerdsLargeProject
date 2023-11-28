@@ -978,12 +978,12 @@ app.post('/api/addReply', async (req, res, next) => {
   
   var error = '';
 
-  const { userID, text, slug, response } = req.body;
+  const { userId, text, slug, response } = req.body;
 
   const date = new Date(Date.now());
-  const userObjId = new ObjectId(userID);
+  const userObjId = new ObjectId(userId);
 
-  const newReply = { UserID:userID, text:text, slug:slug, timestamp:date, response:response }
+  const newReply = { userId:userId, text:text, slug:slug, timestamp:date, response:response }
 
   try 
   {
@@ -996,6 +996,8 @@ app.post('/api/addReply', async (req, res, next) => {
   }
   catch(e)
   {
+    console.log(e);
+
     error = e.toString();
   }
 

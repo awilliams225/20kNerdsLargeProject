@@ -23,6 +23,25 @@ export default function ReplyForum() {
     }
 
     useEffect(() => {
+        const grabAnswer = async () => {
+            let userData = localStorage.getItem('user_data');
+            if (!userData) {
+                return;
+            }
+            let userId = JSON.parse(userData).id;
+
+            const questResponse = await fetch(buildPath('api/questions/getQuestion/' + slug), { method: 'GET', headers: { 'Content-Type': 'application/json' }});
+
+            if (questResponse != null) {
+                const questJson = await questResponse.json();
+
+                console.log(questJson);
+            }
+            else {
+                console.log('Question is null');
+            }
+        }
+
         const grabReplies = async () => {
 
             setRepliesLoading(true);
@@ -46,8 +65,9 @@ export default function ReplyForum() {
             }
         }
 
+        grabAnswer();
         grabReplies();
-    }, []);
+    }, [slug]);
 
     const renderQuestions = () => {
         if (repliesLoading) {

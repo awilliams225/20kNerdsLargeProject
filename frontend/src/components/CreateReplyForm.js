@@ -40,7 +40,7 @@ export default function CreateReplyForm(props) {
         }
         let userId = JSON.parse(userData).id;
 
-        var obj = { userId: userId, text: formData.text, slug: slug };
+        var obj = { userId: userId, text: formData.text, slug: slug, response: null };
         var js = JSON.stringify(obj);
 
         const response = await fetch(buildPath('api/addReply'), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });

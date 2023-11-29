@@ -76,7 +76,6 @@ function App() {
 
     useEffect(() => {
         const storeStance = () => {
-            console.log("state change!");
             if ((stance === "fight" || stance === "flight") && stance !== localStorage.getItem('stance')) {
                 localStorage.setItem('stance', stance);
             }
@@ -87,7 +86,7 @@ function App() {
     
     const wrapElement = (element) => {
         if (isValidated) {
-            document.body.style.backgroundColor = "#f07841";
+            document.body.style.backgroundColor = (stance === "fight" ?  "#f07841" : "#2a628f");
             return (
                 <div data-bs-theme={stance}>
                     {element}

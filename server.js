@@ -742,8 +742,8 @@ app.post('/api/posts/countPostsByUser', async (req, res, next) => {
   try{
     const query = {
       $and: [
-        { "UserID": { $exists: true } },
-        { "UserID": UserID }
+        { "UserId": { $exists: true } },
+        { "UserId": UserId }
       ]
     };
 
@@ -918,7 +918,7 @@ app.post('/api/replies/grabRepliesbyUserID', async (req, res, next) => {
 
 
 // Returns paginated list of replies by UserID. 
-app.post('/api/replies/getRepliesbyUserID/:pageNum', async (req, res, next) => {
+app.post('/api/replies/getRepliesByUserID/:pageNum', async (req, res, next) => {
 
   var error = '';
   var replyList = [];
@@ -952,7 +952,7 @@ app.post('/api/replies/getRepliesbyUserID/:pageNum', async (req, res, next) => {
 });
 
 // Counts  number of replies from given user
-app.post('/api/posts/countRepliesByUser', async (req, res, next) => {
+app.post('/api/replies/countRepliesByUser', async (req, res, next) => {
 
   var error = '';
   var count = 0;

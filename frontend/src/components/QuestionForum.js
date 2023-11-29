@@ -1,4 +1,3 @@
-//import React, { useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -9,14 +8,15 @@ import ButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 import Card from 'react-bootstrap/Card';
 import Spinner from 'react-bootstrap/Spinner';
 import ListGroup from 'react-bootstrap/ListGroup';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { StanceContext } from './StanceContext';
 import { useParams } from "react-router-dom";
 import Paginator from '../components/Paginator';
 
 import { useNavigate } from 'react-router-dom';
 
 
-export default function ChooseAnswer() {
+export default function QuestionForum() {
     const [active, setActive] = useState("");
     const [checked, setChecked] = useState(false);
     const [radioValue, setRadioValue] = useState('');
@@ -28,7 +28,7 @@ export default function ChooseAnswer() {
     const [randLoading, setRandLoading] = useState(true);
     const [responsesLoading, setResponsesLoading] = useState(false);
 
-    const [stance, setStance] = useState("fight");
+    const {stance, setStance} = useContext(StanceContext);
     const [currQuestion, setCurrQuestion] = useState({});
     const [alreadyAnswered, setAlreadyAnswered] = useState(false);
     const [answers, setAnswers] = useState([]);
@@ -161,9 +161,10 @@ export default function ChooseAnswer() {
 
                 var res = await response.json();
 
-                if (res.answer != null)
+                if (res.answer != null) {
                     setAlreadyAnswered(true);
-                else
+                    setStance(res.answer.stance);
+                } else
                     setAlreadyAnswered(false);
 
                 setResponsesLoading(false);
@@ -333,7 +334,7 @@ export default function ChooseAnswer() {
                     <Button style={{
                         width: '25%', height: '10vh', borderRadius: 0
                     }} 
-                        variant='light' 
+                        variant={'primary-' + stance} 
                         onClick={ changeStance }
                     >
                         { stance.toUpperCase() } MODE

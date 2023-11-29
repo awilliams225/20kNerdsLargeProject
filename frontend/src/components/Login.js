@@ -81,11 +81,7 @@ export default function Login() {
     }
 
     return (
-        <div id="LoginDiv" style={{
-            backgroundColor: '#1A1A20', height: '50vh', width: '75%',
-            borderRadius: '15px 0px 0px 15px', textAlign: 'center',
-            padding: '5vh', marginLeft: 'auto', marginRight: 0, marginTop: '10vh'
-        }}>
+        <>
             <h2 className='h2 text-white'>Login</h2>
             <Form>
                 <Form.Control type='username' placeholder='Username' onChange={handleUsernameChange} />
@@ -99,6 +95,6 @@ export default function Login() {
             </Form>
             <ForgotPasswordModal /> <br />
             <span className='text-light' id="loginResult">{message}</span>
-        </div>
+        </>
     );
 }

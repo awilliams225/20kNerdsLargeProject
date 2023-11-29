@@ -1,28 +1,21 @@
 import React from 'react';
 import "bootstrap/dist/css/bootstrap.css"
 
-import Login from '../components/Login';
-import Register from '../components/Register';
+import LoginTitle from '../components/LoginTitle';
+import LoginBox from '../components/LoginBox';
 
 const LoginPage = () => {
     return (
-        <div>
-            <div style={{
-                backgroundColor: '#FFFFFF',
-                height: '100vh', width: '50vw', float: 'right'
+        <div style={{
+            backgroundSize: "cover",
+            backgroundImage:`url(${require('../images/background.png')})`, 
+            width:"100%", 
+            height:"100vh", 
+            backgroundPosition: "center",
+            backgroundRepeat: "repeat-y"
             }}>
-                <h1 style={{ color: '#4BBCD5' }}>
-                    R FLIGHT</h1>
-                <Register />
-            </div>
-            <div style={{
-                backgroundColor: '#FF0000',
-                height: '100vh', width: '50vw', float: 'left'
-            }}>
-                <h1 style={{ textAlign: 'right', color: '#FFFFFF' }}>
-                    FIGHT O</h1>
-                <Login />
-            </div>
+            <LoginTitle />
+            <LoginBox />
         </div>
     );
 }

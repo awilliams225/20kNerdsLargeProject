@@ -148,11 +148,7 @@ export default function Register() {
     }
 
     return (
-        <div id="RegisterDiv" style={{
-            backgroundColor: '#4BBCD5', height: '50vh', width: '75%',
-            borderRadius: '0px 15px 15px 0px', marginLeft: 0, marginTop: '10vh',
-            textAlign: 'center', padding: '5vh'
-        }}>
+        <>
             <h2 className='h2'>Signup</h2>
             <Form>
                 <Form.Control type='username' placeholder='Username' onChange={handleUsernameChange}/>
@@ -172,6 +168,6 @@ export default function Register() {
             <span className='text-light small' id='passLowerSpan'></span><br />
             <span className='text-light small' id='passNumberSpan'></span><br />
             <span className='text-light small' id='passSpecialSpan'></span><br />
-        </div>
+        </>
     );
 }

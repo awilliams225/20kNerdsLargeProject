@@ -73,14 +73,14 @@ app.post("/api/validateToken", (req, res) => {
       const verified = jwt.verify(token, jwtSecretKey); 
       if (verified){ 
           if (verified.userId === userId){
-            return res.send({ "message": "Successfully Verified"}); 
+            return res.status(200).send({ "message": "Successfully Verified"}); 
           }
           else {
             return res.status(401).send({ "error": "userId does not match"} );
           }
       }
       else {  
-          return res.status(401).send({ "error": "token was not verified" }); 
+          return res.status(401).send({ "error": "token was not verified, or token has expired" }); 
       } 
   } catch (error) { 
       return res.status(401).send(error); 
@@ -142,7 +142,7 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
             button: {
                 color: '#22BC66', // Optional action button color
                 text: 'Confirm your account',
-                link: 'https://fight-or-flight-20k-5991cb1c14ef.herokuapp.com/emailverified/' + token
+                link: 'http://localhost:3000/emailverified/'
             }
         },
         outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'
@@ -159,7 +159,8 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
   }
   transporter.sendMail(message).then(() => {
     return res.status(201).json({
-      msg: "you should recieve an email"
+      msg: "you should recieve an email",
+      token: token
     })
   }).catch(error => {
     return res.status(500).json({ error })
@@ -222,7 +223,7 @@ app.post('/api/forgotPassword', async (req, res, next) =>
             button: {
                 color: '#22BC66', // Optional action button color
                 text: 'Change password',
-                link: 'https://fight-or-flight-20k-5991cb1c14ef.herokuapp.com/changepassword/' + token
+                link: 'http://localhost:3000/emailverified/' + token
             }
         },
         outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'
@@ -442,6 +443,8 @@ app.post('/api/register', async (req, res, next) =>
 	
   const { username, password, email } = req.body;
   var error = '';
+  var result = null;
+  var id = '';
 
   const db = client.db('COP4331_LargeProject');
   try
@@ -457,7 +460,9 @@ app.post('/api/register', async (req, res, next) =>
       const hashPassword = await bcrypt.hash(password, salt);
       const newUser = {Username:username, Password:hashPassword, Email:email, Answers:[]};
       const db = client.db('COP4331_LargeProject');
-      const result = db.collection('Users').insertOne(newUser);
+      result = await db.collection('Users').insertOne(newUser);
+      if (result != null)
+        id = result.insertedId;
     }
   }
   catch(e)
@@ -465,7 +470,7 @@ app.post('/api/register', async (req, res, next) =>
     error = e.toString();
   }
 
-  var ret = { error: error };
+  var ret = { userId: result.insertedId.toString(), error: error };
   res.status(200).json(ret);
 });
 
@@ -488,7 +493,10 @@ app.post('/api/login', async (req, res, next) =>
       const compare = await bcrypt.compare(password, results[0].Password)
       if (compare)
       {
-        id = results[0]._id;
+        if (results[0].Registered == true)
+          id = results[0]._id;
+        else
+          error = 'This user is not email registered!';
       }
       else
       {
@@ -497,7 +505,7 @@ app.post('/api/login', async (req, res, next) =>
     }
     else
     {
-      error = 'No User with that Username found!';
+      error = 'No user with that username found!';
     }
   }
   catch(e)

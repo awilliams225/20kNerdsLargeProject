@@ -538,6 +538,27 @@ app.post('/api/getUserByEmail', async (req, res, next) =>
   res.status(200).json(ret);
 });
 
+app.post('/api/getUserByUserId', async (req, res, next) => 
+{
+	
+  var error = '';
+  var results;
+  const { userId } = req.body;
+  const userObjID = new ObjectId(userId);
+  try
+  {
+    const db = client.db('COP4331_LargeProject');
+    results = await db.collection('Users').find({_id:userObjID}).toArray();
+  }
+  catch(e)
+  {
+    error = e.toString();
+  }
+
+  var ret = { results:results, error:error};
+  res.status(200).json(ret);
+});
+
 // Returns number of questions
 app.post('/api/numQuestions', async (req, res, next) =>
 {
@@ -633,10 +654,31 @@ app.post('/api/addPost', async (req, res, next) => {
 
   const newPost = { UserId:userId, Username:username, numReplies:numReplies, Timestamp:timestamp, Slug:slug, Content:content, Title:title, QuestionSlug:questionSlug, Answer:answer}
 
+  // check if slug exists in database. If it does, append an incrementing number ex: i-dont-like-cats_1
   try 
   {
     const db = client.db('COP4331_LargeProject');
-    const result = db.collection('Post').insertOne(newPost);
+    var result = await db.collection('Post').countDocuments({Slug:slug});
+    if ( result == 0 )
+    {
+      const result = db.collection('Post').insertOne(newPost);
+    }
+    else
+    {
+      var append = 1;
+      var newSlug = slug + "_" + append;
+      result = await db.collection('Post').countDocuments({Slug:newSlug});
+      // hard cap of numbered entries is 20 for now
+      while ((result >= 1) || append > 20)
+      {
+        append++;
+        newSlug = slug + "_" + append;
+        result = await db.collection('Post').countDocuments({Slug:newSlug});
+      }
+      const appendedPost = { UserId:userId, Username:username, numReplies:numReplies, Timestamp:timestamp, Slug:newSlug, Content:content, Title:title, QuestionSlug:questionSlug, Answer:answer}
+      const appendedResult = db.collection('Post').insertOne(appendedPost);
+    }
+
   }
   catch(e)
   {

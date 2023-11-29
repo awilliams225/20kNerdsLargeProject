@@ -1,7 +1,7 @@
 import React from 'react';
 
 import GlobalNavbar from '../components/GlobalNavbar';
-import Post from '../components/Post';
+import Post from '../components/PostDetails';
 import ReplyForum from '../components/ReplyForum';
 import Container from 'react-bootstrap/Container';
 

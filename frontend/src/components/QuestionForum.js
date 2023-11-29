@@ -161,9 +161,10 @@ export default function QuestionForum() {
 
                 var res = await response.json();
 
-                if (res.answer != null)
+                if (res.answer != null) {
                     setAlreadyAnswered(true);
-                else
+                    setStance(res.answer.stance);
+                } else
                     setAlreadyAnswered(false);
 
                 setResponsesLoading(false);
@@ -333,7 +334,7 @@ export default function QuestionForum() {
                     <Button style={{
                         width: '25%', height: '10vh', borderRadius: 0
                     }} 
-                        variant='light' 
+                        variant={'primary-' + stance} 
                         onClick={ changeStance }
                     >
                         { stance.toUpperCase() } MODE

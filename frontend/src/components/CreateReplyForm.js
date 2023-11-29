@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Card from 'react-bootstrap/Card';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import { StanceContext } from './StanceContext';
 
 
 export default function CreateReplyForm(props) {
+
+    const {stance, setStance} = useContext(StanceContext);
 
     const slug = props.slug;
 
@@ -55,10 +58,10 @@ export default function CreateReplyForm(props) {
 
     return (
         <>
-            <Button variant="primary-fight" onClick={handleShow}>
+            <Button variant={"primary-" + stance} onClick={handleShow}>
                 Reply
             </Button>
-            <Modal show={show} data-bs-theme="fight">
+            <Modal show={show} data-bs-theme={stance}>
                 <Card>
                     <Card.Header>Send reply</Card.Header>
                     <Card.Body>
@@ -66,8 +69,8 @@ export default function CreateReplyForm(props) {
                             <Form.Group className="mb-5" controlId="formText">
                                 <Form.Control required name="text" as="textarea" placeholder="Respond with something cool..." onChange={handleChange} />
                             </Form.Group>
-                            <Button variant="warning-fight me-3" onClick={handleClose}>Cancel</Button>
-                            <Button variant="primary-fight" type="submit">Reply</Button>
+                            <Button variant={"danger-" + stance + " me-3"} onClick={handleClose}>Cancel</Button>
+                            <Button variant={"primary-" + stance} type="submit">Reply</Button>
                         </Form>
                     </Card.Body>
                 </Card>

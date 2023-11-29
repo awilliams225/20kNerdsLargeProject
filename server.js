@@ -958,6 +958,30 @@ app.post('/api/replies/grabRepliesbyUserID', async (req, res, next) => {
   res.status(200).json(ret);
 });
 
+// WIP (assuming database has unique slugs) returns an array of replies and an array of their associated posts
+app.post('/api/replies/grabRepliesAndPostsByUserId', async (req, res, next) => {
+
+  var error = '';
+  var postList = [];
+  var replyList = [];
+
+  const { userId } = req.body;
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    replyList = await db.collection('Replies').find({userId:userId}).toArray();
+   
+    for (i = 0; i < replyList.length; i++)
+    {
+      postList[i] = await db.collection('Post').find({Slug:replyList[i].slug}).toArray();
+    }
+  }
+  catch (e) {
+    error = e.toString();
+  }
+  var ret = { postList:postList, replyList: replyList, error:''};
+  res.status(200).json(ret);
+});
 
 // Returns paginated list of replies by UserID. 
 app.post('/api/replies/getRepliesByUserID/:pageNum', async (req, res, next) => {

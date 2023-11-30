@@ -35,6 +35,7 @@ export default function QuestionForum() {
 
     const {stance, setStance} = useContext(StanceContext);
     const [currQuestion, setCurrQuestion] = useState({});
+    const [currAnswer, setCurrAnswer] = useState({});
     const [alreadyAnswered, setAlreadyAnswered] = useState(false);
     const [answers, setAnswers] = useState([]);
 
@@ -139,10 +140,17 @@ export default function QuestionForum() {
             return <Spinner animation="border" />;
         }
         else {
-            if (side == 0)
-                return <h4>{currQuestion.responses[0]}</h4>;
-            else
-                return <h4>{currQuestion.responses[1]}</h4>;
+            let responseText = (<h4>{currQuestion.responses[side]}</h4>);
+            if (alreadyAnswered && currAnswer.response === side) {
+                return (
+                    <div>
+                        {responseText}
+                        <h5>Your Answer!</h5>
+                    </div>
+                )
+            } else {
+                return responseText;
+            }
         }
     }
 
@@ -168,6 +176,8 @@ export default function QuestionForum() {
 
                 if (res.answer != null) {
                     setAlreadyAnswered(true);
+                    setCurrAnswer(res.answer);
+                    console.log(res.answer);
                     setStance(res.answer.stance);
                 } else
                     setAlreadyAnswered(false);
@@ -223,7 +233,33 @@ export default function QuestionForum() {
         }
     }
 
+    const renderStanceButton = (style) => {
+        return (
+            <>
+                <Button style={style} 
+                    variant={'primary-' + stance} 
+                    onClick={ panelOpen && alreadyAnswered ? null : changeStance }
+                >
+                    <span>{ stance.toUpperCase() } MODE</span>
+                    
+                    <OverlayTrigger overlay={
+                        <Tooltip>
+                            <h3>What is this?</h3>
+                            This is your <b>stance.</b> In <b style={{color: 'orange'}}>fight</b> mode, you can argue with people about this topic, while in <b style={{color: 'cyan'}}>flight</b> mode, you can talk to other people who feel the same way as you. You cannot change your stance on a question once you answer it, so choose wisely!
+                        </Tooltip>
+                    }>
+                        <Badge pill bg="secondary" className="m-2">i</Badge>
+                    </OverlayTrigger>
+                </Button> 
+            </>
+        )
+    }
+
     const changeStance = () => {
+        if (panelOpen && alreadyAnswered) {
+            return;
+        }
+
         if (stance === "fight")
             setStance("flight");
         else
@@ -271,12 +307,24 @@ export default function QuestionForum() {
 
     }
 
+    const stanceButtonStyle = () => {
+        if (panelOpen && alreadyAnswered) {
+            return 'default';
+        }
+        return 'pointer';
+    }
+
     return (
         <>
+            <Collapse in={!panelOpen}>
+                <div id="lonely-stance-button">
+                    {renderStanceButton({width: '100%', height: '10vh'})}
+                </div>
+            </Collapse>
             <Collapse in={panelOpen}>
                 <Container fluid id="choose-answer-panel">
                     <Row>
-                        <ButtonGroup name="options" type="radio" style={{ paddingLeft: 0, paddingRight: 0 }}>
+                        <ButtonGroup name="options" type="radio" style={{ paddingLeft: 0, paddingRight: 0}}>
                             <ToggleButton className="w-50 d-flex align-items-center justify-content-center"
                                 style={{
                                     height: '40vh', borderRadius: '0', padding: '5vw',
@@ -285,11 +333,12 @@ export default function QuestionForum() {
                                 key={1}
                                 id={"radio-1"}
                                 type="radio"
-                                //variant={idx % 2 ? 'outline-success' : 'outline-danger'}
+                                variant={"primary-" + stance}
                                 name="radio"
                                 value={1}
                                 checked={radioValue === 1}
                                 onChange={(e) => setRadioValue(e.currentTarget.value)}
+                                disabled={alreadyAnswered}
                             >
                                 { printResponses(0)}
                             </ToggleButton>
@@ -301,18 +350,19 @@ export default function QuestionForum() {
                                 key={2}
                                 id={"radio-2"}
                                 type="radio"
-                                //variant={idx % 2 ? 'outline-success' : 'outline-danger'}
+                                variant={"secondary-" + stance}
                                 name="radio"
                                 value={2}
                                 checked={radioValue === 2}
                                 onChange={(e) => setRadioValue(e.currentTarget.value)}
+                                disabled={alreadyAnswered}
                             >
                                 { printResponses(1) }
                             </ToggleButton>
                         </ButtonGroup>
                     </Row>
                     <Row className="d-flex align-items-center justify-content-center">
-                        <div className="d-flex align-items-center justify-content-center"
+                        <div className="d-flex align-items-center justify-content-center shadow"
                             style={{
                                 backgroundColor: 'white', width: '60vw',
                                 borderRadius: '15px', textAlign: 'center', height: '10vh', marginTop: '-60vh',
@@ -328,9 +378,9 @@ export default function QuestionForum() {
                                 width: '25%', height: '10vh'
                             }} 
                                 onClick={ () => setPanelOpen(false) }
-                                variant='light'
-                                aria-controls="choose-answer-panel"
-                                aria-expanded={panelOpen}
+                                variant='secondary'
+                                aria-controls="choose-answer-panel lonely-stance-button"
+                                aria-expanded={false}
                             >
                                 CANCEL
                             </Button>
@@ -346,28 +396,11 @@ export default function QuestionForum() {
                             >
                                 { alreadyAnswered ? 'GO TO FORUM' : 'SUBMIT' }
                             </Button>
-                            <Button style={{
-                                width: '25%', height: '10vh'
-                            }} 
-                                variant={'primary-' + stance} 
-                                onClick={ changeStance }
-                            >
-                                <span>{ stance.toUpperCase() } MODE</span>
-                                
-                                <OverlayTrigger overlay={
-                                    <Tooltip>
-                                        <h3>What is this?</h3>
-                                        This is your <b>stance.</b> In <b style={{color: 'orange'}}>fight</b> mode, you can argue with people about this topic, while in <b style={{color: 'cyan'}}>flight</b> mode, you can talk to other people who feel the same way as you. You cannot change your stance on a question once you answer it, so choose wisely!
-                                    </Tooltip>
-                                }>
-                                    <Badge pill bg="secondary" className="m-2">i</Badge>
-                                </OverlayTrigger>
-                            </Button> 
+                            {renderStanceButton({width: '25%', height: '10vh', cursor: stanceButtonStyle()})}
                         </ButtonGroup>
                     </Row>
                 </Container>
             </Collapse>
-
             <div>
                 {renderQuestions()}
             </div>

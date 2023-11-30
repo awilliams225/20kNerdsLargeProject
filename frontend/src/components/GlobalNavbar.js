@@ -2,7 +2,8 @@ import React from 'react';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import { useNavigate } from 'react-router-dom';
+import NavDropdown from 'react-bootstrap/NavDropdown';
+import { PersonCircle } from 'react-bootstrap-icons';
 export default function GlobalNavbar() {
 
     const app_name = 'fight-or-flight-20k-5991cb1c14ef'
@@ -17,6 +18,7 @@ export default function GlobalNavbar() {
 
     const logOut = () => {
 
+        localStorage.removeItem("stance");
         localStorage.removeItem("user_data");
         localStorage.removeItem("token");
 
@@ -25,11 +27,19 @@ export default function GlobalNavbar() {
     return (
         <Navbar expand="lg" bg="dark">
             <Container>
-                <Nav className="me-auto">
+                <Navbar.Brand className="me-auto">
                     <Nav.Link href="/home/">Home</Nav.Link>
-                </Nav>
+                </Navbar.Brand>
                 <Nav>
-                    <Nav.Link href='/' onClick={logOut}>Log Out</Nav.Link>
+                <NavDropdown title={ <PersonCircle size={36}></PersonCircle> } id="navbarScrollingDropdown">
+                   <NavDropdown.Item href={ '/user/' + JSON.parse(localStorage.getItem("user_data")).id }>
+                     Profile
+                   </NavDropdown.Item>
+                   <NavDropdown.Divider />
+                   <NavDropdown.Item href="/" onClick={logOut}>
+                     Logout
+                   </NavDropdown.Item>
+                </NavDropdown>
                 </Nav>
             </Container>
         </Navbar>

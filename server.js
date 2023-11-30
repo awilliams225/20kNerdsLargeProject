@@ -609,7 +609,7 @@ app.post('/api/addPost', async (req, res, next) => {
     res.status(200).json(ret);
   }
   else
-    userObjID = new ObjectId(userId);
+    userObjId = new ObjectId(userId);
 
   try
   {

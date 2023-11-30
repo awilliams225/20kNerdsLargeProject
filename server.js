@@ -582,6 +582,8 @@ app.post('/api/addPost', async (req, res, next) => {
   var timestamp = new Date(Date.now());
   var numReplies = 0;
   var username = '';
+  var answerObjId = null;
+  var userObjId = null;
   const { userId, slug, content, title, questionSlug, answerId } = req.body;
 
   console.log("UserId: " + userId);
@@ -591,8 +593,24 @@ app.post('/api/addPost', async (req, res, next) => {
   console.log("QuestionSlug: " + questionSlug);
   console.log("AnswerId: " + answerId);
 
-  const answerObjId = new ObjectId(answerId);
-  const userObjID = new ObjectId(userId);
+  if (answerId == '')
+  {
+    error = "Answer ID not received!";
+    var ret = { error:error };
+    res.status(200).json(ret);
+  }
+  else
+    answerObjId = new ObjectId(answerId);
+  
+  if (userId == '')
+  {
+    error = "User ID not received!";
+    var ret = { error:error };
+    res.status(200).json(ret);
+  }
+  else
+    userObjID = new ObjectId(userId);
+
   try
   {
     const db = client.db('COP4331_LargeProject');
@@ -621,7 +639,7 @@ app.post('/api/addPost', async (req, res, next) => {
     error = e.toString();
   }
 
-  var ret = { error:error};
+  var ret = { error:error };
   res.status(200).json(ret);
 });
 

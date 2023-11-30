@@ -65,6 +65,17 @@ $theme-colors: map-merge($theme-colors, $flight-colors);
 
     --#{$prefix}border-color: #{$border-color-fight};
     --#{$prefix}border-color-translucent: #{$border-color-translucent-fight};
+
+    --#{$prefix}pagination-active-bg: #{$pagination-active-bg-fight};
+    --#{$prefix}pagination-active-border-color: #{$pagination-active-border-color-fight};
+
+    --#{$prefix}list-group-active-bg: #{$primary-fight};
+    --#{$prefix}list-group-active-border-color: #{$primary-fight};
+
+    .page-item.active .page-link {
+        background-color: #{$pagination-active-bg-fight};
+        border-color: #{$pagination-active-bg-fight};
+    }
 }
 
 [data-bs-theme="flight"] {
@@ -100,6 +111,17 @@ $theme-colors: map-merge($theme-colors, $flight-colors);
 
     --#{$prefix}border-color: #{$border-color-flight};
     --#{$prefix}border-color-translucent: #{$border-color-translucent-flight};
+
+    --#{$prefix}pagination-active-bg: #{$pagination-active-bg-flight};
+    --#{$prefix}pagination-active-border-color: #{$pagination-active-border-color-flight};
+
+    --#{$prefix}list-group-active-bg: #{$primary-flight};
+    --#{$prefix}list-group-active-border-color: #{$primary-flight};
+
+    .page-item.active .page-link {
+        background-color: #{$pagination-active-bg-flight};
+        border-color: #{$pagination-active-bg-flight};
+    }
 }
 
 @import "../node_modules/bootstrap/scss/bootstrap";

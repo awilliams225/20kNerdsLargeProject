@@ -53,3 +53,5 @@ $link-hover-color-flight:             shift-color($link-color-flight, -$link-sha
 $code-color-flight:                   tint-color($code-color, 40%) !default;
 $mark-color-flight:                   $body-color-flight !default;
 $mark-bg-flight:                      $yellow-800 !default;
+$pagination-active-bg-flight:         $primary-flight !default;
+$pagination-active-border-color-flight:$primary-flight !default;

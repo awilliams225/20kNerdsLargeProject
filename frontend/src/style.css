@@ -24,6 +24,14 @@
   --bs-highlight-bg: #664d03;
   --bs-border-color: #495057;
   --bs-border-color-translucent: rgba(255, 255, 255, 0.15);
+  --bs-pagination-active-bg: #fe4e00;
+  --bs-pagination-active-border-color: #fe4e00;
+  --bs-list-group-active-bg: #fe4e00;
+  --bs-list-group-active-border-color: #fe4e00;
+}
+[data-bs-theme=fight] .page-item.active .page-link {
+  background-color: #fe4e00;
+  border-color: #fe4e00;
 }
 
 [data-bs-theme=flight] {
@@ -51,6 +59,14 @@
   --bs-highlight-bg: #664d03;
   --bs-border-color: #495057;
   --bs-border-color-translucent: rgba(255, 255, 255, 0.15);
+  --bs-pagination-active-bg: #3e92cc;
+  --bs-pagination-active-border-color: #3e92cc;
+  --bs-list-group-active-bg: #3e92cc;
+  --bs-list-group-active-border-color: #3e92cc;
+}
+[data-bs-theme=flight] .page-item.active .page-link {
+  background-color: #3e92cc;
+  border-color: #3e92cc;
 }
 
 /*!

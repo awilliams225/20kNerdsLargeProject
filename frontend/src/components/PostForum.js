@@ -1,7 +1,8 @@
 import Spinner from 'react-bootstrap/Spinner';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { useParams } from "react-router-dom";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { StanceContext } from './StanceContext';
 import Paginator from '../components/Paginator';
 import CreatePostForm from '../components/CreatePostForm';
 import Post from './Post';
@@ -16,6 +17,7 @@ export default function PostForum() {
     const [paginationLoading, setPaginationLoading] = useState(true);
     const [answer, setAnswer] = useState({});
     const [answerReceived, setAnswerReceived] = useState(null);
+    const {stance, setStance} = useContext(StanceContext);
 
     const postsPerPage = 5;
 
@@ -141,7 +143,7 @@ export default function PostForum() {
                     <Paginator activePage={page} numPages={Math.ceil(numPosts / postsPerPage)} />
                     <ListGroup className="mt-3">
                         {postList.map((post) => (
-                            <ListGroup.Item action href={"post/" + post.Slug + "/"} className="my-3 shadow border-5">
+                            <ListGroup.Item action href={"post/" + post.Slug + "/"} className="my-3 shadow border-5" data-bs-theme={stance}>
                                 <Post post={post} />
                             </ListGroup.Item>
                         ))}

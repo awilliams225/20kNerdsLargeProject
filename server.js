@@ -1034,6 +1034,7 @@ app.post('/api/replies/getByPostSlug', async (req, res, next) => {
 app.post('/api/answers/addAnswer', async(req, res, next) => {
   var error = '';
   var addResult = null;
+  var insertedId = null;
 
   const obj = { response, stance, questionId, userId } = req.body;
 
@@ -1053,7 +1054,10 @@ app.post('/api/answers/addAnswer', async(req, res, next) => {
     error = e.toString();
   }
 
-  var ret = { answerId: addResult.insertedId.toString(), error: error }
+  if (addResult != null)
+    insertedId = addresult.insertedId.toString();
+
+  var ret = { answerId: insertedId, error: error }
   res.status(200).json(ret);
 })
 

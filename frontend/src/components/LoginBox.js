@@ -18,7 +18,7 @@ export default function LoginBox() {
                         <Login />
                     </div>
                     <div id="RegisterDiv" style={{
-                    backgroundColor: '#4BBCD5', height: '50vh', width: '25%',
+                    backgroundColor: '#31ABEE', height: '50vh', width: '25%',
                     borderRadius: '0px 15px 15px 0px',
                     textAlign: 'center', padding: '5vh', boxShadow: "10px 10px"
                     }}>

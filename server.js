@@ -1057,6 +1057,8 @@ app.post('/api/answers/addAnswer', async(req, res, next) => {
   if (addResult != null)
     insertedId = addresult.insertedId.toString();
 
+  console.log(insertedId);
+
   var ret = { answerId: insertedId, error: error }
   res.status(200).json(ret);
 })

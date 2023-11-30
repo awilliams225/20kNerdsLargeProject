@@ -1038,8 +1038,21 @@ app.post('/api/answers/addAnswer', async(req, res, next) => {
 
   const obj = { response, stance, questionId, userId } = req.body;
 
-  var userObjId = new ObjectId(userId);
-  var questionObjId = new ObjectId(questionId);
+  if (userId != '') {
+    var userObjId = new ObjectId(userId);
+  }
+  else {
+    error = "User ID not received!";
+    var ret = { error:error }; 
+  }
+
+  if (questionId != '') {
+    var questionObjId = new ObjectId(questionId);
+  }
+  else {
+    error = "Question ID not received!";
+    var ret = { error:error };
+  }
 
   const newAnswer = { response, stance, question: questionObjId, user: userObjId }
 

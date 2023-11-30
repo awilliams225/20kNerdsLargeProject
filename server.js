@@ -584,6 +584,13 @@ app.post('/api/addPost', async (req, res, next) => {
   var username = '';
   const { userId, slug, content, title, questionSlug, answerId } = req.body;
 
+  console.log("UserId: " + userId);
+  console.log("Slug: " + slug);
+  console.log("Content: " + content);
+  console.log("Title: " + title);
+  console.log("QuestionSlug: " + questionSlug);
+  console.log("AnswerId: " + answerId);
+
   const answerObjId = new ObjectId(answerId);
   const userObjID = new ObjectId(userId);
   try

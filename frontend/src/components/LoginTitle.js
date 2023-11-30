@@ -11,8 +11,8 @@ export default function LoginTitle() {
             <Container>
                 <Row className="justify-content-center">
                     <Image src={logo} roundedCircle style={{
-                    width:"40%",
-                    height:"40%"
+                    height:'20vh',
+                    width: 'auto'
                 }} />
                 </Row>
             </Container>

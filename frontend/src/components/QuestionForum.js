@@ -9,6 +9,9 @@ import Card from 'react-bootstrap/Card';
 import Spinner from 'react-bootstrap/Spinner';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Collapse from 'react-bootstrap/Collapse';
+import Badge from 'react-bootstrap/Badge';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 import React, { useState, useEffect, useContext } from 'react';
 import { StanceContext } from './StanceContext';
 import { useParams } from "react-router-dom";
@@ -320,7 +323,7 @@ export default function QuestionForum() {
                         </div>
                     </Row>
                     <Row className="d-flex align-items-center justify-content-center">
-                        <ButtonGroup style={{ width: '75%' }} name="actions" className="rounded-bottom">
+                        <ButtonGroup style={{ width: '75%'}} name="actions">
                             <Button style={{
                                 width: '25%', height: '10vh'
                             }} 
@@ -349,7 +352,16 @@ export default function QuestionForum() {
                                 variant={'primary-' + stance} 
                                 onClick={ changeStance }
                             >
-                                { stance.toUpperCase() } MODE
+                                <span>{ stance.toUpperCase() } MODE</span>
+                                
+                                <OverlayTrigger overlay={
+                                    <Tooltip>
+                                        <h3>What is this?</h3>
+                                        This is your <b>stance.</b> In fight mode, you can argue with people about this topic, while in flight mode, you can talk to other people who feel the same way as you. You cannot change your stance on a question once you answer it, so choose wisely!
+                                    </Tooltip>
+                                }>
+                                    <Badge pill bg="secondary" className="m-2">i</Badge>
+                                </OverlayTrigger>
                             </Button> 
                         </ButtonGroup>
                     </Row>

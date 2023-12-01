@@ -145,7 +145,7 @@ export default function QuestionForum() {
                 return (
                     <div>
                         {responseText}
-                        <h5>Your Answer!</h5>
+                        <h5><b>Your Answer!</b></h5>
                     </div>
                 )
             } else {
@@ -177,7 +177,6 @@ export default function QuestionForum() {
                 if (res.answer != null) {
                     setAlreadyAnswered(true);
                     setCurrAnswer(res.answer);
-                    console.log(res.answer);
                     setStance(res.answer.stance);
                 } else
                     setAlreadyAnswered(false);

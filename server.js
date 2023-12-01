@@ -548,14 +548,14 @@ app.post('/api/getUserByUserId', async (req, res, next) =>
   try
   {
     const db = client.db('COP4331_LargeProject');
-    results = await db.collection('Users').find({_id:userObjID}).toArray();
+    results = await db.collection('Users').findOne({_id:userObjID});
   }
   catch(e)
   {
     error = e.toString();
   }
 
-  var ret = { results:results, error:error};
+  var ret = { results: results, error:error};
   res.status(200).json(ret);
 });
 

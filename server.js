@@ -272,17 +272,17 @@ app.post('/api/changePassword', async (req, res, next) => {
 
 });
 
-app.post('/api/changePassword', async (req, res, next) => {
+app.post('/api/changeEmail', async (req, res, next) => {
 
   var error = '';
-  const { username, newPassword } = req.body;
-  
+  const { userId, email } = req.body;
+  var objId = new ObjectId(userId);
   try {
     const db = client.db('COP4331_LargeProject');
-    db.collection('Users').updateOne( { Username:username },
+    db.collection('Users').updateOne( { _id:objId },
     {
       $set: {
-        Password: newPassword
+        Email: email
       }
     })
   }
@@ -290,7 +290,7 @@ app.post('/api/changePassword', async (req, res, next) => {
     error = e.toString();
   }
 
-  var ret = { newPassword: newPassword, error: error };
+  var ret = { newEmail: email, error: error };
   res.status(200).json(ret);
 
 });

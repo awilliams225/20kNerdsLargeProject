@@ -2,14 +2,16 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Card from 'react-bootstrap/Card';
 
 export default function ChangePasswordForm() {
 
     const [userId, setId] = useState('');
     const [oldPass, setOldPass] = useState('');
     const [newPass, setNewPass] = useState('');
-
-    const { token } = useParams();
+    const [message, setMessage] = useState('');
 
     const app_name = 'fight-or-flight-20k-5991cb1c14ef'
     function buildPath(route) {
@@ -26,10 +28,10 @@ export default function ChangePasswordForm() {
     useEffect(() => {
 
         const grabUser = async () => {
-            var obj = { token: token };
+            var obj = { token: JSON.parse(localStorage.getItem('token')) };
             var js = JSON.stringify(obj);
 
-            console.log(token);
+            console.log(JSON.parse(localStorage.getItem('token')));
 
             const response = await fetch(buildPath("api/grabUserByPassRequest"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 
@@ -58,27 +60,35 @@ export default function ChangePasswordForm() {
         const response = await fetch(buildPath("api/changePassword"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 
         if (response.status === 200) {
-            console.log("Password has been changed!");
+            setMessage("Password changed successfully!");
         }
         else {
-            console.log(response.text);
+            setMessage("Unable to change password.");
         }
     }
 
     return (
         <>
-        <Form>
-            <Form.Group controlId="passChange">
-                <Form.Label className='mb-3'>Current Password</Form.Label>
-                <Form.Control type='password' placeholder='Current Password' value={oldPass} onChange={ e => setOldPass(e.target.value) } />
+            <Container>
+                <Row className='justify-content-center pt-5'>
+                    <Card bg='dark' data-bs-theme="dark" style={{ width: '24rem', height: '18rem' }} className='p-3'>
+                        <Form className='text-center'>
+                            <Form.Group controlId="passChange">
+                                <Form.Label>Current Password</Form.Label>
+                                <Form.Control className='mb-3' type='password' placeholder='Current Password' value={oldPass} onChange={e => setOldPass(e.target.value)} />
 
-                <Form.Label className='mb-3'>New Password</Form.Label>
-                <Form.Control type='password' placeholder='New Password' value={newPass} onChange={ e => setNewPass(e.target.value) } />
-            </Form.Group>
-            <Button variant='primary' onClick={changePass}>
-                Change Password
-            </Button>
-        </Form>
+                                <Form.Label>New Password</Form.Label>
+                                <Form.Control className='mb-3' type='password' placeholder='New Password' value={newPass} onChange={e => setNewPass(e.target.value)} />
+                            </Form.Group>
+                            <Button variant='primary' onClick={changePass}>
+                                Change Password
+                            </Button>
+                            <br/><a href={'/'}>Return to Login</a>
+                            <br/><span>{message}</span>
+                        </Form>
+                    </Card>
+                </Row>
+            </Container>
         </>
     )
 }

@@ -223,7 +223,7 @@ app.post('/api/forgotPassword', async (req, res, next) =>
             button: {
                 color: '#22BC66', // Optional action button color
                 text: 'Change password',
-                link: 'http://localhost:3000/emailverified/' + token
+                link: 'http://localhost:3000/changepassword/'
             }
         },
         outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'
@@ -240,7 +240,8 @@ app.post('/api/forgotPassword', async (req, res, next) =>
   }
   transporter.sendMail(message).then(() => {
     return res.status(201).json({
-      msg: "you should recieve an email"
+      msg: "you should recieve an email",
+      token: token
     })
   }).catch(error => {
     return res.status(500).json({ error })
@@ -252,16 +253,41 @@ app.post('/api/forgotPassword', async (req, res, next) =>
 app.post('/api/changePassword', async (req, res, next) => {
 
   var error = '';
-  const { username, newPassword } = req.body;
+  const { userId, oldPassword, newPassword } = req.body;
+  var userObjId = null;
+  var user = null;
+
+  if (userId != '')
+    userObjId = new ObjectId(userId);
+  else {
+    error = "User not found!";
+    var ret = { newPassword: newPassword, error: error };
+    res.status(401).json(ret);
+    return;
+  }
   
   try {
     const db = client.db('COP4331_LargeProject');
-    db.collection('Users').updateOne( { Username:username },
+    user = await db.collection('Users').findOne({ _id:userObjId });
+    console.log(user);
+    if (user != null) {
+      const compare = await bcrypt.compare(oldPassword, user.Password)
+      if (!compare) {
+        error = "Passwords don't match!";
+        var ret = { newPassword: newPassword, error: error };
+        res.status(401).json(ret);
+        return;
+      }
+    } 
+    const salt = await bcrypt.genSalt(10);
+    const hashPassword = await bcrypt.hash(newPassword, salt);
+    db.collection('Users').updateOne( { _id:userObjId },
     {
       $set: {
-        Password: newPassword
+        Password: hashPassword
       }
     })
+    const deleted = db.collection('PassChangeRequests').deleteOne({userId: userId});
   }
   catch (e) {
     error = e.toString();
@@ -384,6 +410,7 @@ app.post('/api/grabUserByPassRequest', async (req, res, next) => {
     if (!verified)
     {
       error = "Token not valid"
+      const deleted = db.collection('PassChangeRequests').deleteOne({ token: token });
       return res.status(401).send(error); 
     }
   }
@@ -397,7 +424,6 @@ app.post('/api/grabUserByPassRequest', async (req, res, next) => {
     const query = { token: token };
     const db = client.db('COP4331_LargeProject');
     result = await db.collection('PassChangeRequests').findOne(query);
-    const deleted = db.collection('PassChangeRequests').deleteOne(query);
   }
   catch (e)
   {
@@ -412,31 +438,6 @@ app.post('/api/grabUserByPassRequest', async (req, res, next) => {
   var ret = { userId: id, error: error };
   res.status(200).json(ret);
 })
-
-app.post('/api/changePassword', async (req, res, next) => {
-
-  var error = '';
-  const { userId, oldPassword, newPassword } = req.body;
-
-  var objId = new ObjectId(userId);
-  
-  try {
-    const db = client.db('COP4331_LargeProject');
-    db.collection('Users').updateOne( { _id:objId, Password:oldPassword },
-    {
-      $set: {
-        Password: newPassword
-      }
-    })
-  }
-  catch (e) {
-    error = e.toString();
-  }
-
-  var ret = { newPassword: newPassword, error: error };
-  res.status(200).json(ret);
-
-});
 
 app.post('/api/register', async (req, res, next) =>
 {

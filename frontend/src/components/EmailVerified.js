@@ -1,6 +1,8 @@
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import React, { useState, useEffect } from 'react';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
 
 export default function EmailVerified() {
 
@@ -76,17 +78,21 @@ export default function EmailVerified() {
 
     return (
         <>
-        <Card bg='dark' data-bs-theme="dark" style={{ width: '24rem', height: '16rem' }} className='p-3'>
-            <Card.Body>
-                <Card.Title>{ title }</Card.Title>
-                <Card.Text>
-                    { text }
-                </Card.Text>
-            </Card.Body>
-            <Button variant='primary' href={'http://localhost:3000/'}>
-                Go To Login
-            </Button>
-        </Card>
+            <Container>
+                <Row className='justify-content-center pt-5'>
+                    <Card bg='dark' data-bs-theme="dark" style={{ width: '24rem', height: '16rem' }} className='p-3'>
+                        <Card.Body>
+                            <Card.Title>{title}</Card.Title>
+                            <Card.Text>
+                                {text}
+                            </Card.Text>
+                        </Card.Body>
+                        <Button variant='primary' href='/'>
+                            Go To Login
+                        </Button>
+                    </Card>
+                </Row>
+            </Container>
         </>
     )
 }

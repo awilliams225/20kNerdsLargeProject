@@ -960,21 +960,28 @@ app.post('/api/replies/grabRepliesbyUserID', async (req, res, next) => {
 });
 
 // WIP (assuming database has unique slugs) returns an array of replies and an array of their associated posts
-app.post('/api/replies/grabRepliesAndPostsByUserId', async (req, res, next) => {
+// UPDATE: Only retrieves one post per reply and is now paginated
+app.post('/api/replies/grabRepliesAndPostsByUserId/:pageNum', async (req, res, next) => {
 
   var error = '';
   var postList = [];
   var replyList = [];
 
-  const { userId } = req.body;
+  const { userId, perPage } = req.body;
+
+  const pageNum = parseInt(req.params.pageNum); 
+
+  const toSkip = (pageNum - 1) * perPage;
+
 
   try {
+
     const db = client.db('COP4331_LargeProject');
-    replyList = await db.collection('Replies').find({userId:userId}).toArray();
+    replyList = await db.collection('Replies').find({ userId: userId }).skip(toSkip).limit(perPage).toArray();
    
     for (i = 0; i < replyList.length; i++)
     {
-      postList[i] = await db.collection('Post').find({Slug:replyList[i].slug}).toArray();
+      postList[i] = await db.collection('Post').findOne({Slug:replyList[i].slug});
     }
   }
   catch (e) {

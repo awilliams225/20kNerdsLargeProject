@@ -72,7 +72,7 @@ export default function GlobalNavbar() {
                     <Container>
                         <Navbar.Brand className="me-auto">
                             <Nav.Link href="/home/">
-                                <LoginTitle />
+                                <LoginTitle height='10vh' />
                             </Nav.Link>
                         </Navbar.Brand>
                         <Nav>

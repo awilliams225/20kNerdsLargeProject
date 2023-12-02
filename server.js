@@ -452,7 +452,7 @@ app.post('/api/register', async (req, res, next) =>
       const db = client.db('COP4331_LargeProject');
       result = await db.collection('Users').insertOne(newUser);
       if (result != null)
-        id = result.insertedId;
+        id = result.insertedId.toString();
     }
   }
   catch(e)
@@ -460,7 +460,7 @@ app.post('/api/register', async (req, res, next) =>
     error = e.toString();
   }
 
-  var ret = { userId: result.insertedId.toString(), error: error };
+  var ret = { userId: id, error: error };
   res.status(200).json(ret);
 });
 

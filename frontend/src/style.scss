@@ -23,8 +23,12 @@ $flight-colors: (
     "primary-flight": $primary-flight,
     "secondary-flight": $secondary-flight,
     "tertiary-flight": $tertiary-flight,
+    "success-flight": $success-flight,
+    "info-flight": $info-flight,
+    "warning-flight": $warning-flight,
+    "danger-flight": $danger-flight,
+    "light-flight": $light-flight,
     "dark-flight": $dark-flight,
-    "dark-alt-flight": $dark-alt-flight
 );
 $theme-colors: map-merge($theme-colors, $flight-colors);
 
@@ -61,6 +65,63 @@ $theme-colors: map-merge($theme-colors, $flight-colors);
 
     --#{$prefix}border-color: #{$border-color-fight};
     --#{$prefix}border-color-translucent: #{$border-color-translucent-fight};
+
+    --#{$prefix}pagination-active-bg: #{$pagination-active-bg-fight};
+    --#{$prefix}pagination-active-border-color: #{$pagination-active-border-color-fight};
+
+    --#{$prefix}list-group-active-bg: #{$primary-fight};
+    --#{$prefix}list-group-active-border-color: #{$primary-fight};
+
+    .page-item.active .page-link {
+        background-color: #{$pagination-active-bg-fight};
+        border-color: #{$pagination-active-bg-fight};
+    }
+}
+
+[data-bs-theme="flight"] {
+
+    --#{$prefix}body-color: #{$body-color-flight};
+    --#{$prefix}body-color-rgb: #{to-rgb($body-color-flight)};
+    --#{$prefix}body-bg: #{$body-bg-flight};
+    --#{$prefix}body-bg-rgb: #{to-rgb($body-bg-flight)};
+
+    --#{$prefix}emphasis-color: #{$body-emphasis-color-flight};
+    --#{$prefix}emphasis-color-rgb: #{to-rgb($body-emphasis-color-flight)};
+
+    --#{$prefix}secondary-color: #{$body-secondary-color-flight};
+    --#{$prefix}secondary-color-rgb: #{to-rgb($body-secondary-color-flight)};
+    --#{$prefix}secondary-bg: #{$body-secondary-bg-flight};
+    --#{$prefix}secondary-bg-rgb: #{to-rgb($body-secondary-bg-flight)};
+
+    --#{$prefix}tertiary-color: #{$body-tertiary-color-flight};
+    --#{$prefix}tertiary-color-rgb: #{to-rgb($body-tertiary-color-flight)};
+    --#{$prefix}tertiary-bg: #{$body-tertiary-bg-flight};
+    --#{$prefix}tertiary-bg-rgb: #{to-rgb($body-tertiary-bg-flight)};
+
+    --#{$prefix}heading-color: #{$headings-color-flight};
+
+    --#{$prefix}link-color: #{$link-color-flight};
+    --#{$prefix}link-hover-color: #{$link-hover-color-flight};
+    --#{$prefix}link-color-rgb: #{to-rgb($link-color-flight)};
+    --#{$prefix}link-hover-color-rgb: #{to-rgb($link-hover-color-flight)};
+
+    --#{$prefix}code-color: #{$code-color-flight};
+    --#{$prefix}highlight-color: #{$mark-color-flight};
+    --#{$prefix}highlight-bg: #{$mark-bg-flight};
+
+    --#{$prefix}border-color: #{$border-color-flight};
+    --#{$prefix}border-color-translucent: #{$border-color-translucent-flight};
+
+    --#{$prefix}pagination-active-bg: #{$pagination-active-bg-flight};
+    --#{$prefix}pagination-active-border-color: #{$pagination-active-border-color-flight};
+
+    --#{$prefix}list-group-active-bg: #{$primary-flight};
+    --#{$prefix}list-group-active-border-color: #{$primary-flight};
+
+    .page-item.active .page-link {
+        background-color: #{$pagination-active-bg-flight};
+        border-color: #{$pagination-active-bg-flight};
+    }
 }
 
 @import "../node_modules/bootstrap/scss/bootstrap";

@@ -53,3 +53,5 @@ $link-hover-color-fight:             shift-color($link-color-fight, -$link-shade
 $code-color-fight:                   tint-color($code-color, 40%) !default;
 $mark-color-fight:                   $body-color-fight !default;
 $mark-bg-fight:                      $yellow-800 !default;
+$pagination-active-bg-fight:         $primary-fight !default;
+$pagination-active-border-color-fight:$primary-fight !default;

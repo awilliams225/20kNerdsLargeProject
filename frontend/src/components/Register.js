@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Eye, EyeFill, EyeSlashFill } from 'react-bootstrap-icons';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
@@ -46,15 +46,26 @@ export default function Register() {
 
             var res = JSON.parse(await response.text());
 
-            if (res.id <= 0) {
-                setMessage('User/Password combination incorrect');
+            if (res.error != '') {
+                setMessage(res.error);
             }
             else {
-                /*var user = {firstName:res.firstName,lastName:res.lastName,id:res.id}
-                localStorage.setItem('user_data', JSON.stringify(user));
-  
-                setMessage('');
-                window.location.href = '/cards';*/
+                var emailObj = { email: email, userId: res.userId };
+                var emailJs = JSON.stringify(emailObj);
+
+                const emailResponse = await fetch(buildPath('api/registerWithEmail'), { method: 'POST', body: emailJs, headers: { 'Content-Type': 'application/json' } });
+                const emailJson = JSON.parse(await emailResponse.text());
+
+                if (emailResponse.status === 201)
+                {
+                    setMessage('A registration email has been sent!');
+                    console.log(emailJson);
+                    localStorage.setItem('token', JSON.stringify(emailJson.token));
+                }
+                else
+                {
+                    console.log("Email didn't exist.");
+                }
             }
         }
         catch (e) {
@@ -137,11 +148,7 @@ export default function Register() {
     }
 
     return (
-        <div id="RegisterDiv" style={{
-            backgroundColor: '#4BBCD5', height: '50vh', width: '75%',
-            borderRadius: '0px 15px 15px 0px', marginLeft: 0, marginTop: '10vh',
-            textAlign: 'center', padding: '5vh'
-        }}>
+        <>
             <h2 className='h2'>Signup</h2>
             <Form>
                 <Form.Control type='username' placeholder='Username' onChange={handleUsernameChange}/>
@@ -161,6 +168,6 @@ export default function Register() {
             <span className='text-light small' id='passLowerSpan'></span><br />
             <span className='text-light small' id='passNumberSpan'></span><br />
             <span className='text-light small' id='passSpecialSpan'></span><br />
-        </div>
+        </>
     );
 }

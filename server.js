@@ -73,14 +73,14 @@ app.post("/api/validateToken", (req, res) => {
       const verified = jwt.verify(token, jwtSecretKey); 
       if (verified){ 
           if (verified.userId === userId){
-            return res.send({ "message": "Successfully Verified"}); 
+            return res.status(200).send({ "message": "Successfully Verified"}); 
           }
           else {
             return res.status(401).send({ "error": "userId does not match"} );
           }
       }
       else {  
-          return res.status(401).send({ "error": "token was not verified" }); 
+          return res.status(401).send({ "error": "token was not verified, or token has expired" }); 
       } 
   } catch (error) { 
       return res.status(401).send(error); 
@@ -142,7 +142,7 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
             button: {
                 color: '#22BC66', // Optional action button color
                 text: 'Confirm your account',
-                link: 'https://fight-or-flight-20k-5991cb1c14ef.herokuapp.com/emailverified/' + token
+                link: 'http://localhost:3000/emailverified/'
             }
         },
         outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'
@@ -159,7 +159,8 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
   }
   transporter.sendMail(message).then(() => {
     return res.status(201).json({
-      msg: "you should recieve an email"
+      msg: "you should recieve an email",
+      token: token
     })
   }).catch(error => {
     return res.status(500).json({ error })
@@ -222,7 +223,7 @@ app.post('/api/forgotPassword', async (req, res, next) =>
             button: {
                 color: '#22BC66', // Optional action button color
                 text: 'Change password',
-                link: 'https://fight-or-flight-20k-5991cb1c14ef.herokuapp.com/changepassword/' + token
+                link: 'http://localhost:3000/changepassword/'
             }
         },
         outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'
@@ -239,7 +240,8 @@ app.post('/api/forgotPassword', async (req, res, next) =>
   }
   transporter.sendMail(message).then(() => {
     return res.status(201).json({
-      msg: "you should recieve an email"
+      msg: "you should recieve an email",
+      token: token
     })
   }).catch(error => {
     return res.status(500).json({ error })
@@ -251,7 +253,18 @@ app.post('/api/forgotPassword', async (req, res, next) =>
 app.post('/api/changePassword', async (req, res, next) => {
 
   var error = '';
-  const { username, newPassword } = req.body;
+  const { userId, oldPassword, newPassword } = req.body;
+  var userObjId = null;
+  var user = null;
+
+  if (userId != '')
+    userObjId = new ObjectId(userId);
+  else {
+    error = "User not found!";
+    var ret = { newPassword: newPassword, error: error };
+    res.status(401).json(ret);
+    return;
+  }
   
   try {
     const db = client.db('COP4331_LargeProject');
@@ -263,12 +276,36 @@ app.post('/api/changePassword', async (req, res, next) => {
         Password: hashPassword
       }
     })
+    const deleted = db.collection('PassChangeRequests').deleteOne({userId: userId});
   }
   catch (e) {
     error = e.toString();
   }
 
   var ret = { newPassword: newPassword, error: error };
+  res.status(200).json(ret);
+
+});
+
+app.post('/api/changeEmail', async (req, res, next) => {
+
+  var error = '';
+  const { userId, email } = req.body;
+  var objId = new ObjectId(userId);
+  try {
+    const db = client.db('COP4331_LargeProject');
+    db.collection('Users').updateOne( { _id:objId },
+    {
+      $set: {
+        Email: email
+      }
+    })
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { newEmail: email, error: error };
   res.status(200).json(ret);
 
 });
@@ -362,6 +399,7 @@ app.post('/api/grabUserByPassRequest', async (req, res, next) => {
     if (!verified)
     {
       error = "Token not valid"
+      const deleted = db.collection('PassChangeRequests').deleteOne({ token: token });
       return res.status(401).send(error); 
     }
   }
@@ -375,7 +413,6 @@ app.post('/api/grabUserByPassRequest', async (req, res, next) => {
     const query = { token: token };
     const db = client.db('COP4331_LargeProject');
     result = await db.collection('PassChangeRequests').findOne(query);
-    const deleted = db.collection('PassChangeRequests').deleteOne(query);
   }
   catch (e)
   {
@@ -391,36 +428,13 @@ app.post('/api/grabUserByPassRequest', async (req, res, next) => {
   res.status(200).json(ret);
 })
 
-app.post('/api/changePassword', async (req, res, next) => {
-
-  var error = '';
-  const { userId, oldPassword, newPassword } = req.body;
-
-  var objId = new ObjectId(userId);
-  
-  try {
-    const db = client.db('COP4331_LargeProject');
-    db.collection('Users').updateOne( { _id:objId, Password:oldPassword },
-    {
-      $set: {
-        Password: newPassword
-      }
-    })
-  }
-  catch (e) {
-    error = e.toString();
-  }
-
-  var ret = { newPassword: newPassword, error: error };
-  res.status(200).json(ret);
-
-});
-
 app.post('/api/register', async (req, res, next) =>
 {
 	
   const { username, password, email } = req.body;
   var error = '';
+  var result = null;
+  var id = '';
 
   const db = client.db('COP4331_LargeProject');
   try
@@ -436,7 +450,9 @@ app.post('/api/register', async (req, res, next) =>
       const hashPassword = await bcrypt.hash(password, salt);
       const newUser = {Username:username, Password:hashPassword, Email:email, Answers:[]};
       const db = client.db('COP4331_LargeProject');
-      const result = db.collection('Users').insertOne(newUser);
+      result = await db.collection('Users').insertOne(newUser);
+      if (result != null)
+        id = result.insertedId;
     }
   }
   catch(e)
@@ -444,7 +460,7 @@ app.post('/api/register', async (req, res, next) =>
     error = e.toString();
   }
 
-  var ret = { error: error };
+  var ret = { userId: result.insertedId.toString(), error: error };
   res.status(200).json(ret);
 });
 
@@ -467,7 +483,10 @@ app.post('/api/login', async (req, res, next) =>
       const compare = await bcrypt.compare(password, results[0].Password)
       if (compare)
       {
-        id = results[0]._id;
+        if (results[0].Registered == true)
+          id = results[0]._id;
+        else
+          error = 'This user is not email registered!';
       }
       else
       {
@@ -476,7 +495,7 @@ app.post('/api/login', async (req, res, next) =>
     }
     else
     {
-      error = 'No User with that Username found!';
+      error = 'No user with that username found!';
     }
   }
   catch(e)
@@ -506,6 +525,27 @@ app.post('/api/getUserByEmail', async (req, res, next) =>
   }
 
   var ret = { id:id, error:''};
+  res.status(200).json(ret);
+});
+
+app.post('/api/getUserByUserId', async (req, res, next) => 
+{
+	
+  var error = '';
+  var results;
+  const { userId } = req.body;
+  const userObjID = new ObjectId(userId);
+  try
+  {
+    const db = client.db('COP4331_LargeProject');
+    results = await db.collection('Users').findOne({_id:userObjID});
+  }
+  catch(e)
+  {
+    error = e.toString();
+  }
+
+  var ret = { results: results, error:error};
   res.status(200).json(ret);
 });
 
@@ -629,10 +669,31 @@ app.post('/api/addPost', async (req, res, next) => {
 
   const newPost = { UserId:userId, Username:username, numReplies:numReplies, Timestamp:timestamp, Slug:slug, Content:content, Title:title, QuestionSlug:questionSlug, Answer:answer}
 
+  // check if slug exists in database. If it does, append an incrementing number ex: i-dont-like-cats_1
   try 
   {
     const db = client.db('COP4331_LargeProject');
-    const result = db.collection('Post').insertOne(newPost);
+    var result = await db.collection('Post').countDocuments({Slug:slug});
+    if ( result == 0 )
+    {
+      const result = db.collection('Post').insertOne(newPost);
+    }
+    else
+    {
+      var append = 1;
+      var newSlug = slug + "_" + append;
+      result = await db.collection('Post').countDocuments({Slug:newSlug});
+      // hard cap of numbered entries is 20 for now
+      while ((result >= 1) || append > 20)
+      {
+        append++;
+        newSlug = slug + "_" + append;
+        result = await db.collection('Post').countDocuments({Slug:newSlug});
+      }
+      const appendedPost = { UserId:userId, Username:username, numReplies:numReplies, Timestamp:timestamp, Slug:newSlug, Content:content, Title:title, QuestionSlug:questionSlug, Answer:answer}
+      const appendedResult = db.collection('Post').insertOne(appendedPost);
+    }
+
   }
   catch(e)
   {
@@ -738,8 +799,8 @@ app.post('/api/posts/countPostsByUser', async (req, res, next) => {
   try{
     const query = {
       $and: [
-        { "UserID": { $exists: true } },
-        { "UserID": UserID }
+        { "UserId": { $exists: true } },
+        { "UserId": UserId }
       ]
     };
 
@@ -912,9 +973,33 @@ app.post('/api/replies/grabRepliesbyUserID', async (req, res, next) => {
   res.status(200).json(ret);
 });
 
+// WIP (assuming database has unique slugs) returns an array of replies and an array of their associated posts
+app.post('/api/replies/grabRepliesAndPostsByUserId', async (req, res, next) => {
+
+  var error = '';
+  var postList = [];
+  var replyList = [];
+
+  const { userId } = req.body;
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    replyList = await db.collection('Replies').find({userId:userId}).toArray();
+   
+    for (i = 0; i < replyList.length; i++)
+    {
+      postList[i] = await db.collection('Post').find({Slug:replyList[i].slug}).toArray();
+    }
+  }
+  catch (e) {
+    error = e.toString();
+  }
+  var ret = { postList:postList, replyList: replyList, error:''};
+  res.status(200).json(ret);
+});
 
 // Returns paginated list of replies by UserID. 
-app.post('/api/replies/getRepliesbyUserID/:pageNum', async (req, res, next) => {
+app.post('/api/replies/getRepliesByUserID/:pageNum', async (req, res, next) => {
 
   var error = '';
   var replyList = [];
@@ -948,7 +1033,7 @@ app.post('/api/replies/getRepliesbyUserID/:pageNum', async (req, res, next) => {
 });
 
 // Counts  number of replies from given user
-app.post('/api/posts/countRepliesByUser', async (req, res, next) => {
+app.post('/api/replies/countRepliesByUser', async (req, res, next) => {
 
   var error = '';
   var count = 0;

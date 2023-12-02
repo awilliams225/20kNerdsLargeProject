@@ -1,13 +1,14 @@
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
 
 export default function EmailVerified() {
 
     const [userId, setId] = useState('');
-
-    const { token } = useParams();
+    const [text, setText] = useState('');
+    const [title, setTitle] = useState('');
 
     const app_name = 'fight-or-flight-20k-5991cb1c14ef'
     function buildPath(route) {
@@ -22,25 +23,44 @@ export default function EmailVerified() {
     useEffect(() => {
 
         const verifyUser = async () => {
-            var obj = { token: token };
-            var js = JSON.stringify(obj);
 
-            console.log(token);
+            const token = localStorage.getItem('token');
+            if (!token) {
+                setTitle('Oops!');
+                setText('It looks like your email has expired, or there was an error.');
+                return;
+            }
+            const tokenJs = JSON.parse(token);
+
+            var obj = { token: tokenJs };
+            var js = JSON.stringify(obj);
 
             const response = await fetch(buildPath("api/grabUserByEmailVerificationRequest"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 
             if (response.status === 200) {
                 const json = await response.json();
 
-                console.log(json.userId);
-
                 obj = { userId: json.userId };
                 js = JSON.stringify(obj);
+
+                console.log(json.userId);
+
+                const tokenResponse = await fetch(buildPath("api/validateToken"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json', 'twentythousand_header_key': tokenJs}});
+
+                if (tokenResponse.status === 200) {
+                    console.log("Token was validated!");
+                }
+                else {
+                    setTitle('Oops!');
+                    setText('It looks like your email has expired, or there was an error.');
+                    return;
+                }
 
                 const regResponse = await fetch(buildPath("api/makeUserRegistered"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 
                 if (regResponse.status === 200) {
-                    console.log("User is registered now!");
+                    setTitle('You May Now Join The Fight!');
+                    setText('Your email has now been verified! Click the button below to be taken back to our login page, and begin fighting! ...or flighting!')
                 }
                 else {
                     console.log(regResponse);
@@ -54,24 +74,25 @@ export default function EmailVerified() {
 
         verifyUser();
 
-    })
+    }, [])
 
     return (
         <>
-        <Card bg='dark' data-bs-theme="dark" style={{ width: '24rem', height: '16rem' }}>
-            <Card.Body>
-                <Card.Title>You May Now Join The Fight!</Card.Title>
-                <Card.Text>
-                    Your email has now been verified!
-                    Click the button below to be taken back
-                    to our login page, and begin fighting!
-                    ...or flighting!
-                </Card.Text>
-            </Card.Body>
-            <Button variant='primary' href={buildPath('')}>
-                Go To Login
-            </Button>
-        </Card>
+            <Container>
+                <Row className='justify-content-center pt-5'>
+                    <Card bg='dark' data-bs-theme="dark" style={{ width: '24rem', height: '16rem' }} className='p-3'>
+                        <Card.Body>
+                            <Card.Title>{title}</Card.Title>
+                            <Card.Text>
+                                {text}
+                            </Card.Text>
+                        </Card.Body>
+                        <Button variant='primary' href='/'>
+                            Go To Login
+                        </Button>
+                    </Card>
+                </Row>
+            </Container>
         </>
     )
 }

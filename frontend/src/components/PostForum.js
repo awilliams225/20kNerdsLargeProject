@@ -1,11 +1,11 @@
-import Card from 'react-bootstrap/Card';
 import Spinner from 'react-bootstrap/Spinner';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { useParams } from "react-router-dom";
-import React, { useState, useEffect } from 'react';
-import ReactMarkdown from "react-markdown";
+import React, { useState, useEffect, useContext } from 'react';
+import { StanceContext } from './StanceContext';
 import Paginator from '../components/Paginator';
 import CreatePostForm from '../components/CreatePostForm';
+import Post from './Post';
 
 export default function PostForum() {
 
@@ -17,6 +17,7 @@ export default function PostForum() {
     const [paginationLoading, setPaginationLoading] = useState(true);
     const [answer, setAnswer] = useState({});
     const [answerReceived, setAnswerReceived] = useState(null);
+    const {stance, setStance} = useContext(StanceContext);
 
     const postsPerPage = 5;
 
@@ -142,19 +143,8 @@ export default function PostForum() {
                     <Paginator activePage={page} numPages={Math.ceil(numPosts / postsPerPage)} />
                     <ListGroup className="mt-3">
                         {postList.map((post) => (
-                            <ListGroup.Item action href={"post/" + post.Slug + "/"} className="my-3 shadow border-5">
-                                <Card>
-                                    <Card.Header>
-                                        <Card.Title>{post.Title}</Card.Title>
-                                        Posted by <a href={"/user/" + post.UserId + "/"}>{post.Username}</a> on {new Date(post.Timestamp).toDateString()}
-                                    </Card.Header>
-                                    <Card.Body>
-                                        
-                                        <Card.Text>
-                                            <ReactMarkdown children={post.Content}></ReactMarkdown>
-                                        </Card.Text>
-                                    </Card.Body>
-                                </Card>
+                            <ListGroup.Item action href={"post/" + post.Slug + "/"} className="my-3 shadow border-5" data-bs-theme={stance}>
+                                <Post post={post} />
                             </ListGroup.Item>
                         ))}
                     </ListGroup>

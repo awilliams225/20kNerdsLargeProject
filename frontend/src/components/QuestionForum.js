@@ -1,4 +1,3 @@
-//import React, { useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -9,16 +8,22 @@ import ButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 import Card from 'react-bootstrap/Card';
 import Spinner from 'react-bootstrap/Spinner';
 import ListGroup from 'react-bootstrap/ListGroup';
-import React, { useState, useEffect } from 'react';
+import Collapse from 'react-bootstrap/Collapse';
+import Badge from 'react-bootstrap/Badge';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+import React, { useState, useEffect, useContext } from 'react';
+import { StanceContext } from './StanceContext';
 import { useParams } from "react-router-dom";
 import Paginator from '../components/Paginator';
 
 import { useNavigate } from 'react-router-dom';
 
 
-export default function ChooseAnswer() {
+export default function QuestionForum() {
     const [active, setActive] = useState("");
     const [checked, setChecked] = useState(false);
+    const [panelOpen, setPanelOpen] = useState(false);
     const [radioValue, setRadioValue] = useState('');
 
     const [questions, setQuestions] = useState({});
@@ -28,8 +33,9 @@ export default function ChooseAnswer() {
     const [randLoading, setRandLoading] = useState(true);
     const [responsesLoading, setResponsesLoading] = useState(false);
 
-    const [stance, setStance] = useState("fight");
+    const {stance, setStance} = useContext(StanceContext);
     const [currQuestion, setCurrQuestion] = useState({});
+    const [currAnswer, setCurrAnswer] = useState({});
     const [alreadyAnswered, setAlreadyAnswered] = useState(false);
     const [answers, setAnswers] = useState([]);
 
@@ -134,10 +140,17 @@ export default function ChooseAnswer() {
             return <Spinner animation="border" />;
         }
         else {
-            if (side == 0)
-                return <h4>{currQuestion.responses[0]}</h4>;
-            else
-                return <h4>{currQuestion.responses[1]}</h4>;
+            let responseText = (<h4>{currQuestion.responses[side]}</h4>);
+            if (alreadyAnswered && currAnswer.response === side) {
+                return (
+                    <div>
+                        {responseText}
+                        <h5><b>Your Answer!</b></h5>
+                    </div>
+                )
+            } else {
+                return responseText;
+            }
         }
     }
 
@@ -161,9 +174,11 @@ export default function ChooseAnswer() {
 
                 var res = await response.json();
 
-                if (res.answer != null)
+                if (res.answer != null) {
                     setAlreadyAnswered(true);
-                else
+                    setCurrAnswer(res.answer);
+                    setStance(res.answer.stance);
+                } else
                     setAlreadyAnswered(false);
 
                 setResponsesLoading(false);
@@ -184,6 +199,10 @@ export default function ChooseAnswer() {
         await checkAnswered(question);
 
         setCurrQuestion(question);
+
+        if (!panelOpen) {
+            setPanelOpen(true);
+        }
 
     }
 
@@ -213,7 +232,33 @@ export default function ChooseAnswer() {
         }
     }
 
+    const renderStanceButton = (style) => {
+        return (
+            <>
+                <Button style={style} 
+                    variant={'primary-' + stance} 
+                    onClick={ panelOpen && alreadyAnswered ? null : changeStance }
+                >
+                    <span>{ stance.toUpperCase() } MODE</span>
+                    
+                    <OverlayTrigger placement='bottom' overlay={
+                        <Tooltip>
+                            <h3>What is this?</h3>
+                            This is your <b>stance.</b> In <b style={{color: 'orange'}}>fight</b> mode, you can argue with people about this topic, while in <b style={{color: 'cyan'}}>flight</b> mode, you can talk to other people who feel the same way as you. You cannot change your stance on a question once you answer it, so choose wisely!
+                        </Tooltip>
+                    }>
+                        <Badge pill bg="secondary" className="m-2">i</Badge>
+                    </OverlayTrigger>
+                </Button> 
+            </>
+        )
+    }
+
     const changeStance = () => {
+        if (panelOpen && alreadyAnswered) {
+            return;
+        }
+
         if (stance === "fight")
             setStance("flight");
         else
@@ -261,87 +306,103 @@ export default function ChooseAnswer() {
 
     }
 
+    const stanceButtonStyle = () => {
+        if (panelOpen && alreadyAnswered) {
+            return 'default';
+        }
+        return 'pointer';
+    }
+
     return (
-        <Container fluid style={{ backgroundColor: '#CDD1D5', height: '50vh' }}>
-            <Row>
-            <ButtonGroup name="options" type="radio">
-                <ToggleButton className="d-flex align-items-center justify-content-center"
-                    style={{
-                        height: '40vh', width: '50vw', borderRadius: '0', padding: '5vw',
-                        marginLeft: '-2vw', position: 'relative', zIndex:'0'
-                    }}
-                    key={1}
-                    id={"radio-1"}
-                    type="radio"
-                    //variant={idx % 2 ? 'outline-success' : 'outline-danger'}
-                    name="radio"
-                    value={1}
-                    checked={radioValue === 1}
-                    onChange={(e) => setRadioValue(e.currentTarget.value)}
-                >
-                    { printResponses(0)}
-                </ToggleButton>
-                <ToggleButton className="d-flex align-items-center justify-content-center"
-                    style={{
-                        height: '40vh', width: '50vw', borderRadius: '0', padding: '5vw',
-                        marginRight: '-2vw', position: 'relative', zIndex:'0'
-                    }}
-                    key={2}
-                    id={"radio-2"}
-                    type="radio"
-                    //variant={idx % 2 ? 'outline-success' : 'outline-danger'}
-                    name="radio"
-                    value={2}
-                    checked={radioValue === 2}
-                    onChange={(e) => setRadioValue(e.currentTarget.value)}
-                >
-                    { printResponses(1) }
-                </ToggleButton>
-            </ButtonGroup>
-            </Row>
-            <Row className="d-flex align-items-center justify-content-center">
-                <div className="d-flex align-items-center justify-content-center"
-                    style={{
-                        backgroundColor: 'white', width: '60vw',
-                        borderRadius: '15px', textAlign: 'center', height: '10vh', marginTop: '-60vh',
-                        position: 'absolute'
-                    }}
-                >
-                    <h3>{currQuestion.text}</h3>
+        <>
+            <Collapse in={!panelOpen}>
+                <div id="lonely-stance-button">
+                    {renderStanceButton({width: '100%', height: '10vh'})}
                 </div>
-            </Row>
-            <Row className="d-flex align-items-center justify-content-center">
-                    <Button style={{
-                        width: '25%', height: '10vh', borderRadius: 0
-                    }} 
-                        variant='light'
-                    >
-                        CANCEL
-                    </Button>
-                    <Button style={{ 
-                        width: '35%', height: '10vh', borderRadius: 0 
-                    }} 
-                        onClick={ alreadyAnswered ? goToForum : submitAnswer}
-                        variant="dark"
-                        key={3}
-                        //className={(active != "1" || active != "2") ? "active" : undefined}
-                        id={"3"}
-                        active={radioValue === ''}
-                    >
-                        { alreadyAnswered ? 'GO TO FORUM' : 'SUBMIT' }
-                    </Button>
-                    <Button style={{
-                        width: '25%', height: '10vh', borderRadius: 0
-                    }} 
-                        variant='light' 
-                        onClick={ changeStance }
-                    >
-                        { stance.toUpperCase() } MODE
-                    </Button> 
-            </Row>
+            </Collapse>
+            <Collapse in={panelOpen}>
+                <Container fluid id="choose-answer-panel">
+                    <Row>
+                        <ButtonGroup name="options" type="radio" style={{ paddingLeft: 0, paddingRight: 0}}>
+                            <ToggleButton className="w-50 d-flex align-items-center justify-content-center"
+                                style={{
+                                    height: '40vh', borderRadius: '0', padding: '5vw',
+                                    position: 'relative', zIndex:'0'
+                                }}
+                                key={1}
+                                id={"radio-1"}
+                                type="radio"
+                                variant={"primary-" + stance}
+                                name="radio"
+                                value={1}
+                                checked={radioValue === 1}
+                                onChange={(e) => setRadioValue(e.currentTarget.value)}
+                                disabled={alreadyAnswered}
+                            >
+                                { printResponses(0)}
+                            </ToggleButton>
+                            <ToggleButton className="w-50 d-flex align-items-center justify-content-center"
+                                style={{
+                                    height: '40vh', borderRadius: '0', padding: '5vw',
+                                    position: 'relative', zIndex:'0'
+                                }}
+                                key={2}
+                                id={"radio-2"}
+                                type="radio"
+                                variant={"secondary-" + stance}
+                                name="radio"
+                                value={2}
+                                checked={radioValue === 2}
+                                onChange={(e) => setRadioValue(e.currentTarget.value)}
+                                disabled={alreadyAnswered}
+                            >
+                                { printResponses(1) }
+                            </ToggleButton>
+                        </ButtonGroup>
+                    </Row>
+                    <Row className="d-flex align-items-center justify-content-center">
+                        <div className="d-flex align-items-center justify-content-center shadow"
+                            style={{
+                                backgroundColor: 'white', width: '60vw',
+                                borderRadius: '15px', textAlign: 'center', height: '10vh', marginTop: '-60vh',
+                                position: 'absolute'
+                            }}
+                        >
+                            <h3>{currQuestion.text}</h3>
+                        </div>
+                    </Row>
+                    <Row className="d-flex align-items-center justify-content-center">
+                        <ButtonGroup style={{ width: '75%'}} name="actions">
+                            <Button style={{
+                                width: '25%', height: '10vh'
+                            }} 
+                                onClick={ () => setPanelOpen(false) }
+                                variant='secondary'
+                                aria-controls="choose-answer-panel lonely-stance-button"
+                                aria-expanded={false}
+                            >
+                                CANCEL
+                            </Button>
+                            <Button style={{ 
+                                width: '35%', height: '10vh'
+                            }} 
+                                onClick={ alreadyAnswered ? goToForum : submitAnswer}
+                                variant="dark"
+                                key={3}
+                                //className={(active != "1" || active != "2") ? "active" : undefined}
+                                id={"3"}
+                                active={radioValue === ''}
+                            >
+                                { alreadyAnswered ? 'GO TO FORUM' : 'SUBMIT' }
+                            </Button>
+                            {renderStanceButton({width: '25%', height: '10vh', cursor: stanceButtonStyle()})}
+                        </ButtonGroup>
+                    </Row>
+                </Container>
+            </Collapse>
             <div>
                 {renderQuestions()}
             </div>
-        </Container>
+            </>
     );
 }

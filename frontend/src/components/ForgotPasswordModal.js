@@ -43,11 +43,14 @@ export default function ForgotPasswordModal() {
 
             const forgResponse = await fetch(buildPath("api/forgotPassword"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 
-            if (forgResponse.status === 200) {
-                setText("You've been sent an email!");
+            if (forgResponse.status === 201) {
+                const emailJson = JSON.parse(await forgResponse.text());
+                setText('An email has been sent!');
+                console.log(emailJson);
+                localStorage.setItem('token', JSON.stringify(emailJson.token));
             }
             else {
-                console.log(forgResponse);
+                setText('This email is invalid!');
             }
         }
         else {
@@ -64,16 +67,16 @@ export default function ForgotPasswordModal() {
         <Modal show={show} onHide={handleClose} data-bs-theme="dark">
                 <Card bg="dark">
                     <Card.Header>Forgot your password?</Card.Header>
-                    <Card.Body>
+                    <Card.Body className='text-center'>
                         <Form className="m-3">
                             <Form.Group className='mb-5' controlId='formEmail'>
                                 <Form.Label>Please Enter Your Email</Form.Label>
                                 <Form.Control name='email' type='email' placeholder='Enter your email...' onChange={handleChange}/>
                             </Form.Group>
+                            <span id='forgPassSpan'>{ spanText }</span>
                         </Form>
                         <Button variant="primary" onClick={handleClick}>Send Email</Button>
                         <Button variant="danger" className='ms-2' onClick={handleClose}>Close</Button>
-                        <span id='forgPassSpan'>{ spanText }</span>
                     </Card.Body>
                 </Card>
             </Modal>

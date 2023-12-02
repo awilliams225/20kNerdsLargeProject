@@ -1,10 +1,57 @@
 @import "../node_modules/bootstrap/scss/functions";
 @import "../node_modules/bootstrap/scss/variables";
 
-$body-bg-flight: #3e92cc;
-$body-color-flight: #3e92cc;
-$primary-flight: #16324f;
-$secondary-flight: #2a628f;
+$primary-flight: #3e92cc;
+$secondary-flight: #44627a;
 $tertiary-flight: #3e92cc;
+$success-flight: #9ade7b;
+$info-flight: #3e92cc;
+$warning-flight: $gray-600;
+$danger-flight: $black;
+$light-flight: #3e92cc;
 $dark-flight: #13293d;
-$dark-alt-flight: #18435a;
+
+$primary-text-emphasis-flight:        tint-color($primary-flight, 40%) !default;
+$secondary-text-emphasis-flight:      tint-color($secondary-flight, 40%) !default;
+$success-text-emphasis-flight:        tint-color($success-flight, 40%) !default;
+$info-text-emphasis-flight:           tint-color($info-flight, 40%) !default;
+$warning-text-emphasis-flight:        tint-color($warning-flight, 40%) !default;
+$danger-text-emphasis-flight:         tint-color($danger-flight, 40%) !default;
+$light-text-emphasis-flight:          tint-color($light-flight, 40%) !default;
+$dark-text-emphasis-flight:           tint-color($dark-flight, 40%) !default;
+
+$primary-bg-subtle-flight:            shade-color($primary-flight, 80%) !default;
+$secondary-bg-subtle-flight:          shade-color($secondary-flight, 80%) !default;
+$success-bg-subtle-flight:            shade-color($success-flight, 80%) !default;
+$info-bg-subtle-flight:               shade-color($info-flight, 80%) !default;
+$warning-bg-subtle-flight:            shade-color($warning-flight, 80%) !default;
+$danger-bg-subtle-flight:             shade-color($danger-flight, 80%) !default;
+$light-bg-subtle-flight:              shade-color($light-flight, 80%) !default;
+$dark-bg-subtle-flight:               shade-color($dark-flight, 80%) !default;
+
+$primary-border-subtle-flight:        shade-color($primary-flight, 40%) !default;
+$secondary-border-subtle-flight:      shade-color($secondary-flight, 40%) !default;
+$success-border-subtle-flight:        shade-color($success-flight, 40%) !default;
+$info-border-subtle-flight:           shade-color($info-flight, 40%) !default;
+$warning-border-subtle-flight:        shade-color($warning-flight, 40%) !default;
+$danger-border-subtle-flight:         shade-color($danger-flight, 40%) !default;
+$light-border-subtle-flight:          shade-color($light-flight, 40%) !default;
+$dark-border-subtle-flight:           shade-color($dark-flight, 40%) !default;
+
+$body-color-flight:                   $light-flight !default;
+$body-bg-flight:                      $dark-flight !default;
+$body-secondary-color-flight:         shade-color($secondary-flight, 40%) !default;
+$body-secondary-bg-flight:            $secondary-flight !default;
+$body-tertiary-color-flight:          shade-color($tertiary-flight, 40%) !default;
+$body-tertiary-bg-flight:             $tertiary-flight !default;
+$body-emphasis-color-flight:          $white !default;
+$border-color-flight:                 $gray-700 !default;
+$border-color-translucent-flight:     rgba($white, .15) !default;
+$headings-color-flight:               inherit !default;
+$link-color-flight:                   tint-color($primary-flight, 40%) !default;
+$link-hover-color-flight:             shift-color($link-color-flight, -$link-shade-percentage) !default;
+$code-color-flight:                   tint-color($code-color, 40%) !default;
+$mark-color-flight:                   $body-color-flight !default;
+$mark-bg-flight:                      $yellow-800 !default;
+$pagination-active-bg-flight:         $primary-flight !default;
+$pagination-active-border-color-flight:$primary-flight !default;

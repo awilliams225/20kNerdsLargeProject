@@ -4,7 +4,14 @@ import ChangePasswordForm from '../components/ChangePasswordForm';
 
 const ChangePasswordPage = () => {
     return (
-        <div>
+        <div style={{
+            backgroundSize: "cover",
+            backgroundImage:`url(${require('../images/background.png')})`, 
+            width:"100%", 
+            height:"100vh", 
+            backgroundPosition: "center",
+            backgroundRepeat: "repeat-y"
+            }}>
             <ChangePasswordForm />
         </div>
     )

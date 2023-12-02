@@ -13,8 +13,12 @@ import ProfileMainPage from './pages/ProfileMainPage';
 import ProfilePostPage from './pages/ProfilePostPage';
 import ProfileReplyPage from './pages/ProfileReplyPage';
 import Spinner from 'react-bootstrap/Spinner';
+import { StanceContext } from './components/StanceContext';
+import { WindowPlus } from 'react-bootstrap-icons';
 
 function App() {
+
+    const [stance, setStance] = useState(localStorage.getItem('stance') != null ? localStorage.getItem('stance') : "fight");
 
     const [isValidated, setIsValidated] = useState(false);
     const [appLoading, setAppLoading] = useState(true);
@@ -70,11 +74,21 @@ function App() {
         setValidation();
     }, []);
 
-    const protectElement = (element) => {
+    useEffect(() => {
+        const storeStance = () => {
+            if ((stance === "fight" || stance === "flight") && stance !== localStorage.getItem('stance')) {
+                localStorage.setItem('stance', stance);
+            }
+        }
+
+        storeStance();
+    }, [stance]);
+    
+    const wrapElement = (element) => {
         if (isValidated) {
-            document.body.style.backgroundColor = "#f07841";
+            document.body.style.backgroundColor = (stance === "fight" ?  "#D66228" : "#004A7F");
             return (
-                <div data-bs-theme="fight">
+                <div data-bs-theme={stance}>
                     {element}
                 </div>
             );
@@ -96,20 +110,23 @@ function App() {
             return <Spinner animation="border" />;
         } else {
             return (
-                <BrowserRouter>
-                    <Routes>
-                        <Route path="/" element={handleLoginPage()} />
-                        <Route path="/cards/" element={protectElement(<CardPage />)} />
-                        <Route path="/home/:page?/" element={protectElement(<QuestionPage />)} />
-                        <Route path="/question/:questionSlug/:page?/" element={protectElement(<PostPage />)} />
-                        <Route path="/question/:questionSlug/post/:slug/" element={protectElement(<ReplyPage />)} />
-                        <Route path="/user/:userId/" element={protectElement(<ProfileMainPage />)} />
-                        <Route path="/user/:userId/posts/:page?/" element={protectElement(<ProfilePostPage />)} />
-                        <Route path="/user/:userId/replies/:page?/" element={protectElement(<ProfileReplyPage />)} />
-                        <Route path="/changepassword/:token" element={<ChangePasswordPage />} />
-                        <Route path="/emailverified/:token" element={<EmailRegisteredPage />} />
-                    </Routes>
-                </BrowserRouter>
+
+                    <BrowserRouter>
+                        <StanceContext.Provider value={{ stance: stance, setStance: setStance }}>
+                            <Routes>
+                                <Route path="/" element={handleLoginPage()} />
+                                <Route path="/cards/" element={wrapElement(<CardPage />)} />
+                                <Route path="/home/:page?/" element={wrapElement(<QuestionPage />)} />
+                                <Route path="/question/:questionSlug/:page?/" element={wrapElement(<PostPage />)} />
+                                <Route path="/question/:questionSlug/post/:slug/" element={wrapElement(<ReplyPage />)} />
+                                <Route path="/user/:userId/" element={wrapElement(<ProfileMainPage />)} />
+                                <Route path="/user/:userId/posts/:page?/" element={wrapElement(<ProfilePostPage />)} />
+                                <Route path="/user/:userId/replies/:page?/" element={wrapElement(<ProfileReplyPage />)} />
+                                <Route path="/changepassword/" element={<ChangePasswordPage />} />
+                                <Route path="/emailverified" element={<EmailRegisteredPage />} />
+                            </Routes>
+                        </StanceContext.Provider>
+                    </BrowserRouter>
             )
         }
     }

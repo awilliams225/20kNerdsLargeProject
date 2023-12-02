@@ -25,6 +25,12 @@ export default function Login() {
     const doLogin = async event => {
         event.preventDefault();
 
+        if (username == '' && password == '')
+        {
+            setMessage('Please enter a username and password!');
+            return;
+        }
+
         var obj = { login: username, password: password };
         var js = JSON.stringify(obj);
 
@@ -34,8 +40,8 @@ export default function Login() {
 
             var res = JSON.parse(await response.text());
 
-            if (res.id <= 0) {
-                setMessage('User/Password combination incorrect');
+            if (res.error != '') {
+                setMessage(res.error);
             }
             else {
                 var user = { firstName: res.firstName, lastName: res.lastName, id: res.id };
@@ -75,11 +81,7 @@ export default function Login() {
     }
 
     return (
-        <div id="LoginDiv" style={{
-            backgroundColor: '#1A1A20', height: '50vh', width: '75%',
-            borderRadius: '15px 0px 0px 15px', textAlign: 'center',
-            padding: '5vh', marginLeft: 'auto', marginRight: 0, marginTop: '10vh'
-        }}>
+        <>
             <h2 className='h2 text-white'>Login</h2>
             <Form>
                 <Form.Control type='username' placeholder='Username' onChange={handleUsernameChange} />
@@ -91,8 +93,8 @@ export default function Login() {
                 </InputGroup>
                 <Button className='mt-2' variant='primary' onClick={doLogin}>Login</Button>
             </Form>
-            <ForgotPasswordModal />
+            <ForgotPasswordModal /> <br />
             <span className='text-light' id="loginResult">{message}</span>
-        </div>
+        </>
     );
 }

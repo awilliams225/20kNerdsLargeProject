@@ -1,9 +1,9 @@
-import Card from 'react-bootstrap/Card';
 import Spinner from 'react-bootstrap/Spinner';
 import ListGroup from 'react-bootstrap/ListGroup';
 import React, { useState, useEffect } from 'react';
 import { useParams } from "react-router-dom";
-import CreateReplyForm from '../components/CreateReplyForm';
+import CreateReplyForm from './CreateReplyForm';
+import Reply from './Reply';
 
 export default function ReplyForum() {
 
@@ -82,12 +82,7 @@ export default function ReplyForum() {
                     <ListGroup className="mt-3">
                         {replyList.map((reply) => (
                             <ListGroup.Item className="my-3 shadow border-5">
-                                <Card>
-                                    <Card.Body>
-                                        <Card.Title>{reply.text}</Card.Title>
-                                        Posted by <a href={"/user/" + reply.userId + "/"}>{reply.username}</a> on {new Date(reply.timestamp).toDateString()} 
-                                    </Card.Body>
-                                </Card>
+                                <Reply reply={reply} />
                             </ListGroup.Item>
                         ))}
                     </ListGroup>

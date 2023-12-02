@@ -282,15 +282,13 @@ export default function QuestionForum() {
             {
                 var res = JSON.parse(await response.text());
 
-                console.log("Question successfully answered!");
-
                 var newArr = answers;
                 newArr.push(currQuestion._id);
                 setAnswers(newArr);
 
                 renderQuestions();
 
-                setAlreadyAnswered(true);
+                await checkAnswered(currQuestion);
             }
         }
         catch (e) {

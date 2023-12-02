@@ -1,14 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import { PersonCircle } from 'react-bootstrap-icons';
 import LoginTitle from './LoginTitle';
+import { StanceContext } from './StanceContext';
+
 export default function GlobalNavbar() {
 
     const [username, setUsername] = useState();
     const [userLoading, setUserLoading] = useState(true);
+    const {stance, setStance} = useContext(StanceContext);
 
     const app_name = 'fight-or-flight-20k-5991cb1c14ef'
     function buildPath(route) {
@@ -65,7 +68,7 @@ export default function GlobalNavbar() {
         }
         else {
             return (
-                <Navbar expand="lg" bg="dark">
+                <Navbar expand="lg" bg={`dark-${stance}`}>
                     <Container>
                         <Navbar.Brand className="me-auto">
                             <Nav.Link href="/home/">

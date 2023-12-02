@@ -259,17 +259,9 @@ app.post('/api/changePassword', async (req, res, next) => {
   const { userId, oldPassword, newPassword } = req.body;
   var userObjId = null;
   var user = null;
-
-  if (userId != '')
-    userObjId = new ObjectId(userId);
-  else {
-    error = "User not found!";
-    var ret = { newPassword: newPassword, error: error };
-    res.status(401).json(ret);
-    return;
-  }
   
   try {
+    userObjId = new ObjectId(userId);
     const db = client.db('COP4331_LargeProject');
     user = await db.collection('Users').findOne({ _id:userObjId });
     console.log(user);

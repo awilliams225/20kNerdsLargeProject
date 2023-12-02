@@ -90,6 +90,9 @@ app.post("/api/validateToken", (req, res) => {
 // in progress Email verification
 app.post('/api/registerWithEmail', async (req, res, next) =>
 {
+  console.log(EMAIL);
+  console.log(PASSWORD);
+
   const { email, userId } = req.body;
 
   objId = new ObjectId(userId);

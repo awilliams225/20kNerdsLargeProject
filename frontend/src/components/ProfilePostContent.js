@@ -92,7 +92,7 @@ export default function ProfilePostContent() {
                         <Container>
                             <Paginator activePage={page} numPages={Math.ceil(numPosts / postsPerPage)} />
                             {postList.map((post) => (
-                                <ListGroup.Item action href={"/question/" + post.QuestionSlug + "/post/" + post.Slug + "/"} className="my-3 shadow border-5">
+                                <ListGroup.Item action href={`/question/${post.QuestionSlug}/post/${post.Slug}/`} className="my-3 shadow border-5">
                                     <Post post={post} />
                                 </ListGroup.Item>
                             ))}

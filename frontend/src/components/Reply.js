@@ -11,7 +11,7 @@ export default function Post(props) {
             <Card>
                 <Card.Body>
                     <Card.Title>{reply.text}</Card.Title>
-                    Posted by <a href={"/user/" + reply.userId + "/"}>{reply.username}</a> at {new Date(reply.timestamp).toLocaleTimeString()}  on {new Date(reply.timestamp).toLocaleDateString()} 
+                    Posted by <a href={`/user/${reply.userId}/`}>{reply.username}</a> at {new Date(reply.timestamp).toLocaleTimeString()}  on {new Date(reply.timestamp).toLocaleDateString()} 
                 </Card.Body>
             </Card>
         </>

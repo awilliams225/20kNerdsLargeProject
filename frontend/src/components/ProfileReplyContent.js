@@ -93,7 +93,7 @@ export default function ProfileReplyContent() {
                         <Container>
                             <Paginator activePage={page} numPages={Math.ceil(numReplies / repliesPerPage)} />
                             {repliesList.map((reply) => (
-                                <ListGroup.Item action href={"/question/" + replies.QuestionSlug + "/post/" + replies.Slug + "/"} className="my-3 shadow border-5">
+                                <ListGroup.Item action href={`/question/${replies.QuestionSlug}/post/${replies.Slug}/`} className="my-3 shadow border-5">
                                     <Reply reply={reply} />
                                 </ListGroup.Item>
                             ))}

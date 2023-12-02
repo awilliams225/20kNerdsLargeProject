@@ -143,7 +143,7 @@ export default function PostForum() {
                     <Paginator activePage={page} numPages={Math.ceil(numPosts / postsPerPage)} />
                     <ListGroup className="mt-3">
                         {postList.map((post) => (
-                            <ListGroup.Item action href={"post/" + post.Slug + "/"} className="my-3 shadow border-5" data-bs-theme={stance}>
+                            <ListGroup.Item action href={`post/${post.Slug}/`} className="my-3 shadow border-5" data-bs-theme={stance}>
                                 <Post post={post} />
                             </ListGroup.Item>
                         ))}

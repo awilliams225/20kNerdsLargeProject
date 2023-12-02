@@ -256,24 +256,13 @@ app.post('/api/forgotPassword', async (req, res, next) =>
 app.post('/api/changePassword', async (req, res, next) => {
 
   var error = '';
-  const { userId, oldPassword, newPassword } = req.body;
+  const { userId, newPassword } = req.body;
   var userObjId = null;
   var user = null;
   
   try {
     userObjId = new ObjectId(userId);
     const db = client.db('COP4331_LargeProject');
-    user = await db.collection('Users').findOne({ _id:userObjId });
-    console.log(user);
-    if (user != null) {
-      const compare = await bcrypt.compare(oldPassword, user.Password)
-      if (!compare) {
-        error = "Passwords don't match!";
-        var ret = { newPassword: newPassword, error: error };
-        res.status(401).json(ret);
-        return;
-      }
-    } 
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(newPassword, salt);
     db.collection('Users').updateOne( { _id:userObjId },

@@ -58,7 +58,7 @@ export default function CreateReplyForm(props) {
 
     return (
         <>
-            <Button variant={"primary-" + stance} onClick={handleShow}>
+            <Button variant={`primary-${stance}`} onClick={handleShow}>
                 Reply
             </Button>
             <Modal show={show} data-bs-theme={stance}>
@@ -69,8 +69,8 @@ export default function CreateReplyForm(props) {
                             <Form.Group className="mb-5" controlId="formText">
                                 <Form.Control required name="text" as="textarea" placeholder="Respond with something cool..." onChange={handleChange} />
                             </Form.Group>
-                            <Button variant={"danger-" + stance + " me-3"} onClick={handleClose}>Cancel</Button>
-                            <Button variant={"primary-" + stance} type="submit">Reply</Button>
+                            <Button variant={`danger-${stance} me-3`} onClick={handleClose}>Cancel</Button>
+                            <Button variant={`primary-${stance}`} type="submit">Reply</Button>
                         </Form>
                     </Card.Body>
                 </Card>

@@ -9,7 +9,6 @@ import Card from 'react-bootstrap/Card';
 export default function ChangePasswordForm() {
 
     const [userId, setId] = useState('');
-    const [oldPass, setOldPass] = useState('');
     const [newPass, setNewPass] = useState('');
     const [message, setMessage] = useState('');
 
@@ -52,7 +51,7 @@ export default function ChangePasswordForm() {
     })
 
     async function changePass() {
-        var obj = { userId: userId, oldPassword: oldPass, newPassword: newPass };
+        var obj = { userId: userId, newPassword: newPass };
         var js = JSON.stringify(obj);
 
         console.log(newPass);
@@ -71,12 +70,9 @@ export default function ChangePasswordForm() {
         <>
             <Container>
                 <Row className='justify-content-center pt-5'>
-                    <Card bg='dark' data-bs-theme="dark" style={{ width: '24rem', height: '18rem' }} className='p-3'>
+                    <Card bg='dark' data-bs-theme="dark" style={{ width: '24rem', height: '14rem' }} className='p-3'>
                         <Form className='text-center'>
                             <Form.Group controlId="passChange">
-                                <Form.Label>Current Password</Form.Label>
-                                <Form.Control className='mb-3' type='password' placeholder='Current Password' value={oldPass} onChange={e => setOldPass(e.target.value)} />
-
                                 <Form.Label>New Password</Form.Label>
                                 <Form.Control className='mb-3' type='password' placeholder='New Password' value={newPass} onChange={e => setNewPass(e.target.value)} />
                             </Form.Group>

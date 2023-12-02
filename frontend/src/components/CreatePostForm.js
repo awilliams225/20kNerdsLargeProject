@@ -61,7 +61,7 @@ export default function CreatePostForm(props) {
 
     return (
         <>
-            <Button variant={"primary-" + stance} onClick={handleShow}>
+            <Button variant={`primary-${stance}`} onClick={handleShow}>
                 Create Post
             </Button>
             <Modal show={show} data-bs-theme={stance}>
@@ -77,8 +77,8 @@ export default function CreatePostForm(props) {
                                 <Form.Label>Post Content</Form.Label>
                                 <Form.Control required name="content" as="textarea" placeholder="Explain your answer..." onChange={handleChange} />
                             </Form.Group>
-                            <Button variant={"danger-" + stance + " me-3"} onClick={handleClose}>Discard</Button>
-                            <Button variant={"primary-" + stance} type="submit">Publish</Button>
+                            <Button variant={`danger-${stance} me-3`} onClick={handleClose}>Discard</Button>
+                            <Button variant={`primary-${stance}`} type="submit">Publish</Button>
                         </Form>
                     </Card.Body>
                 </Card>

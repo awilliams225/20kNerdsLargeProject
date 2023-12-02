@@ -21,7 +21,7 @@ export default function Paginator(props) {
         <>
             <Pagination className="mt-3">
                 <Pagination.First disabled={activePage === 1} href={"1"} />
-                <Pagination.Prev disabled={activePage === 1} href={"" + (activePage - 1)} />
+                <Pagination.Prev disabled={activePage === 1} href={`${activePage - 1}`} />
 
                 {items}
 

@@ -326,7 +326,7 @@ export default function QuestionForum() {
                             <ToggleButton className="w-50 d-flex align-items-center justify-content-center"
                                 style={{
                                     height: '40vh', borderRadius: '0', padding: '5vw',
-                                    position: 'relative', zIndex:'0', border: radioValue == 1 ? '5px solid black' : 'none',
+                                    position: 'relative', zIndex:'0', border: radioValue == 1 ? '15px solid black' : 'none',
                                 }}
                                 key={1}
                                 id={"radio-1"}
@@ -343,7 +343,7 @@ export default function QuestionForum() {
                             <ToggleButton className="w-50 d-flex align-items-center justify-content-center"
                                 style={{
                                     height: '40vh', borderRadius: '0', padding: '5vw',
-                                    position: 'relative', zIndex:'0', border: radioValue == 2 ? '5px solid black' : 'none'
+                                    position: 'relative', zIndex:'0', border: radioValue == 2 ? '15px solid black' : 'none'
                                 }}
                                 key={2}
                                 id={"radio-2"}

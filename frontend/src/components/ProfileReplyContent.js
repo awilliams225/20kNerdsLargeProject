@@ -32,13 +32,15 @@ export default function ProfileReplyContent() {
         const grabReplies = async () => {
             setRepliesLoading(true);
 
-            var obj = { UserID: userId, repliesPerPage: parseInt(repliesPerPage) };
+            var obj = { userId: userId, perPage: parseInt(repliesPerPage) };
             var js = JSON.stringify(obj);
 
-            const response = await fetch(buildPath("api/replies/getRepliesbyUserID/" + page), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
+            const response = await fetch(buildPath("api/replies/grabRepliesAndPostsByUserId/" + page), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 
             if (response != null) {
                 const json = await response.json();
+
+                console.log(json);
 
                 setReplies(json);
 
@@ -78,23 +80,23 @@ export default function ProfileReplyContent() {
             return <Spinner animation="border" />;
         }
         else {
-            if (replies.list == undefined) {
+            if (replies.pairList == undefined) {
                 return (
                     <>
-                        <h1>Oops! This user does not appear to have any posts.</h1>
+                        <h1>Oops! This user does not appear to have any replies.</h1>
                     </>
                 )
             }
-            var repliesList = replies.list;
-            console.log(repliesList);
+            var pairList = replies.pairList;
+            console.log(pairList);
             return (
                 <>
                     <Card>
                         <Container>
                             <Paginator activePage={page} numPages={Math.ceil(numReplies / repliesPerPage)} />
-                            {repliesList.map((reply) => (
-                                <ListGroup.Item action href={`/question/${replies.QuestionSlug}/post/${replies.Slug}/`} className="my-3 shadow border-5">
-                                    <Reply reply={reply} />
+                            {pairList.map((pair) => (
+                                <ListGroup.Item action href={`/question/${pair.post.QuestionSlug}/post/${pair.post.Slug}/`} className="my-3 shadow border-5">
+                                    <Reply reply={pair.reply} />
                                 </ListGroup.Item>
                             ))}
                         </Container>

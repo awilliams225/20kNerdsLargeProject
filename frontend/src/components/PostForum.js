@@ -6,6 +6,7 @@ import { StanceContext } from './StanceContext';
 import Paginator from '../components/Paginator';
 import CreatePostForm from '../components/CreatePostForm';
 import Post from './Post';
+import ForumHeader from './ForumHeader';
 
 export default function PostForum() {
 
@@ -15,6 +16,7 @@ export default function PostForum() {
     const [numPosts, setNumPosts] = useState({});
     const [postsLoading, setPostsLoading] = useState(true);
     const [paginationLoading, setPaginationLoading] = useState(true);
+    const [question, setQuestion] = useState({});
     const [answer, setAnswer] = useState({});
     const [answerReceived, setAnswerReceived] = useState(null);
     const {stance, setStance} = useContext(StanceContext);
@@ -44,6 +46,8 @@ export default function PostForum() {
             const questJson = await questResponse.json();
 
             question = questJson.question;
+
+            setQuestion(question);
 
             var obj = { userId: userId, questionId: question._id };
             var js = JSON.stringify(obj);
@@ -139,6 +143,7 @@ export default function PostForum() {
             var postList = posts.posts;
             return (
                 <>
+                    <ForumHeader question={question} answer={answer}/>
                     <CreatePostForm questionSlug={questionSlug} answerId={answer._id} />
                     <Paginator activePage={page} numPages={Math.ceil(numPosts / postsPerPage)} />
                     <ListGroup className="mt-3">

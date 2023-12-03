@@ -952,8 +952,8 @@ app.post('/api/replies/grabRepliesbyUserID', async (req, res, next) => {
 app.post('/api/replies/grabRepliesAndPostsByUserId/:pageNum', async (req, res, next) => {
 
   var error = '';
-  var postList = [];
   var replyList = [];
+  var pairList = [];
 
   const { userId, perPage } = req.body;
 
@@ -966,16 +966,15 @@ app.post('/api/replies/grabRepliesAndPostsByUserId/:pageNum', async (req, res, n
 
     const db = client.db('COP4331_LargeProject');
     replyList = await db.collection('Replies').find({ userId: userId }).skip(toSkip).limit(perPage).toArray();
-   
     for (i = 0; i < replyList.length; i++)
     {
-      postList[i] = await db.collection('Post').findOne({Slug:replyList[i].slug});
+      pairList[i] = { post: await db.collection('Post').findOne({Slug:replyList[i].slug}), reply: replyList[i] };
     }
   }
   catch (e) {
     error = e.toString();
   }
-  var ret = { postList:postList, replyList: replyList, error:''};
+  var ret = { pairList: pairList, error:''};
   res.status(200).json(ret);
 });
 

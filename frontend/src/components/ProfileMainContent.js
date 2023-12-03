@@ -159,6 +159,14 @@ export default function ProfileHeader() {
                     <Container>
                         <Row>
                             <Col>
+                                <Card className='shadow border-5 m-3 p-2'>
+                                    <Card.Title>Stats:</Card.Title>
+                                    <Card.Text className='h2'>Posts: {postNumber}</Card.Text>
+                                    <Card.Text className='h2'>Replies: {replyNumber}</Card.Text>
+                                </Card>
+                            </Col>
+                        {userId == JSON.parse(localStorage.getItem('user_data')).id &&
+                            <Col>
                                 <Card className='shadow border-5 m-3'>
                                     <Form className='m-3'>
                                         <Form.Group className='mb-3' controlId='usernameForm'>
@@ -166,7 +174,7 @@ export default function ProfileHeader() {
                                             <Form.Control type='text' onChange={onUsernameChange} value={username} disabled={ userId == JSON.parse(localStorage.getItem('user_data')).id ? false : true }></Form.Control>
                                             <Button variant={`primary-${stance}`} style={{ display: (userId == JSON.parse(localStorage.getItem('user_data')).id ? "block" : "none") }}>Change Username</Button>
                                         </Form.Group>
-                                        <Form.Group className='mb-3' controlId='usernameForm' style={{ display: (userId == JSON.parse(localStorage.getItem('user_data')).id ? "block" : "none") }}>
+                                        <Form.Group className='mb-3' controlId='usernameForm'>
                                             <Form.Label>Password:</Form.Label>
                                             <Form.Control type='text' onChange={onPasswordChange}></Form.Control>
                                             <Form.Text className='text-light' style={{ display: "block" }}>{passwordMessage}</Form.Text>
@@ -181,13 +189,7 @@ export default function ProfileHeader() {
                                     </Form>
                                 </Card>
                             </Col>
-                            <Col>
-                                <Card className='shadow border-5 m-3 p-2'>
-                                    <Card.Title>Stats:</Card.Title>
-                                    <Card.Text className='h2'>Posts: {postNumber}</Card.Text>
-                                    <Card.Text className='h2'>Replies: {replyNumber}</Card.Text>
-                                </Card>
-                            </Col>
+                        }
                         </Row>
                     </Container>
                 </Card>

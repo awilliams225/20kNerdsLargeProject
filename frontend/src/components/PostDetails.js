@@ -1,15 +1,12 @@
 import { useParams } from "react-router-dom";
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import Post from './Post';
-import { StanceContext } from './StanceContext';
-import Button from 'react-bootstrap/Button';
 
 export default function PostDetails() {
     const { questionSlug, slug } = useParams();
 
     const [post, setPost] = useState({});
     const [loading, setLoading] = useState(true);
-    const {stance, setStance} = useContext(StanceContext);
 
     const app_name = 'fight-or-flight-20k-5991cb1c14ef'
     function buildPath(route) {
@@ -50,9 +47,6 @@ export default function PostDetails() {
         else {
             return (
                 <>
-                    <Button className="mb-3" variant={`secondary-${stance}`} href={`/question/${questionSlug}/`}>
-                        Back to Forum
-                    </Button>
                     <Post post={post.Result} />
                 </>
             )

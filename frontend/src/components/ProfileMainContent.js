@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/esm/Button';
 import Spinner from 'react-bootstrap/esm/Spinner';
 import Form from 'react-bootstrap/Form';
+import { StanceContext } from './StanceContext';
 import { useParams } from 'react-router-dom';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -14,10 +15,14 @@ export default function ProfileHeader() {
     const [user, setUser] = useState({});
     const [userLoading, setUserLoading] = useState(true);
     const [email, setEmail] = useState('');
+    const [emailMessage, setEmailMessage] = useState('');
     const [username, setUsername] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [passwordMessage, setPasswordMessage] = useState('');
     const [postNumber, setPostNumber] = useState(0);
     const [replyNumber, setReplyNumber] = useState('');
     const [statsLoading, setStatsLoading] = useState(true);
+    const {stance, setStance} = useContext(StanceContext);
 
     const app_name = 'fight-or-flight-20k-5991cb1c14ef'
     function buildPath(route) {
@@ -111,6 +116,10 @@ export default function ProfileHeader() {
     const onUsernameChange = (event) => {
         setUsername(event.target.value);
     }
+    
+    const onPasswordChange = (event) => {
+        setNewPassword(event.target.value);
+    }
 
     const updateEmail = async () => {
         const obj = { userId: userId, email: email };
@@ -119,10 +128,24 @@ export default function ProfileHeader() {
         const response = await fetch(buildPath("api/changeEmail"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 
         if (response.status === 200) {
-            console.log("Successful email change!");
+            setEmailMessage("Email changed successfully!");
         }
         else {
-            console.log("Email change not successful...");
+            setEmailMessage("Email change not successful...");
+        }
+    }
+
+    async function changePass() {
+        var obj = { userId: userId, newPassword: newPassword };
+        var js = JSON.stringify(obj);
+
+        const response = await fetch(buildPath("api/changePassword"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
+
+        if (response.status === 200) {
+            setPasswordMessage("Password changed successfully!");
+        }
+        else {
+            setPasswordMessage("Unable to change password.");
         }
     }
 
@@ -141,17 +164,19 @@ export default function ProfileHeader() {
                                         <Form.Group className='mb-3' controlId='usernameForm'>
                                             <Form.Label>Username:</Form.Label>
                                             <Form.Control type='text' onChange={onUsernameChange} value={username} disabled={ userId == JSON.parse(localStorage.getItem('user_data')).id ? false : true }></Form.Control>
-                                            <Button style={{ display: (userId == JSON.parse(localStorage.getItem('user_data')).id ? "block" : "none") }}>Change Username</Button>
+                                            <Button variant={`primary-${stance}`} style={{ display: (userId == JSON.parse(localStorage.getItem('user_data')).id ? "block" : "none") }}>Change Username</Button>
                                         </Form.Group>
                                         <Form.Group className='mb-3' controlId='usernameForm' style={{ display: (userId == JSON.parse(localStorage.getItem('user_data')).id ? "block" : "none") }}>
                                             <Form.Label>Password:</Form.Label>
-                                            <Form.Control type='text'></Form.Control>
-                                            <Button>Change Password</Button>
+                                            <Form.Control type='text' onChange={onPasswordChange}></Form.Control>
+                                            <Form.Text className='text-light' style={{ display: "block" }}>{passwordMessage}</Form.Text>
+                                            <Button onClick={changePass} variant={`primary-${stance}`}>Change Password</Button>
                                         </Form.Group>
                                         <Form.Group className='mb-3' controlId='usernameForm'>
                                             <Form.Label>Email:</Form.Label>
                                             <Form.Control type='text' onChange={onEmailChange} value={email} disabled={ userId == JSON.parse(localStorage.getItem('user_data')).id ? false : true }></Form.Control>
-                                            <Button onClick={updateEmail} style={{ display: (userId == JSON.parse(localStorage.getItem('user_data')).id ? "block" : "none") }}>Change Email</Button>
+                                            <Form.Text className='text-light'>{emailMessage}</Form.Text>
+                                            <Button onClick={updateEmail} variant={`primary-${stance}`} style={{ display: (userId == JSON.parse(localStorage.getItem('user_data')).id ? "block" : "none") }}>Change Email</Button>
                                         </Form.Group>
                                     </Form>
                                 </Card>

@@ -14,7 +14,7 @@ const LoginPage = () => {
             backgroundPosition: "center",
             backgroundRepeat: "repeat-y"
             }}>
-            <LoginTitle />
+            <LoginTitle height='20vh' />
             <LoginBox />
         </div>
     );

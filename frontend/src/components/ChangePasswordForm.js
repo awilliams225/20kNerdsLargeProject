@@ -5,12 +5,15 @@ import { useParams } from 'react-router';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Card from 'react-bootstrap/Card';
+import { Eye, EyeFill, EyeSlashFill } from 'react-bootstrap-icons';
+import InputGroup from 'react-bootstrap/InputGroup';
 
 export default function ChangePasswordForm() {
 
     const [userId, setId] = useState('');
     const [newPass, setNewPass] = useState('');
     const [message, setMessage] = useState('');
+    const [showPass, setShowPass] = useState(false);
 
     const app_name = 'fight-or-flight-20k-5991cb1c14ef'
     function buildPath(route) {
@@ -66,21 +69,31 @@ export default function ChangePasswordForm() {
         }
     }
 
+    const showPassClick = (event) => {
+        setShowPass((prev) => !prev);
+    }
+
+    const handlePasswordChange = (event) => {
+        setNewPass(event.target.value);
+    }
+
     return (
         <>
             <Container>
                 <Row className='justify-content-center pt-5'>
                     <Card bg='dark' data-bs-theme="dark" style={{ width: '24rem', height: '14rem' }} className='p-3'>
                         <Form className='text-center'>
-                            <Form.Group controlId="passChange">
-                                <Form.Label>New Password</Form.Label>
-                                <Form.Control className='mb-3' type='password' placeholder='New Password' value={newPass} onChange={e => setNewPass(e.target.value)} />
-                            </Form.Group>
+                            <InputGroup className='mt-3 mb-3'>
+                                <Form.Control type={showPass ? 'text' : 'password'} placeholder='Password' onChange={handlePasswordChange} />
+                                <InputGroup.Text onClick={showPassClick}>
+                                    {showPass ? <EyeSlashFill /> : <EyeFill />}
+                                </InputGroup.Text>
+                            </InputGroup>
                             <Button variant='primary' onClick={changePass}>
                                 Change Password
                             </Button>
-                            <br/><a href={'/'}>Return to Login</a>
-                            <br/><span>{message}</span>
+                            <br /><a href={'/'}>Return to Login</a>
+                            <br /><span>{message}</span>
                         </Form>
                     </Card>
                 </Row>

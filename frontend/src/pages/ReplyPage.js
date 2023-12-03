@@ -1,7 +1,7 @@
 import React from 'react';
 
 import GlobalNavbar from '../components/GlobalNavbar';
-import Post from '../components/PostDetails';
+import PostDetails from '../components/PostDetails';
 import ReplyForum from '../components/ReplyForum';
 import Container from 'react-bootstrap/Container';
 
@@ -10,7 +10,7 @@ const ReplyPage = () => {
         <div>
             <GlobalNavbar />
             <Container className="my-5">
-                <Post />
+                <PostDetails />
                 <ReplyForum />
             </Container>
         </div>

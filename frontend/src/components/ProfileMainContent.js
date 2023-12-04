@@ -46,8 +46,6 @@ export default function ProfileHeader() {
             if (response.status === 200) {
                 const json = JSON.parse(await response.text());
 
-                console.log(json);
-
                 setUser(json.results);
 
                 setEmail(json.results.Email);
@@ -76,11 +74,7 @@ export default function ProfileHeader() {
             if (response.status === 200) {
                 var json = JSON.parse(await response.text());
 
-                console.log(json);
-
                 setPostNumber(json.postsCount);
-
-                console.log(postNumber);
 
                 setStatsLoading(false);
             }
@@ -93,11 +87,7 @@ export default function ProfileHeader() {
             if (response.status === 200) {
                 var json = JSON.parse(await response.text());
 
-                console.log(json);
-
                 setReplyNumber(json.repliesCount);
-
-                console.log(replyNumber);
 
                 setStatsLoading(false);
             }

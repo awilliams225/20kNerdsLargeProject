@@ -83,14 +83,10 @@ export default function PostForum() {
             var obj = { questionSlug: questionSlug, postsPerPage: parseInt(postsPerPage), stance: answer.stance, response: answer.response };
             var js = JSON.stringify(obj);
 
-            console.log(answer);
-
             const response = await fetch(buildPath("api/getPostsByQuestion/" + page), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 
             if (response != null) {
                 const json = await response.json();
-
-                console.log(json);
 
                 setPosts(json);
 
@@ -107,14 +103,11 @@ export default function PostForum() {
             var obj = { questionSlug: questionSlug, stance: answer.stance, response: answer.response };
             var js = JSON.stringify(obj);
 
-            console.log(answer);
 
             const response = await fetch(buildPath("api/numPosts"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 
             if (response != null) {
                 const json = await response.json();
-
-                console.log(json.numPosts);
 
                 setNumPosts(json.numPosts);
 
@@ -124,8 +117,6 @@ export default function PostForum() {
                 console.log("Response is null");
             }
         }
-
-        console.log(answerReceived);
 
         if (answerReceived) {
             console.log("Hello?");

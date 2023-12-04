@@ -33,8 +33,6 @@ export default function ProfileHeader() {
 
                 setUser(json);
 
-                console.log(user);
-
                 setLoading(false);
             }
             else {

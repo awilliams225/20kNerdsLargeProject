@@ -22,7 +22,6 @@ export default function CreateReplyForm(props) {
 
     const handleChange = (event) => {
         setFormData({...formData, [event.target.name]: event.target.value});
-        console.log(formData);
     }
 
     const app_name = 'fight-or-flight-20k-5991cb1c14ef'

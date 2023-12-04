@@ -79,14 +79,12 @@ export default function ReplyForum() {
 
             var obj = { slug: slug };
             var js = JSON.stringify(obj);
-            console.log(js);
 
             const response = await fetch(buildPath("api/replies/getByPostSlug"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 
             if (response != null) {
                 const json = await response.json();
 
-                console.log(json);
                 setReplies(json);
 
                 setRepliesLoading(false);
@@ -107,7 +105,6 @@ export default function ReplyForum() {
         }
         else {
             var replyList = replies.replyList;
-            console.log(replyList);
             return (
                 <>
                     <Button variant={`secondary-${stance}`} href={`/question/${questionSlug}/`}>

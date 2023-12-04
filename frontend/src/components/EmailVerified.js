@@ -43,7 +43,6 @@ export default function EmailVerified() {
                 obj = { userId: json.userId };
                 js = JSON.stringify(obj);
 
-                console.log(json.userId);
 
                 const tokenResponse = await fetch(buildPath("api/validateToken"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json', 'twentythousand_header_key': tokenJs}});
 

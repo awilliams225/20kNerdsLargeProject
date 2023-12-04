@@ -36,8 +36,6 @@ export default function ForgotPasswordModal() {
         if (response.status === 200) {
             const json = await response.json();
 
-            console.log(json.id);
-
             obj = { userId: json.id, email: email};
             js = JSON.stringify(obj);
 
@@ -46,7 +44,6 @@ export default function ForgotPasswordModal() {
             if (forgResponse.status === 201) {
                 const emailJson = JSON.parse(await forgResponse.text());
                 setText('An email has been sent!');
-                console.log(emailJson);
                 localStorage.setItem('token', JSON.stringify(emailJson.token));
             }
             else {

@@ -226,7 +226,7 @@ app.post('/api/forgotPassword', async (req, res, next) =>
             button: {
                 color: '#22BC66', // Optional action button color
                 text: 'Change password',
-                link: 'https://fight-or-flight-20k-5991cb1c14ef.herokuapp.com/changepassword/'
+                link: 'https://fight-or-flight-20k-5991cb1c14ef.herokuapp.com/changepassword/' + token
             }
         },
         outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'

@@ -44,7 +44,6 @@ export default function ForgotPasswordModal() {
             if (forgResponse.status === 201) {
                 const emailJson = JSON.parse(await forgResponse.text());
                 setText('An email has been sent!');
-                localStorage.setItem('token', JSON.stringify(emailJson.token));
             }
             else {
                 setText('This email is invalid!');

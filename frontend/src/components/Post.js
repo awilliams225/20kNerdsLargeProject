@@ -8,6 +8,7 @@ export default function Post(props) {
 
     return (
         <>
+            {post !== undefined &&
             <Card className="mb-3 shadow border-5">
                 <Card.Header>
                     <Card.Title>{post.Title}</Card.Title>
@@ -17,6 +18,7 @@ export default function Post(props) {
                     <ReactMarkdown children={post.Content}></ReactMarkdown>
                 </Card.Body>
             </Card>
+            }
         </>
     )
 

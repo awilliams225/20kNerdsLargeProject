@@ -10,6 +10,8 @@ import InputGroup from 'react-bootstrap/InputGroup';
 
 export default function ChangePasswordForm() {
 
+    const { token } = useParams();
+
     const [userId, setId] = useState('');
     const [newPass, setNewPass] = useState('');
     const [message, setMessage] = useState('');
@@ -30,10 +32,8 @@ export default function ChangePasswordForm() {
     useEffect(() => {
 
         const grabUser = async () => {
-            var obj = { token: JSON.parse(localStorage.getItem('token')) };
+            var obj = { token: token };
             var js = JSON.stringify(obj);
-
-            console.log(JSON.parse(localStorage.getItem('token')));
 
             const response = await fetch(buildPath("api/grabUserByPassRequest"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 

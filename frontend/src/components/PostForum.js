@@ -1,5 +1,7 @@
 import Spinner from 'react-bootstrap/Spinner';
 import ListGroup from 'react-bootstrap/ListGroup';
+import Card from 'react-bootstrap/Card';
+import Button from 'react-bootstrap/Button';
 import { useParams } from "react-router-dom";
 import React, { useState, useEffect, useContext } from 'react';
 import { StanceContext } from './StanceContext';
@@ -18,7 +20,7 @@ export default function PostForum() {
     const [paginationLoading, setPaginationLoading] = useState(true);
     const [question, setQuestion] = useState({});
     const [answer, setAnswer] = useState({});
-    const [answerReceived, setAnswerReceived] = useState(null);
+    const [answerReceived, setAnswerReceived] = useState(false);
     const {stance, setStance} = useContext(StanceContext);
 
     const postsPerPage = 5;
@@ -79,6 +81,11 @@ export default function PostForum() {
         const grabForum = async () => {
             setPostsLoading(true);
 
+            if (answer === null) {
+                setPostsLoading(false);
+                return;
+            }
+
             var obj = { questionSlug: questionSlug, postsPerPage: parseInt(postsPerPage), stance: answer.stance, response: answer.response };
             var js = JSON.stringify(obj);
 
@@ -98,6 +105,11 @@ export default function PostForum() {
 
         const grabNumPosts = async () => {
             setPaginationLoading(true);
+
+            if (answer === null) {
+                setPaginationLoading(false);
+                return;
+            }
 
             var obj = { questionSlug: questionSlug, stance: answer.stance, response: answer.response };
             var js = JSON.stringify(obj);
@@ -132,6 +144,8 @@ export default function PostForum() {
             var postList = posts.posts;
             return (
                 <>
+                    {answer !== null ?
+                    <>
                     <ForumHeader question={question} answer={answer}/>
                     <CreatePostForm questionSlug={questionSlug} answerId={answer._id} />
                     <Paginator activePage={page} numPages={Math.ceil(numPosts / postsPerPage)} />
@@ -142,6 +156,22 @@ export default function PostForum() {
                             </ListGroup.Item>
                         ))}
                     </ListGroup>
+                    </>
+                    :
+                    <>
+                    <Card className="my-4 shadow border-5">
+                        <Card.Header>
+                            <Card.Title>Forum Locked!</Card.Title>
+                        </Card.Header>
+                        <Card.Body>
+                            <Card.Text>Nice try, nerd! You have to answer the question before you can access this forum.</Card.Text>
+                        </Card.Body>
+                    </Card>
+                    <Button variant={`secondary-${stance}`} href={"/"}>
+                        Back to Questions
+                    </Button>
+                    </>
+                    }
                 </>
             )
         }

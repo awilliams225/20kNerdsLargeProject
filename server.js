@@ -1017,7 +1017,7 @@ app.post('/api/replies/countRepliesByUser', async (req, res, next) => {
 
   var error = '';
   var count = 0;
-  const { UserID } = req.body;
+  const { UserId } = req.body;
 
 
   try {
@@ -1025,7 +1025,7 @@ app.post('/api/replies/countRepliesByUser', async (req, res, next) => {
     const query = {
       $and: [
         { "UserID": { $exists: true } },
-        { "UserID": UserID }
+        { "UserID": UserId }
       ]
     };
 

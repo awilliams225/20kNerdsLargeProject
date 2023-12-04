@@ -66,7 +66,7 @@ export default function ProfileHeader() {
         const getStats = async () => {
             setStatsLoading(true);
 
-            var obj = { userId };
+            var obj = { UserId: userId };
             var js = JSON.stringify(obj);
 
             var response = await fetch(buildPath("api/posts/countPostsByUser"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });

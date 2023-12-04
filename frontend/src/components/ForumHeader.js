@@ -6,8 +6,9 @@ export default function ForumHeader(props) {
 
     const question = props.question;
     const answer = props.answer;
+
     return (
-        <>
+        <> {props.answer ? 
             <Card className="my-4 shadow border-5">
                 <Card.Header>
                     <Card.Title className="text-center fs-1">{question.text}</Card.Title>
@@ -17,6 +18,16 @@ export default function ForumHeader(props) {
                     <Card.Text className="text-center fs-4"> You answered: "{question.responses[answer.response]}"</Card.Text>
                 </Card.Body>
             </Card>
+            :
+            <Card>
+                <Card.Header>
+                    <Card.Title className="text-center fs-1">{question.text}</Card.Title>
+                </Card.Header>
+                <Card.Body>
+                    <Card.Text className="text-center fs-4">Forum locked in read-only (answer the question first!)</Card.Text>
+                </Card.Body>
+            </Card>
+            }
         </>
     )
 

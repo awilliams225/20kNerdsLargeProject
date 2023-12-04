@@ -17,7 +17,7 @@ export default function ReplyForum() {
     const [repliesLoading, setRepliesLoading] = useState(true);
     const [question, setQuestion] = useState({});
     const [answer, setAnswer] = useState({});
-    const [answerReceived, setAnswerReceived] = useState(null);
+    const [answerReceived, setAnswerReceived] = useState(false);
     const {stance, setStance} = useContext(StanceContext);
 
     const app_name = 'fight-or-flight-20k-5991cb1c14ef'
@@ -111,7 +111,9 @@ export default function ReplyForum() {
                     </Button>
                     <ForumHeader question={question} answer={answer} />
                     <PostDetails />
+                    {answer !== null &&
                     <CreateReplyForm slug={slug} />
+                    }
                     <ListGroup className="mt-3">
                         {replyList.map((reply) => (
                             <ListGroup.Item className="my-3 shadow border-5">

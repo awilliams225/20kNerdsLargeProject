@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { StanceContext } from './StanceContext';
 import Post from './Post';
 
 export default function PostDetails() {
@@ -7,6 +8,7 @@ export default function PostDetails() {
 
     const [post, setPost] = useState({});
     const [loading, setLoading] = useState(true);
+    const {stance, setStance} = useContext(StanceContext);
 
     const app_name = 'fight-or-flight-20k-5991cb1c14ef'
     function buildPath(route) {
@@ -44,6 +46,7 @@ export default function PostDetails() {
             return <h1>Loading...</h1>
         }
         else {
+            setStance(post.Result.Answer.stance);
             return (
                 <>
                     <Post post={post.Result} />

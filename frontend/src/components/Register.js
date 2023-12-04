@@ -157,7 +157,7 @@ export default function Register() {
                     </InputGroup.Text>
                 </InputGroup>
                 <Form.Control className='mt-2' type='email' placeholder='Email' onChange={handleEmailChange}/>
-                <Button className='mt-2' variant='primary' onClick={doRegister}>Register</Button>
+                <Button className='mt-2' variant='primary' onSubmit={doRegister}>Register</Button>
             </Form>
             <span id="registerResult">{message}</span>
             <span className='text-light small' id='passValidSpan'></span><br />

@@ -85,7 +85,7 @@ export default function ChangePasswordForm() {
                                     {showPass ? <EyeSlashFill /> : <EyeFill />}
                                 </InputGroup.Text>
                             </InputGroup>
-                            <Button variant='primary' onClick={changePass}>
+                            <Button variant='primary' onSubmit={changePass}>
                                 Change Password
                             </Button>
                             <br /><a href={'/'}>Return to Login</a>

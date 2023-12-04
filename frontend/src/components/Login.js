@@ -91,7 +91,7 @@ export default function Login() {
                         { showPass ? <EyeSlashFill/> : <EyeFill /> }
                     </InputGroup.Text>
                 </InputGroup>
-                <Button className='mt-2' variant='primary' onClick={doLogin}>Login</Button>
+                <Button className='mt-2' variant='primary' onSubmit={doLogin}>Login</Button>
             </Form>
             <ForgotPasswordModal /> <br />
             <span className='text-light' id="loginResult">{message}</span>

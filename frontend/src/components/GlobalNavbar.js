@@ -37,8 +37,6 @@ export default function GlobalNavbar() {
             if (response.status === 200) {
                 const json = JSON.parse(await response.text());
 
-                console.log(json);
-
                 setUsername(json.results.Username);
 
                 setUserLoading(false);

@@ -89,7 +89,7 @@ export default function Register() {
         const lowerCheck = /[a-z]/g
         const numCheck = /[0-9]/g
         const specialCheck = /[!@#$%^&*]/g
-        const allCheck =  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&^])[A-Za-z\d@.#$!%*?&]{8,15}$/;
+        const allCheck =  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&^])[A-Za-z\d@.#$!%*?&]{8,100}$/;
 
         if (pass.length < 8) {
             lengthSpan.innerHTML = '* Please make password 8 characters or more';

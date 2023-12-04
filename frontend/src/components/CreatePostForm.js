@@ -13,6 +13,7 @@ export default function CreatePostForm(props) {
 
     const questionSlug = props.questionSlug;
     const answerId = props.answerId;
+    const response = props.response;
 
     const [show, setShow] = useState(false);
     const [formData, setFormData] = useState({
@@ -65,7 +66,7 @@ export default function CreatePostForm(props) {
             </Button>
             <Modal show={show} data-bs-theme={stance}>
                 <Card>
-                    <Card.Header>Create a Post</Card.Header>
+                    <Card.Header>Create a Post for Your Answer: "{response}"</Card.Header>
                     <Card.Body>
                         <Form className="m-3" onSubmit={handleSubmit}>
                             <Form.Group className="mb-5" controlId="formTitle">

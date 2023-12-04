@@ -147,7 +147,7 @@ export default function PostForum() {
                     {answer !== null ?
                     <>
                     <ForumHeader question={question} answer={answer}/>
-                    <CreatePostForm questionSlug={questionSlug} answerId={answer._id} />
+                    <CreatePostForm questionSlug={questionSlug} answerId={answer._id} response={question.responses[answer.response]} />
                     <Paginator activePage={page} numPages={Math.ceil(numPosts / postsPerPage)} />
                     <ListGroup className="mt-3">
                         {postList.map((post) => (

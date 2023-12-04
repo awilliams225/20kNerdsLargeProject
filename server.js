@@ -1024,8 +1024,8 @@ app.post('/api/replies/countRepliesByUser', async (req, res, next) => {
 
     const query = {
       $and: [
-        { "UserID": { $exists: true } },
-        { "UserID": UserId }
+        { "userId": { $exists: true } },
+        { "userId": UserId }
       ]
     };
 

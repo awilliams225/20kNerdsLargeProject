@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ForgotPasswordModal from '../components/ForgotPasswordModal'
 import { Eye, EyeFill, EyeSlashFill } from 'react-bootstrap-icons';
 import Form from 'react-bootstrap/Form';
@@ -21,6 +21,14 @@ export default function Login() {
             return 'http://localhost:5000/' + route;
         }
     }
+
+    useEffect(() => {
+
+        document.addEventListener("keydown", handleKeyPress);
+
+        document.removeEventListener("keydown", handleKeyPress);
+
+    }, [])
 
     const doLogin = async event => {
         event.preventDefault();
@@ -97,7 +105,7 @@ export default function Login() {
                         { showPass ? <EyeSlashFill/> : <EyeFill /> }
                     </InputGroup.Text>
                 </InputGroup>
-                <Button className='mt-2' variant='primary' onClick={doLogin} onKeyDown={handleKeyPress}>Login</Button>
+                <Button className='mt-2' variant='primary' onClick={doLogin}>Login</Button>
             </Form>
             <ForgotPasswordModal /> <br />
             <span className='text-light' id="loginResult">{message}</span>

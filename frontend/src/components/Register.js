@@ -133,6 +133,12 @@ export default function Register() {
 
     }
 
+    const handleKeyPress = (event) => {
+        if (event.key == 'Enter') {
+            doRegister();
+        }
+    }
+
     const handleUsernameChange = (event) => {
         setUsername(event.target.value);
     }
@@ -157,7 +163,7 @@ export default function Register() {
                     </InputGroup.Text>
                 </InputGroup>
                 <Form.Control className='mt-2' type='email' placeholder='Email' onChange={handleEmailChange}/>
-                <Button className='mt-2' variant='primary' onClick={doRegister}>Register</Button>
+                <Button className='mt-2' variant='primary' onClick={doRegister} onKeyDown={handleKeyPress}>Register</Button>
             </Form>
             <span id="registerResult">{message}</span>
             <span className='text-light small' id='passValidSpan'></span><br />

@@ -65,6 +65,12 @@ export default function ChangePasswordForm() {
         }
     }
 
+    const handleKeyPress = (event) => {
+        if (event.key == 'Enter') {
+            changePass();
+        }
+    }
+
     const showPassClick = (event) => {
         setShowPass((prev) => !prev);
     }
@@ -85,7 +91,7 @@ export default function ChangePasswordForm() {
                                     {showPass ? <EyeSlashFill /> : <EyeFill />}
                                 </InputGroup.Text>
                             </InputGroup>
-                            <Button variant='primary' onClick={changePass}>
+                            <Button variant='primary' onClick={changePass} onKeyDown={handleKeyPress}>
                                 Change Password
                             </Button>
                             <br /><a href={'/'}>Return to Login</a>

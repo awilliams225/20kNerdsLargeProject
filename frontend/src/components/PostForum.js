@@ -68,7 +68,6 @@ export default function PostForum() {
 
     const runEffect = async () => {
         await grabAnswer();
-        console.log("Answer grabbed");
     }
 
     useEffect(() => {
@@ -119,7 +118,6 @@ export default function PostForum() {
         }
 
         if (answerReceived) {
-            console.log("Hello?");
             grabForum();
             grabNumPosts();
         }

@@ -32,7 +32,6 @@ export default function ReplyForum() {
 
     const runEffect = async () => {
         await grabAnswer();
-        console.log("Answer grabbed");
     }
 
     const grabAnswer = async () => {

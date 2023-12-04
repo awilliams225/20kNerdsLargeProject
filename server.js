@@ -967,7 +967,7 @@ app.post('/api/replies/grabRepliesAndPostsByUserId/:pageNum', async (req, res, n
     replyList = await db.collection('Replies').find({ userId: userId }).skip(toSkip).limit(perPage).toArray();
 
     pairList = await Promise.all(replyList.map(async (reply) => {
-        return {post: await db.collection('Post').findOne({Slug:reply.slug}), ...reply};
+        return {post: await db.collection('Post').findOne({Slug:reply.slug}), reply: reply};
     }))
   }
   catch (e) {

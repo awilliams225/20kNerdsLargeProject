@@ -59,7 +59,6 @@ export default function Register() {
                 if (emailResponse.status === 201)
                 {
                     setMessage('A registration email has been sent!');
-                    console.log(emailJson);
                     localStorage.setItem('token', JSON.stringify(emailJson.token));
                 }
                 else

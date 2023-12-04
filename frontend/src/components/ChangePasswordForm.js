@@ -40,8 +40,6 @@ export default function ChangePasswordForm() {
             if (response.status === 200) {
                 const json = await response.json();
 
-                console.log(json.userId);
-
                 setId(json.userId);
             }
             else {
@@ -56,8 +54,6 @@ export default function ChangePasswordForm() {
     async function changePass() {
         var obj = { userId: userId, newPassword: newPass };
         var js = JSON.stringify(obj);
-
-        console.log(newPass);
 
         const response = await fetch(buildPath("api/changePassword"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 

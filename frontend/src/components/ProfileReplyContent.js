@@ -40,8 +40,6 @@ export default function ProfileReplyContent() {
             if (response != null) {
                 const json = await response.json();
 
-                console.log(json);
-
                 setReplies(json);
 
                 setRepliesLoading(false);
@@ -88,7 +86,6 @@ export default function ProfileReplyContent() {
                 )
             }
             var pairList = replies.pairList;
-            console.log(pairList);
             return (
                 <>
                     <Card>

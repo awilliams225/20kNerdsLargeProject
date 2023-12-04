@@ -142,7 +142,7 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
             button: {
                 color: '#22BC66', // Optional action button color
                 text: 'Confirm your account',
-                link: 'http://localhost:3000/emailverified/'
+                link: 'http://localhost:3000/emailverified/' + token
             }
         },
         outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'
@@ -459,7 +459,7 @@ app.post('/api/register', async (req, res, next) =>
     error = e.toString();
   }
 
-  var ret = { userId: result.insertedId.toString(), error: error };
+  var ret = { userId: id, error: error };
   res.status(200).json(ret);
 });
 

@@ -3,8 +3,11 @@ import Button from 'react-bootstrap/Button';
 import React, { useState, useEffect } from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
+import { useParams } from 'react-router-dom';
 
 export default function EmailVerified() {
+
+    let { token } = useParams();
 
     const [userId, setId] = useState('');
     const [text, setText] = useState('');
@@ -24,15 +27,13 @@ export default function EmailVerified() {
 
         const verifyUser = async () => {
 
-            const token = localStorage.getItem('token');
             if (!token) {
                 setTitle('Oops!');
                 setText('It looks like your email has expired, or there was an error.');
                 return;
             }
-            const tokenJs = JSON.parse(token);
 
-            var obj = { token: tokenJs };
+            var obj = { token: token };
             var js = JSON.stringify(obj);
 
             const response = await fetch(buildPath("api/grabUserByEmailVerificationRequest"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
@@ -44,7 +45,7 @@ export default function EmailVerified() {
                 js = JSON.stringify(obj);
 
 
-                const tokenResponse = await fetch(buildPath("api/validateToken"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json', 'twentythousand_header_key': tokenJs}});
+                const tokenResponse = await fetch(buildPath("api/validateToken"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json', 'twentythousand_header_key': token}});
 
                 if (tokenResponse.status === 200) {
                     console.log("Token was validated!");

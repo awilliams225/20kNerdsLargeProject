@@ -145,7 +145,7 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
             button: {
                 color: '#22BC66', // Optional action button color
                 text: 'Confirm your account',
-                link: 'https://fight-or-flight-20k-5991cb1c14ef.herokuapp.com/emailverified/'
+                link: 'https://fight-or-flight-20k-5991cb1c14ef.herokuapp.com/emailverified/' + token
             }
         },
         outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'

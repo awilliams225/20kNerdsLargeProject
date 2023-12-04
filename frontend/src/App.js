@@ -122,8 +122,8 @@ function App() {
                                 <Route path="/user/:userId/" element={wrapElement(<ProfileMainPage />)} />
                                 <Route path="/user/:userId/posts/:page?/" element={wrapElement(<ProfilePostPage />)} />
                                 <Route path="/user/:userId/replies/:page?/" element={wrapElement(<ProfileReplyPage />)} />
-                                <Route path="/changepassword/" element={<ChangePasswordPage />} />
-                                <Route path="/emailverified" element={<EmailRegisteredPage />} />
+                                <Route path="/changepassword/:token" element={<ChangePasswordPage />} />
+                                <Route path="/emailverified/:token" element={<EmailRegisteredPage />} />
                             </Routes>
                         </StanceContext.Provider>
                     </BrowserRouter>

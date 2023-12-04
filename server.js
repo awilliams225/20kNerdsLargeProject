@@ -223,7 +223,7 @@ app.post('/api/forgotPassword', async (req, res, next) =>
             button: {
                 color: '#22BC66', // Optional action button color
                 text: 'Change password',
-                link: 'http://localhost:3000/changepassword/'
+                link: 'http://localhost:3000/changepassword/' + token
             }
         },
         outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'

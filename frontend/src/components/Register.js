@@ -134,6 +134,7 @@ export default function Register() {
     }
 
     const handleKeyPress = (event) => {
+        event.preventDefault();
         if (event.key == 'Enter') {
             doRegister();
         }
@@ -154,7 +155,7 @@ export default function Register() {
     return (
         <>
             <h2 className='h2'>Signup</h2>
-            <Form>
+            <Form onKeyUp={handleKeyPress}>
                 <Form.Control type='username' placeholder='Username' onChange={handleUsernameChange}/>
                 <InputGroup className='mt-2'>
                     <Form.Control type={showPass ? 'text' : 'password'} placeholder='Password' onChange={handlePasswordChange} />
@@ -163,7 +164,7 @@ export default function Register() {
                     </InputGroup.Text>
                 </InputGroup>
                 <Form.Control className='mt-2' type='email' placeholder='Email' onChange={handleEmailChange}/>
-                <Button className='mt-2' variant='primary' onClick={doRegister} onKeyDown={handleKeyPress}>Register</Button>
+                <Button className='mt-2' variant='primary' onClick={doRegister}>Register</Button>
             </Form>
             <span id="registerResult">{message}</span>
             <span className='text-light small' id='passValidSpan'></span><br />

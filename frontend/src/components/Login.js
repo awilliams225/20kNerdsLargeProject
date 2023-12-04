@@ -30,8 +30,7 @@ export default function Login() {
 
     }, [])
 
-    const doLogin = async event => {
-        event.preventDefault();
+    const doLogin = async () => {
 
         if (username == '' && password == '')
         {
@@ -77,6 +76,7 @@ export default function Login() {
     };
 
     const handleKeyPress = (event) => {
+        event.preventDefault();
         if (event.key == 'Enter') {
             doLogin();
         }
@@ -97,7 +97,7 @@ export default function Login() {
     return (
         <>
             <h2 className='h2 text-white'>Login</h2>
-            <Form>
+            <Form onKeyUp={handleKeyPress}>
                 <Form.Control type='username' placeholder='Username' onChange={handleUsernameChange} />
                 <InputGroup className='mt-2'>
                     <Form.Control type={showPass ? 'text' : 'password'} placeholder='Password' onChange={handlePasswordChange} />

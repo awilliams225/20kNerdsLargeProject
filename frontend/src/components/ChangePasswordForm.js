@@ -66,6 +66,7 @@ export default function ChangePasswordForm() {
     }
 
     const handleKeyPress = (event) => {
+        event.preventDefault();
         if (event.key == 'Enter') {
             changePass();
         }
@@ -84,7 +85,7 @@ export default function ChangePasswordForm() {
             <Container>
                 <Row className='justify-content-center pt-5'>
                     <Card bg='dark' data-bs-theme="dark" style={{ width: '24rem', height: '14rem' }} className='p-3'>
-                        <Form className='text-center'>
+                        <Form className='text-center' onKeyUp={changePass}>
                             <InputGroup className='mt-3 mb-3'>
                                 <Form.Control type={showPass ? 'text' : 'password'} placeholder='Password' onChange={handlePasswordChange} />
                                 <InputGroup.Text onClick={showPassClick}>

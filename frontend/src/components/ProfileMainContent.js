@@ -8,6 +8,9 @@ import { StanceContext } from './StanceContext';
 import { useParams } from 'react-router-dom';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import OverlayTrigger from 'react-bootstrap/esm/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+
 
 export default function ProfileHeader() {
     const { userId } = useParams();
@@ -17,13 +20,22 @@ export default function ProfileHeader() {
     const [email, setEmail] = useState('');
     const [emailMessage, setEmailMessage] = useState('');
     const [username, setUsername] = useState('');
-    const [newPassword, setNewPassword] = useState('');
+    const [password, setPassword] = useState('');
     const [passwordMessage, setPasswordMessage] = useState('');
     const [postNumber, setPostNumber] = useState(0);
     const [replyNumber, setReplyNumber] = useState('');
     const [statsLoading, setStatsLoading] = useState(true);
     const [usernameMessage, setUsernameMessage] = useState(true);
     const {stance, setStance} = useContext(StanceContext);
+
+    const [showCount, setShowCount] = useState(false);
+    const [showUpper, setShowUpper] = useState(false);
+    const [showLower, setShowLower] = useState(false);
+    const [showNum, setShowNum] = useState(false);
+    const [showSpecial, setShowSpecial] = useState(false);
+    const [showPassValid, setShowPassValid] = useState(false);
+    const [passValid, setPassValid] = useState(false);
+    const [show, setShow] = useState(false);
 
     const app_name = 'fight-or-flight-20k-5991cb1c14ef'
     function buildPath(route) {
@@ -107,10 +119,6 @@ export default function ProfileHeader() {
     const onUsernameChange = (event) => {
         setUsername(event.target.value);
     }
-    
-    const onPasswordChange = (event) => {
-        setNewPassword(event.target.value);
-    }
 
     const updateEmail = async () => {
         const obj = { userId: userId, email: email };
@@ -141,8 +149,14 @@ export default function ProfileHeader() {
     }
 
     async function changePass() {
-        var obj = { userId: userId, newPassword: newPassword };
+        var obj = { userId: userId, newPassword: password };
         var js = JSON.stringify(obj);
+
+        if (!passValid)
+        {
+            setShowPassValid(true);
+            return;
+        }
 
         const response = await fetch(buildPath("api/changePassword"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 
@@ -152,6 +166,78 @@ export default function ProfileHeader() {
         else {
             setPasswordMessage("Unable to change password.");
         }
+    }
+
+    const passToolTip = (
+        <Tooltip>
+            <span className='text-light' id='passValidSpan' style={{ display: showPassValid ? "inline" : "none" }}>This password is invalid!</span><br />
+            <span className='text-light small' id='passLengthSpan' style={{ display: showCount ? "inline" : "none" }}>* Please make password 8 characters or more</span><br />
+            <span className='text-light small' id='passUpperSpan' style={{ display: showUpper ? "inline" : "none" }}>* Please include at least 1 uppercase letter</span><br />
+            <span className='text-light small' id='passLowerSpan' style={{ display: showLower ? "inline" : "none" }}>* Please include at least 1 lowercase letter</span><br />
+            <span className='text-light small' id='passNumberSpan' style={{ display: showNum ? "inline" : "none" }}>* Please include at least 1 number</span><br />
+            <span className='text-light small' id='passSpecialSpan' style={{ display: showSpecial ? "inline" : "none" }}>* Please include at least 1 special character</span><br />
+        </Tooltip>
+    )
+
+    const onPasswordChange = (event) => {
+        const validSpan = document.getElementById('passValidSpan');
+        setShowPassValid(false);
+
+        var pass = event.target.value;
+
+        const upperCheck = /[A-Z]/g
+        const lowerCheck = /[a-z]/g
+        const numCheck = /[0-9]/g
+        const specialCheck = /[!@#$%^&*]/g
+        const allCheck =  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&^])[A-Za-z\d@.#$!%*?&]{8,100}$/;
+
+        if (pass.length < 8) {
+            setShowCount(true);
+            setPassValid(false);
+            setShow(true);
+        }
+        else
+            setShowCount(false);
+
+        if (!pass.match(upperCheck)) {
+            setShowUpper(true);
+            setPassValid(false);
+            setShow(true);
+        }
+        else
+            setShowUpper(false);
+
+        if (!pass.match(lowerCheck)) {
+            setShowLower(true);
+            setPassValid(false);
+            setShow(true);
+        }
+        else
+            setShowLower(false);
+
+        if (!pass.match(numCheck)) {
+            setShowNum(true);
+            setPassValid(false);
+            setShow(true);
+        }
+        else
+            setShowNum(false);        
+
+        if (!pass.match(specialCheck)) {
+            setShowSpecial(true);
+            setPassValid(false);
+            setShow(true);
+        }
+        else
+            setShowSpecial(false);   
+
+        if (pass.match(allCheck)) {
+            setPassValid(true);
+            setShow(false);
+        }
+
+        setPassword(pass);
+
     }
 
     const renderUserInfo = () => {
@@ -180,13 +266,15 @@ export default function ProfileHeader() {
                                             <Form.Text className='text-light' style={{ display: "block" }}>{usernameMessage}</Form.Text>
                                             <Button onClick={updateUsername} variant={`primary-${stance}`} style={{ display: (userId == JSON.parse(localStorage.getItem('user_data')).id ? "block" : "none") }}>Change Username</Button>
                                         </Form.Group>
-                                        <Form.Group className='mb-3' controlId='usernameForm'>
+                                        <OverlayTrigger placement="left" delay={{ show: 250, hide: 400 }} overlay={passToolTip} show={show}>
+                                        <Form.Group className='mb-3' controlId='passwordForm'>
                                             <Form.Label>Password:</Form.Label>
                                             <Form.Control type='text' onChange={onPasswordChange}></Form.Control>
                                             <Form.Text className='text-light' style={{ display: "block" }}>{passwordMessage}</Form.Text>
                                             <Button onClick={changePass} variant={`primary-${stance}`}>Change Password</Button>
                                         </Form.Group>
-                                        <Form.Group className='mb-3' controlId='usernameForm'>
+                                        </OverlayTrigger>
+                                        <Form.Group className='mb-3' controlId='emailForm'>
                                             <Form.Label>Email:</Form.Label>
                                             <Form.Control type='text' onChange={onEmailChange} value={email} disabled={ userId == JSON.parse(localStorage.getItem('user_data')).id ? false : true }></Form.Control>
                                             <Form.Text className='text-light'>{emailMessage}</Form.Text>

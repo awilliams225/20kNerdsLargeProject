@@ -22,6 +22,7 @@ export default function ProfileHeader() {
     const [postNumber, setPostNumber] = useState(0);
     const [replyNumber, setReplyNumber] = useState('');
     const [statsLoading, setStatsLoading] = useState(true);
+    const [usernameMessage, setUsernameMessage] = useState(true);
     const {stance, setStance} = useContext(StanceContext);
 
     const app_name = 'fight-or-flight-20k-5991cb1c14ef'
@@ -125,6 +126,20 @@ export default function ProfileHeader() {
         }
     }
 
+    const updateUsername = async () => {
+        const obj = { userId: userId, newUsername: username };
+        const js = JSON.stringify(obj);
+
+        const response = await fetch(buildPath("api/changeUsername"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
+
+        if (response.status === 200) {
+            setUsernameMessage("Username changed successfully!");
+        }
+        else {
+            setUsernameMessage("Unable to change username.");
+        }
+    }
+
     async function changePass() {
         var obj = { userId: userId, newPassword: newPassword };
         var js = JSON.stringify(obj);
@@ -162,7 +177,8 @@ export default function ProfileHeader() {
                                         <Form.Group className='mb-3' controlId='usernameForm'>
                                             <Form.Label>Username:</Form.Label>
                                             <Form.Control type='text' onChange={onUsernameChange} value={username} disabled={ userId == JSON.parse(localStorage.getItem('user_data')).id ? false : true }></Form.Control>
-                                            <Button variant={`primary-${stance}`} style={{ display: (userId == JSON.parse(localStorage.getItem('user_data')).id ? "block" : "none") }}>Change Username</Button>
+                                            <Form.Text className='text-light' style={{ display: "block" }}>{usernameMessage}</Form.Text>
+                                            <Button onClick={updateUsername} variant={`primary-${stance}`} style={{ display: (userId == JSON.parse(localStorage.getItem('user_data')).id ? "block" : "none") }}>Change Username</Button>
                                         </Form.Group>
                                         <Form.Group className='mb-3' controlId='usernameForm'>
                                             <Form.Label>Password:</Form.Label>

@@ -53,6 +53,10 @@ export default function CreatePostForm(props) {
 
         if (response != null) {
             const json = await response.json();
+
+            if (response.status === 200) {
+                window.location.reload();
+            }
         }
         else {
             console.log("Response is null");

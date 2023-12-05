@@ -250,8 +250,56 @@ app.post('/api/forgotPassword', async (req, res, next) =>
     return res.status(500).json({ error })
   })
 
-
 });
+
+// change the username in all collections
+app.post('/api/changeUsername', async (req, res, next) => {
+  var error = '';
+  const { userId, newUsername } = req.body;
+  var userObjId = null;
+
+  if (userId != '')
+    userObjId = new ObjectId(userId);
+  else {
+    error = "User not found!";
+    var ret = { error: error };
+    res.status(401).json(ret);
+    return;
+  }
+
+  userQuery = {
+    $and: [
+      { "_id": { $exists: true } },
+      { "_id": userObjId },
+    ]
+  }
+
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    await db.collection('Post').updateMany({UserId: userId}, {
+      $set: {
+        Username: newUsername
+      }
+    })
+    await db.collection('Replies').updateMany({userId: userId}, {
+      $set: {
+        username: newUsername
+      }
+    })
+    await db.collection('Users').updateOne(userQuery, {
+      $set: {
+        Username: newUsername
+      }
+    });
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { newUsername: newUsername, error: error };
+  res.status(200).json(ret);
+})
 
 app.post('/api/changePassword', async (req, res, next) => {
 
@@ -973,6 +1021,33 @@ app.post('/api/replies/grabRepliesAndPostsByUserId/:pageNum', async (req, res, n
   var ret = { pairList: pairList, error:''};
   res.status(200).json(ret);
 });
+
+// Gets all replies and their associated posts by userID
+app.post('/api/replies/grabAllRepliesAndPostsByUserId', async (req, res, next) => {
+
+  var error = '';
+  var replyList = [];
+  var pairList = [];
+
+  const { userId} = req.body;
+
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    replyList = await db.collection('Replies').find({ userId: userId }).toArray();
+
+    pairList = await Promise.all(replyList.map(async (reply) => {
+      return { post: await db.collection('Post').findOne({ Slug: reply.slug }), reply: reply };
+    }))
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { pairList: pairList, error: '' };
+  res.status(200).json(ret);
+});
+
 
 // Returns paginated list of replies by UserID. 
 app.post('/api/replies/getRepliesByUserID/:pageNum', async (req, res, next) => {

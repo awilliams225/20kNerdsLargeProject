@@ -76,6 +76,10 @@ $theme-colors: map-merge($theme-colors, $flight-colors);
         background-color: #{$pagination-active-bg-fight};
         border-color: #{$pagination-active-bg-fight};
     }
+
+    .page-item .page-link {
+        color: #{$light-fight};
+    }
 }
 
 [data-bs-theme="flight"] {
@@ -121,6 +125,10 @@ $theme-colors: map-merge($theme-colors, $flight-colors);
     .page-item.active .page-link {
         background-color: #{$pagination-active-bg-flight};
         border-color: #{$pagination-active-bg-flight};
+    }
+
+    .page-item .page-link {
+        color: #{$light-flight};
     }
 }
 

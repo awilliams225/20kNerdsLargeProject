@@ -221,6 +221,7 @@ export default function QuestionForum() {
                                 <Card>
                                     <Card.Body>
                                         <Card.Title>{question.text}</Card.Title>
+                                        <Card.Text>{ answers.includes(question._id) ? "(Answered)" : "" }</Card.Text>
                                     </Card.Body>
                                 </Card>
                             </ListGroup.Item>

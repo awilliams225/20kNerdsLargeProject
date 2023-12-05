@@ -246,6 +246,55 @@ app.post('/api/forgotPassword', async (req, res, next) =>
     return res.status(500).json({ error })
   })
 
+});
+
+// change the username in all collections
+app.post('/api/changeUsername', async (req, res, next) => {
+
+  var error = '';
+  const { username, newUsername } = req.body;
+  
+  try {
+    const db = client.db('COP4331_LargeProject');
+    db.collection('Users').updateMany( { Username:username },
+    {
+      $set: {
+        Username: newUsername
+      }
+    })
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    db.collection('Replies').updateMany( { Username:username },
+    {
+      $set: {
+        Username: newUsername
+      }
+    })
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    db.collection('Post').updateMany( { Username:username },
+    {
+      $set: {
+        Username: newUsername
+      }
+    })
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { newUsername: newUsername, error: error };
+  res.status(200).json(ret);
 
 });
 

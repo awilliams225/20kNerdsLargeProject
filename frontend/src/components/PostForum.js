@@ -1,11 +1,14 @@
 import Spinner from 'react-bootstrap/Spinner';
 import ListGroup from 'react-bootstrap/ListGroup';
+import Card from 'react-bootstrap/Card';
+import Button from 'react-bootstrap/Button';
 import { useParams } from "react-router-dom";
 import React, { useState, useEffect, useContext } from 'react';
 import { StanceContext } from './StanceContext';
 import Paginator from '../components/Paginator';
 import CreatePostForm from '../components/CreatePostForm';
 import Post from './Post';
+import ForumHeader from './ForumHeader';
 
 export default function PostForum() {
 
@@ -15,8 +18,9 @@ export default function PostForum() {
     const [numPosts, setNumPosts] = useState({});
     const [postsLoading, setPostsLoading] = useState(true);
     const [paginationLoading, setPaginationLoading] = useState(true);
+    const [question, setQuestion] = useState({});
     const [answer, setAnswer] = useState({});
-    const [answerReceived, setAnswerReceived] = useState(null);
+    const [answerReceived, setAnswerReceived] = useState(false);
     const {stance, setStance} = useContext(StanceContext);
 
     const postsPerPage = 5;
@@ -45,6 +49,8 @@ export default function PostForum() {
 
             question = questJson.question;
 
+            setQuestion(question);
+
             var obj = { userId: userId, questionId: question._id };
             var js = JSON.stringify(obj);
 
@@ -64,7 +70,6 @@ export default function PostForum() {
 
     const runEffect = async () => {
         await grabAnswer();
-        console.log("Answer grabbed");
     }
 
     useEffect(() => {
@@ -76,17 +81,18 @@ export default function PostForum() {
         const grabForum = async () => {
             setPostsLoading(true);
 
+            if (answer === null) {
+                setPostsLoading(false);
+                return;
+            }
+
             var obj = { questionSlug: questionSlug, postsPerPage: parseInt(postsPerPage), stance: answer.stance, response: answer.response };
             var js = JSON.stringify(obj);
-
-            console.log(answer);
 
             const response = await fetch(buildPath("api/getPostsByQuestion/" + page), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 
             if (response != null) {
                 const json = await response.json();
-
-                console.log(json);
 
                 setPosts(json);
 
@@ -100,17 +106,19 @@ export default function PostForum() {
         const grabNumPosts = async () => {
             setPaginationLoading(true);
 
+            if (answer === null) {
+                setPaginationLoading(false);
+                return;
+            }
+
             var obj = { questionSlug: questionSlug, stance: answer.stance, response: answer.response };
             var js = JSON.stringify(obj);
 
-            console.log(answer);
 
             const response = await fetch(buildPath("api/numPosts"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 
             if (response != null) {
                 const json = await response.json();
-
-                console.log(json.numPosts);
 
                 setNumPosts(json.numPosts);
 
@@ -121,10 +129,7 @@ export default function PostForum() {
             }
         }
 
-        console.log(answerReceived);
-
         if (answerReceived) {
-            console.log("Hello?");
             grabForum();
             grabNumPosts();
         }
@@ -139,15 +144,34 @@ export default function PostForum() {
             var postList = posts.posts;
             return (
                 <>
-                    <CreatePostForm questionSlug={questionSlug} answerId={answer._id} />
+                    {answer !== null ?
+                    <>
+                    <ForumHeader question={question} answer={answer}/>
+                    <CreatePostForm questionSlug={questionSlug} answerId={answer._id} response={question.responses[answer.response]} />
                     <Paginator activePage={page} numPages={Math.ceil(numPosts / postsPerPage)} />
                     <ListGroup className="mt-3">
                         {postList.map((post) => (
-                            <ListGroup.Item action href={"post/" + post.Slug + "/"} className="my-3 shadow border-5" data-bs-theme={stance}>
+                            <ListGroup.Item action href={`post/${post.Slug}/`} className="my-3 shadow border-5" data-bs-theme={stance}>
                                 <Post post={post} />
                             </ListGroup.Item>
                         ))}
                     </ListGroup>
+                    </>
+                    :
+                    <>
+                    <Card className="my-4 shadow border-5">
+                        <Card.Header>
+                            <Card.Title>Forum Locked!</Card.Title>
+                        </Card.Header>
+                        <Card.Body>
+                            <Card.Text>Nice try, nerd! You have to answer the question before you can access this forum.</Card.Text>
+                        </Card.Body>
+                    </Card>
+                    <Button variant={`secondary-${stance}`} href={"/"}>
+                        Back to Questions
+                    </Button>
+                    </>
+                    }
                 </>
             )
         }

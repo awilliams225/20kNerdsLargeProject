@@ -8,15 +8,17 @@ export default function Post(props) {
 
     return (
         <>
+            {post !== undefined &&
             <Card className="mb-3 shadow border-5">
                 <Card.Header>
                     <Card.Title>{post.Title}</Card.Title>
-                    Posted by <a href={"/user/" + post.UserId + "/"}>{post.Username}</a> at {new Date(post.Timestamp).toLocaleTimeString()} on {new Date(post.Timestamp).toLocaleDateString()}
+                    Posted by <a href={`/user/${post.UserId}/`}>{post.Username}</a> at {new Date(post.Timestamp).toLocaleTimeString()} on {new Date(post.Timestamp).toLocaleDateString()}
                 </Card.Header>
                 <Card.Body>
                     <ReactMarkdown children={post.Content}></ReactMarkdown>
                 </Card.Body>
             </Card>
+            }
         </>
     )
 

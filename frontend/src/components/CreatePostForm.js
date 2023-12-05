@@ -13,6 +13,7 @@ export default function CreatePostForm(props) {
 
     const questionSlug = props.questionSlug;
     const answerId = props.answerId;
+    const response = props.response;
 
     const [show, setShow] = useState(false);
     const [formData, setFormData] = useState({
@@ -25,7 +26,6 @@ export default function CreatePostForm(props) {
 
     const handleChange = (event) => {
         setFormData({...formData, [event.target.name]: event.target.value});
-        console.log(formData);
     }
 
     const app_name = 'fight-or-flight-20k-5991cb1c14ef'
@@ -61,12 +61,12 @@ export default function CreatePostForm(props) {
 
     return (
         <>
-            <Button variant={"primary-" + stance} onClick={handleShow}>
+            <Button variant={`primary-${stance}`} onClick={handleShow}>
                 Create Post
             </Button>
             <Modal show={show} data-bs-theme={stance}>
                 <Card>
-                    <Card.Header>Create a Post</Card.Header>
+                    <Card.Header>Create a Post for Your Answer: "{response}"</Card.Header>
                     <Card.Body>
                         <Form className="m-3" onSubmit={handleSubmit}>
                             <Form.Group className="mb-5" controlId="formTitle">
@@ -77,8 +77,8 @@ export default function CreatePostForm(props) {
                                 <Form.Label>Post Content</Form.Label>
                                 <Form.Control required name="content" as="textarea" placeholder="Explain your answer..." onChange={handleChange} />
                             </Form.Group>
-                            <Button variant={"danger-" + stance + " me-3"} onClick={handleClose}>Discard</Button>
-                            <Button variant={"primary-" + stance} type="submit">Publish</Button>
+                            <Button variant={`danger-${stance} me-3`} onClick={handleClose}>Discard</Button>
+                            <Button variant={`primary-${stance}`} type="submit">Publish</Button>
                         </Form>
                     </Card.Body>
                 </Card>

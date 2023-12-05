@@ -142,7 +142,7 @@ app.post('/api/registerWithEmail', async (req, res, next) =>
             button: {
                 color: '#22BC66', // Optional action button color
                 text: 'Confirm your account',
-                link: 'http://localhost:3000/emailverified/'
+                link: 'http://localhost:3000/emailverified/' + token
             }
         },
         outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'
@@ -223,7 +223,7 @@ app.post('/api/forgotPassword', async (req, res, next) =>
             button: {
                 color: '#22BC66', // Optional action button color
                 text: 'Change password',
-                link: 'http://localhost:3000/emailverified/' + token
+                link: 'http://localhost:3000/changepassword/' + token
             }
         },
         outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'
@@ -240,7 +240,8 @@ app.post('/api/forgotPassword', async (req, res, next) =>
   }
   transporter.sendMail(message).then(() => {
     return res.status(201).json({
-      msg: "you should recieve an email"
+      msg: "you should recieve an email",
+      token: token
     })
   }).catch(error => {
     return res.status(500).json({ error })
@@ -301,16 +302,29 @@ app.post('/api/changeUsername', async (req, res, next) => {
 app.post('/api/changePassword', async (req, res, next) => {
 
   var error = '';
-  const { username, newPassword } = req.body;
+  const { userId, newPassword } = req.body;
+  var userObjId = null;
+  
+  if (userId != '')
+    userObjId = new ObjectId(userId);
+  else {
+    error = "User not found!";
+    var ret = { newPassword: newPassword, error: error };
+    res.status(401).json(ret);
+    return;
+  }
   
   try {
     const db = client.db('COP4331_LargeProject');
-    db.collection('Users').updateOne( { Username:username },
+    const salt = await bcrypt.genSalt(10);
+    const hashPassword = await bcrypt.hash(newPassword, salt);
+    db.collection('Users').updateOne( { _id:userObjId },
     {
       $set: {
-        Password: newPassword
+        Password: hashPassword
       }
     })
+    const deleted = db.collection('PassChangeRequests').deleteOne({userId: userId});
   }
   catch (e) {
     error = e.toString();
@@ -433,6 +447,7 @@ app.post('/api/grabUserByPassRequest', async (req, res, next) => {
     if (!verified)
     {
       error = "Token not valid"
+      const deleted = db.collection('PassChangeRequests').deleteOne({ token: token });
       return res.status(401).send(error); 
     }
   }
@@ -446,7 +461,6 @@ app.post('/api/grabUserByPassRequest', async (req, res, next) => {
     const query = { token: token };
     const db = client.db('COP4331_LargeProject');
     result = await db.collection('PassChangeRequests').findOne(query);
-    const deleted = db.collection('PassChangeRequests').deleteOne(query);
   }
   catch (e)
   {
@@ -461,31 +475,6 @@ app.post('/api/grabUserByPassRequest', async (req, res, next) => {
   var ret = { userId: id, error: error };
   res.status(200).json(ret);
 })
-
-app.post('/api/changePassword', async (req, res, next) => {
-
-  var error = '';
-  const { userId, oldPassword, newPassword } = req.body;
-
-  var objId = new ObjectId(userId);
-  
-  try {
-    const db = client.db('COP4331_LargeProject');
-    db.collection('Users').updateOne( { _id:objId, Password:oldPassword },
-    {
-      $set: {
-        Password: newPassword
-      }
-    })
-  }
-  catch (e) {
-    error = e.toString();
-  }
-
-  var ret = { newPassword: newPassword, error: error };
-  res.status(200).json(ret);
-
-});
 
 app.post('/api/register', async (req, res, next) =>
 {
@@ -519,7 +508,7 @@ app.post('/api/register', async (req, res, next) =>
     error = e.toString();
   }
 
-  var ret = { userId: result.insertedId.toString(), error: error };
+  var ret = { userId: id, error: error };
   res.status(200).json(ret);
 });
 
@@ -1008,29 +997,62 @@ app.post('/api/replies/grabRepliesbyUserID', async (req, res, next) => {
 });
 
 // WIP (assuming database has unique slugs) returns an array of replies and an array of their associated posts
-app.post('/api/replies/grabRepliesAndPostsByUserId', async (req, res, next) => {
+// UPDATE: Only retrieves one post per reply and is now paginated
+app.post('/api/replies/grabRepliesAndPostsByUserId/:pageNum', async (req, res, next) => {
 
   var error = '';
-  var postList = [];
   var replyList = [];
+  var pairList = [];
 
-  const { userId } = req.body;
+  const { userId, perPage } = req.body;
+
+  const pageNum = parseInt(req.params.pageNum); 
+
+  const toSkip = (pageNum - 1) * perPage;
+
 
   try {
     const db = client.db('COP4331_LargeProject');
-    replyList = await db.collection('Replies').find({userId:userId}).toArray();
-   
-    for (i = 0; i < replyList.length; i++)
-    {
-      postList[i] = await db.collection('Post').find({Slug:replyList[i].slug}).toArray();
-    }
+    replyList = await db.collection('Replies').find({ userId: userId }).skip(toSkip).limit(perPage).toArray();
+
+    pairList = await Promise.all(replyList.map(async (reply) => {
+        return {post: await db.collection('Post').findOne({Slug:reply.slug}), reply: reply};
+    }))
   }
   catch (e) {
     error = e.toString();
   }
-  var ret = { postList:postList, replyList: replyList, error:''};
+
+  var ret = { pairList: pairList, error:''};
   res.status(200).json(ret);
 });
+
+// Gets all replies and their associated posts by userID
+app.post('/api/replies/grabAllRepliesAndPostsByUserId', async (req, res, next) => {
+
+  var error = '';
+  var replyList = [];
+  var pairList = [];
+
+  const { userId} = req.body;
+
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    replyList = await db.collection('Replies').find({ userId: userId }).toArray();
+
+    pairList = await Promise.all(replyList.map(async (reply) => {
+      return { post: await db.collection('Post').findOne({ Slug: reply.slug }), reply: reply };
+    }))
+  }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { pairList: pairList, error: '' };
+  res.status(200).json(ret);
+});
+
 
 // Returns paginated list of replies by UserID. 
 app.post('/api/replies/getRepliesByUserID/:pageNum', async (req, res, next) => {
@@ -1071,15 +1093,15 @@ app.post('/api/replies/countRepliesByUser', async (req, res, next) => {
 
   var error = '';
   var count = 0;
-  const { UserID } = req.body;
+  const { UserId } = req.body;
 
 
   try {
 
     const query = {
       $and: [
-        { "UserID": { $exists: true } },
-        { "UserID": UserID }
+        { "userId": { $exists: true } },
+        { "userId": UserId }
       ]
     };
 

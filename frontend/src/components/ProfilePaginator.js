@@ -8,13 +8,13 @@ export default function ProfilePaginator(props) {
     return (
         <>
             <Pagination className="mt-3">
-                <Pagination.Item active={props.activeTab === "main"} href={"/user/" + userId + "/"}>
+                <Pagination.Item active={props.activeTab === "main"} href={`/user/${userId}/`}>
                     Info
                 </Pagination.Item>
-                <Pagination.Item active={props.activeTab === "post"} href={"/user/" + userId + "/posts/"}>
+                <Pagination.Item active={props.activeTab === "post"} href={`/user/${userId}/posts/`}>
                     Posts
                 </Pagination.Item>
-                <Pagination.Item active={props.activeTab === "reply"} href={"/user/" + userId + "/replies/"}>
+                <Pagination.Item active={props.activeTab === "reply"} href={`/user/${userId}/replies/`}>
                     Replies
                 </Pagination.Item>
             </Pagination>

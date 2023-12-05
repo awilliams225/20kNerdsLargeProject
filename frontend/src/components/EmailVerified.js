@@ -1,8 +1,13 @@
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import React, { useState, useEffect } from 'react';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import { useParams } from 'react-router-dom';
 
 export default function EmailVerified() {
+
+    let { token } = useParams();
 
     const [userId, setId] = useState('');
     const [text, setText] = useState('');
@@ -22,15 +27,13 @@ export default function EmailVerified() {
 
         const verifyUser = async () => {
 
-            const token = localStorage.getItem('token');
             if (!token) {
                 setTitle('Oops!');
                 setText('It looks like your email has expired, or there was an error.');
                 return;
             }
-            const tokenJs = JSON.parse(token);
 
-            var obj = { token: tokenJs };
+            var obj = { token: token };
             var js = JSON.stringify(obj);
 
             const response = await fetch(buildPath("api/grabUserByEmailVerificationRequest"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
@@ -41,9 +44,8 @@ export default function EmailVerified() {
                 obj = { userId: json.userId };
                 js = JSON.stringify(obj);
 
-                console.log(json.userId);
 
-                const tokenResponse = await fetch(buildPath("api/validateToken"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json', 'twentythousand_header_key': tokenJs}});
+                const tokenResponse = await fetch(buildPath("api/validateToken"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json', 'twentythousand_header_key': token}});
 
                 if (tokenResponse.status === 200) {
                     console.log("Token was validated!");
@@ -76,17 +78,21 @@ export default function EmailVerified() {
 
     return (
         <>
-        <Card bg='dark' data-bs-theme="dark" style={{ width: '24rem', height: '16rem' }} className='p-3'>
-            <Card.Body>
-                <Card.Title>{ title }</Card.Title>
-                <Card.Text>
-                    { text }
-                </Card.Text>
-            </Card.Body>
-            <Button variant='primary' href={'http://localhost:3000/'}>
-                Go To Login
-            </Button>
-        </Card>
+            <Container>
+                <Row className='justify-content-center pt-5'>
+                    <Card bg='dark' data-bs-theme="dark" style={{ width: '24rem', height: '16rem' }} className='p-3'>
+                        <Card.Body>
+                            <Card.Title>{title}</Card.Title>
+                            <Card.Text>
+                                {text}
+                            </Card.Text>
+                        </Card.Body>
+                        <Button variant='primary' href='/'>
+                            Go To Login
+                        </Button>
+                    </Card>
+                </Row>
+            </Container>
         </>
     )
 }

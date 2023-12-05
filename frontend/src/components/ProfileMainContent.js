@@ -1,8 +1,197 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import Card from 'react-bootstrap/Card';
+import Container from 'react-bootstrap/Container';
+import Button from 'react-bootstrap/esm/Button';
+import Spinner from 'react-bootstrap/esm/Spinner';
+import Form from 'react-bootstrap/Form';
+import { StanceContext } from './StanceContext';
+import { useParams } from 'react-router-dom';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 export default function ProfileHeader() {
+    const { userId } = useParams();
+
+    const [user, setUser] = useState({});
+    const [userLoading, setUserLoading] = useState(true);
+    const [email, setEmail] = useState('');
+    const [emailMessage, setEmailMessage] = useState('');
+    const [username, setUsername] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [passwordMessage, setPasswordMessage] = useState('');
+    const [postNumber, setPostNumber] = useState(0);
+    const [replyNumber, setReplyNumber] = useState('');
+    const [statsLoading, setStatsLoading] = useState(true);
+    const {stance, setStance} = useContext(StanceContext);
+
+    const app_name = 'fight-or-flight-20k-5991cb1c14ef'
+    function buildPath(route) {
+        if (process.env.NODE_ENV === 'production') {
+            return 'https://' + app_name + '.herokuapp.com/' + route;
+        }
+        else {
+            return 'http://localhost:5000/' + route;
+        }
+    }
+
+    useEffect(() => {
+        const getUser = async () => {
+            setUserLoading(true);
+
+            const obj = { userId };
+            const js = JSON.stringify(obj);
+
+            const response = await fetch(buildPath("api/getUserByUserId"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
+
+            if (response.status === 200) {
+                const json = JSON.parse(await response.text());
+
+                setUser(json.results);
+
+                setEmail(json.results.Email);
+
+                setUsername(json.results.Username);
+
+                setUserLoading(false);
+            }
+            else {
+                console.log("Could not find user!");
+            }
+        }
+
+        getUser();
+    }, [userId])
+
+    useEffect(() => {
+        const getStats = async () => {
+            setStatsLoading(true);
+
+            var obj = { UserId: userId };
+            var js = JSON.stringify(obj);
+
+            var response = await fetch(buildPath("api/posts/countPostsByUser"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
+
+            if (response.status === 200) {
+                var json = JSON.parse(await response.text());
+
+                setPostNumber(json.postsCount);
+
+                setStatsLoading(false);
+            }
+            else {
+                console.log("Could not find user!");
+            }
+
+            var response = await fetch(buildPath("api/replies/countRepliesByUser"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
+
+            if (response.status === 200) {
+                var json = JSON.parse(await response.text());
+
+                setReplyNumber(json.repliesCount);
+
+                setStatsLoading(false);
+            }
+            else {
+                console.log("Could not find user!");
+            }
+        }
+        
+        getStats();
+    }, [userId, user])
+
+    const onEmailChange = (event) => {
+        setEmail(event.target.value);
+    }
+
+    const onUsernameChange = (event) => {
+        setUsername(event.target.value);
+    }
+    
+    const onPasswordChange = (event) => {
+        setNewPassword(event.target.value);
+    }
+
+    const updateEmail = async () => {
+        const obj = { userId: userId, email: email };
+        const js = JSON.stringify(obj);
+
+        const response = await fetch(buildPath("api/changeEmail"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
+
+        if (response.status === 200) {
+            setEmailMessage("Email changed successfully!");
+        }
+        else {
+            setEmailMessage("Email change not successful...");
+        }
+    }
+
+    async function changePass() {
+        var obj = { userId: userId, newPassword: newPassword };
+        var js = JSON.stringify(obj);
+
+        const response = await fetch(buildPath("api/changePassword"), { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
+
+        if (response.status === 200) {
+            setPasswordMessage("Password changed successfully!");
+        }
+        else {
+            setPasswordMessage("Unable to change password.");
+        }
+    }
+
+    const renderUserInfo = () => {
+        if (userLoading || statsLoading) {
+            return <Spinner animation='border' />
+        }
+        else {
+            return (
+                <Card>
+                    <Container>
+                        <Row>
+                            <Col>
+                                <Card className='shadow border-5 m-3 p-2'>
+                                    <Card.Title>Stats:</Card.Title>
+                                    <Card.Text className='h2'>Posts: {postNumber}</Card.Text>
+                                    <Card.Text className='h2'>Replies: {replyNumber}</Card.Text>
+                                </Card>
+                            </Col>
+                        {userId == JSON.parse(localStorage.getItem('user_data')).id &&
+                            <Col>
+                                <Card className='shadow border-5 m-3'>
+                                    <Form className='m-3'>
+                                        <Form.Group className='mb-3' controlId='usernameForm'>
+                                            <Form.Label>Username:</Form.Label>
+                                            <Form.Control type='text' onChange={onUsernameChange} value={username} disabled={ userId == JSON.parse(localStorage.getItem('user_data')).id ? false : true }></Form.Control>
+                                            <Button variant={`primary-${stance}`} style={{ display: (userId == JSON.parse(localStorage.getItem('user_data')).id ? "block" : "none") }}>Change Username</Button>
+                                        </Form.Group>
+                                        <Form.Group className='mb-3' controlId='usernameForm'>
+                                            <Form.Label>Password:</Form.Label>
+                                            <Form.Control type='text' onChange={onPasswordChange}></Form.Control>
+                                            <Form.Text className='text-light' style={{ display: "block" }}>{passwordMessage}</Form.Text>
+                                            <Button onClick={changePass} variant={`primary-${stance}`}>Change Password</Button>
+                                        </Form.Group>
+                                        <Form.Group className='mb-3' controlId='usernameForm'>
+                                            <Form.Label>Email:</Form.Label>
+                                            <Form.Control type='text' onChange={onEmailChange} value={email} disabled={ userId == JSON.parse(localStorage.getItem('user_data')).id ? false : true }></Form.Control>
+                                            <Form.Text className='text-light'>{emailMessage}</Form.Text>
+                                            <Button onClick={updateEmail} variant={`primary-${stance}`} style={{ display: (userId == JSON.parse(localStorage.getItem('user_data')).id ? "block" : "none") }}>Change Email</Button>
+                                        </Form.Group>
+                                    </Form>
+                                </Card>
+                            </Col>
+                        }
+                        </Row>
+                    </Container>
+                </Card>
+            )
+        }
+    }
+
     return (
         <>
+            <div>
+                {renderUserInfo()}
+            </div>
         </>
     )
 

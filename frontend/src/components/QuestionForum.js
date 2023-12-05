@@ -1,6 +1,5 @@
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import ButtonGroup from 'react-bootstrap/ToggleButtonGroup';
@@ -9,13 +8,12 @@ import Card from 'react-bootstrap/Card';
 import Spinner from 'react-bootstrap/Spinner';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Collapse from 'react-bootstrap/Collapse';
-import Badge from 'react-bootstrap/Badge';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
+
 import React, { useState, useEffect, useContext } from 'react';
 import { StanceContext } from './StanceContext';
 import { useParams } from "react-router-dom";
-import Paginator from '../components/Paginator';
+import Paginator from './Paginator';
+import StanceInfo from './StanceInfo';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -178,6 +176,7 @@ export default function QuestionForum() {
                     setAlreadyAnswered(true);
                     setCurrAnswer(res.answer);
                     setStance(res.answer.stance);
+                    setRadioValue(res.answer.response + 1);
                 } else
                     setAlreadyAnswered(false);
 
@@ -241,14 +240,7 @@ export default function QuestionForum() {
                 >
                     <span>{ stance.toUpperCase() } MODE</span>
                     
-                    <OverlayTrigger placement='bottom' overlay={
-                        <Tooltip>
-                            <h3>What is this?</h3>
-                            This is your <b>stance.</b> In <b style={{color: 'orange'}}>fight</b> mode, you can argue with people about this topic, while in <b style={{color: 'cyan'}}>flight</b> mode, you can talk to other people who feel the same way as you. You cannot change your stance on a question once you answer it, so choose wisely!
-                        </Tooltip>
-                    }>
-                        <Badge pill bg="secondary" className="m-2">i</Badge>
-                    </OverlayTrigger>
+                    <StanceInfo />
                 </Button> 
             </>
         )
@@ -282,15 +274,13 @@ export default function QuestionForum() {
             {
                 var res = JSON.parse(await response.text());
 
-                console.log("Question successfully answered!");
-
                 var newArr = answers;
                 newArr.push(currQuestion._id);
                 setAnswers(newArr);
 
                 renderQuestions();
 
-                setAlreadyAnswered(true);
+                await checkAnswered(currQuestion);
             }
         }
         catch (e) {
@@ -327,7 +317,7 @@ export default function QuestionForum() {
                             <ToggleButton className="w-50 d-flex align-items-center justify-content-center"
                                 style={{
                                     height: '40vh', borderRadius: '0', padding: '5vw',
-                                    position: 'relative', zIndex:'0'
+                                    position: 'relative', zIndex:'0', border: radioValue == 1 ? '10px solid black' : 'none',
                                 }}
                                 key={1}
                                 id={"radio-1"}
@@ -344,7 +334,7 @@ export default function QuestionForum() {
                             <ToggleButton className="w-50 d-flex align-items-center justify-content-center"
                                 style={{
                                     height: '40vh', borderRadius: '0', padding: '5vw',
-                                    position: 'relative', zIndex:'0'
+                                    position: 'relative', zIndex:'0', border: radioValue == 2 ? '10px solid black' : 'none'
                                 }}
                                 key={2}
                                 id={"radio-2"}

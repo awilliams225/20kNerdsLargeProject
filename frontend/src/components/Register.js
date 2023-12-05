@@ -3,6 +3,8 @@ import { Eye, EyeFill, EyeSlashFill } from 'react-bootstrap-icons';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
+import Tooltip from 'react-bootstrap/ToolTip';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 
 export default function Register() {
 
@@ -12,6 +14,14 @@ export default function Register() {
     const [showPass, setShowPass] = useState(false);
     const [email, setEmail] = useState('');
     const [passValid, setPassValid] = useState(false);
+    const [show, setShow] = useState(false);
+
+    const [showCount, setShowCount] = useState(false);
+    const [showUpper, setShowUpper] = useState(false);
+    const [showLower, setShowLower] = useState(false);
+    const [showNum, setShowNum] = useState(false);
+    const [showSpecial, setShowSpecial] = useState(false);
+    const [showPassValid, setShowPassValid] = useState(false);
 
     const app_name = 'fight-or-flight-20k-5991cb1c14ef'
     function buildPath(route) {
@@ -30,7 +40,7 @@ export default function Register() {
 
         if (!passValid)
         {
-            validSpan.innerHTML = 'This password is invalid!';
+            setShowPassValid(true);
             return;
         }
 
@@ -74,15 +84,9 @@ export default function Register() {
 
     const handlePasswordChange = (event) => {
         const validSpan = document.getElementById('passValidSpan');
-        validSpan.innerHTML = '';
+        setShowPassValid(false);
 
         var pass = event.target.value;
-
-        const lengthSpan = document.getElementById('passLengthSpan');
-        const upperSpan = document.getElementById('passUpperSpan');
-        const lowerSpan = document.getElementById('passLowerSpan');
-        const numSpan = document.getElementById('passNumberSpan');
-        const specialSpan = document.getElementById('passSpecialSpan');
 
         const upperCheck = /[A-Z]/g
         const lowerCheck = /[a-z]/g
@@ -91,42 +95,48 @@ export default function Register() {
         const allCheck =  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&^])[A-Za-z\d@.#$!%*?&]{8,100}$/;
 
         if (pass.length < 8) {
-            lengthSpan.innerHTML = '* Please make password 8 characters or more';
+            setShowCount(true);
             setPassValid(false);
+            setShow(true);
         }
         else
-            lengthSpan.innerHTML = '';
+            setShowCount(false);
 
         if (!pass.match(upperCheck)) {
-            upperSpan.innerHTML = '* Please include at least 1 uppercase letter';
+            setShowUpper(true);
             setPassValid(false);
+            setShow(true);
         }
         else
-            upperSpan.innerHTML = '';
+            setShowUpper(false);
 
         if (!pass.match(lowerCheck)) {
-            lowerSpan.innerHTML = '* Please include at least 1 lowercase letter';
+            setShowLower(true);
             setPassValid(false);
+            setShow(true);
         }
         else
-            lowerSpan.innerHTML = '';
+            setShowLower(false);
 
         if (!pass.match(numCheck)) {
-            numSpan.innerHTML = '* Please include at least 1 number';
+            setShowNum(true);
             setPassValid(false);
+            setShow(true);
         }
         else
-            numSpan.innerHTML = '';        
+            setShowNum(false);        
 
         if (!pass.match(specialCheck)) {
-            specialSpan.innerHTML = '* Please include at least 1 special character';
+            setShowSpecial(true);
             setPassValid(false);
+            setShow(true);
         }
         else
-            specialSpan.innerHTML = '';   
+            setShowSpecial(false);   
 
         if (pass.match(allCheck)) {
             setPassValid(true);
+            setShow(false);
         }
 
         setPassword(pass);
@@ -152,9 +162,21 @@ export default function Register() {
         setShowPass((prev) => !prev);
     }
 
+    const passToolTip = (
+        <Tooltip>
+            <span className='text-light' id='passValidSpan' style={{ display: showPassValid ? "inline" : "none" }}>This password is invalid!</span><br />
+            <span className='text-light small' id='passLengthSpan' style={{ display: showCount ? "inline" : "none" }}>* Please make password 8 characters or more</span><br />
+            <span className='text-light small' id='passUpperSpan' style={{ display: showUpper ? "inline" : "none" }}>* Please include at least 1 uppercase letter</span><br />
+            <span className='text-light small' id='passLowerSpan' style={{ display: showLower ? "inline" : "none" }}>* Please include at least 1 lowercase letter</span><br />
+            <span className='text-light small' id='passNumberSpan' style={{ display: showNum ? "inline" : "none" }}>* Please include at least 1 number</span><br />
+            <span className='text-light small' id='passSpecialSpan' style={{ display: showSpecial ? "inline" : "none" }}>* Please include at least 1 special character</span><br />
+        </Tooltip>
+    )
+
     return (
         <>
             <h2 className='h2'>Signup</h2>
+            <OverlayTrigger placement="bottom" delay={{ show: 250, hide: 400 }} overlay={passToolTip} show={show}>
             <Form onKeyUp={handleKeyPress}>
                 <Form.Control type='username' placeholder='Username' onChange={handleUsernameChange}/>
                 <InputGroup className='mt-2'>
@@ -164,15 +186,11 @@ export default function Register() {
                     </InputGroup.Text>
                 </InputGroup>
                 <Form.Control className='mt-2' type='email' placeholder='Email' onChange={handleEmailChange}/>
-                <Button className='mt-2' variant='primary' onClick={doRegister}>Register</Button>
+                    <Button className='mt-2' variant='primary' onClick={doRegister}>Register</Button>
             </Form>
+            </OverlayTrigger>
             <span id="registerResult">{message}</span>
-            <span className='text-light small' id='passValidSpan'></span><br />
-            <span className='text-light small' id='passLengthSpan'></span><br />
-            <span className='text-light small' id='passUpperSpan'></span><br />
-            <span className='text-light small' id='passLowerSpan'></span><br />
-            <span className='text-light small' id='passNumberSpan'></span><br />
-            <span className='text-light small' id='passSpecialSpan'></span><br />
+            
         </>
     );
 }

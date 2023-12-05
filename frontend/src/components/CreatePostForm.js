@@ -38,8 +38,8 @@ export default function CreatePostForm(props) {
         }
     }
 
-    const handleSubmit = async () => {
-
+    const handleSubmit = async (event) => {
+        event.preventDefault();
         let userData = localStorage.getItem('user_data');
         if (!userData) {
             return;

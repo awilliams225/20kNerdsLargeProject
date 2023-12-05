@@ -34,7 +34,9 @@ export default function CreateReplyForm(props) {
         }
     }
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (event) => {
+
+        event.preventDefault();
 
         let userData = localStorage.getItem('user_data');
         if (!userData) {

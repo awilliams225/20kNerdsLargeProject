@@ -3,7 +3,7 @@ import { Eye, EyeFill, EyeSlashFill } from 'react-bootstrap-icons';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
-import Tooltip from 'react-bootstrap/ToolTip';
+import ToolTip from 'react-bootstrap/ToolTip';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 
 export default function Register() {

@@ -1,15 +1,15 @@
 @import "../node_modules/bootstrap/scss/functions";
 @import "../node_modules/bootstrap/scss/variables";
 
-$primary-fight: #aa1c00;
+$primary-fight: #82000D;
 $secondary-fight: #382727;
 $tertiary-fight: #f05941;
 $success-fight: #9ade7b;
 $info-fight: #ff8f8f;
 $warning-fight: $gray-600;
-$danger-fight: $black;
-$light-fight: #f07841;
-$dark-fight: #5a0606;
+$danger-fight: black;
+$light-fight: #FFFFFF;
+$dark-fight: #D90429;
 
 $primary-text-emphasis-fight:        tint-color($primary-fight, 70%) !default;
 $secondary-text-emphasis-fight:      tint-color($secondary-fight, 40%) !default;
@@ -18,7 +18,7 @@ $info-text-emphasis-fight:           tint-color($info-fight, 40%) !default;
 $warning-text-emphasis-fight:        tint-color($warning-fight, 40%) !default;
 $danger-text-emphasis-fight:         tint-color($danger-fight, 40%) !default;
 $light-text-emphasis-fight:          tint-color($light-fight, 40%) !default;
-$dark-text-emphasis-fight:           tint-color($dark-fight, 40%) !default;
+$dark-text-emphasis-fight:           tint-color($danger-fight, 40%) !default;
 
 $primary-bg-subtle-fight:            shade-color($primary-fight, 80%) !default;
 $secondary-bg-subtle-fight:          shade-color($secondary-fight, 80%) !default;

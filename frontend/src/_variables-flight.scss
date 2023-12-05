@@ -1,15 +1,15 @@
 @import "../node_modules/bootstrap/scss/functions";
 @import "../node_modules/bootstrap/scss/variables";
 
-$primary-flight: #47a7eb;
-$secondary-flight: #44627a;
+$primary-flight: #304E94;
+$secondary-flight: #1A1A40;
 $tertiary-flight: #3e92cc;
 $success-flight: #9ade7b;
 $info-flight: #3e92cc;
 $warning-flight: $gray-600;
 $danger-flight: $black;
-$light-flight: #3e92cc;
-$dark-flight: #13293d;
+$light-flight: #FFFFFF;
+$dark-flight: #5679B6;
 
 $primary-text-emphasis-flight:        tint-color($primary-flight, 40%) !default;
 $secondary-text-emphasis-flight:      tint-color($secondary-flight, 40%) !default;
@@ -18,7 +18,7 @@ $info-text-emphasis-flight:           tint-color($info-flight, 40%) !default;
 $warning-text-emphasis-flight:        tint-color($warning-flight, 40%) !default;
 $danger-text-emphasis-flight:         tint-color($danger-flight, 40%) !default;
 $light-text-emphasis-flight:          tint-color($light-flight, 40%) !default;
-$dark-text-emphasis-flight:           tint-color($dark-flight, 40%) !default;
+$dark-text-emphasis-flight:           tint-color($danger-flight, 40%) !default;
 
 $primary-bg-subtle-flight:            shade-color($primary-flight, 80%) !default;
 $secondary-bg-subtle-flight:          shade-color($secondary-flight, 80%) !default;

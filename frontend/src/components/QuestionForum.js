@@ -8,6 +8,8 @@ import Card from 'react-bootstrap/Card';
 import Spinner from 'react-bootstrap/Spinner';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Collapse from 'react-bootstrap/Collapse';
+import { FaCheck } from "react-icons/fa";
+import { FaQuestion } from "react-icons/fa";
 
 import React, { useState, useEffect, useContext } from 'react';
 import { StanceContext } from './StanceContext';
@@ -22,7 +24,7 @@ export default function QuestionForum() {
     const [active, setActive] = useState("");
     const [checked, setChecked] = useState(false);
     const [panelOpen, setPanelOpen] = useState(false);
-    const [radioValue, setRadioValue] = useState('');
+    const [radioValue, setRadioValue] = useState(0);
 
     const [questions, setQuestions] = useState({});
     const [numQuestions, setNumQuestions] = useState({});
@@ -217,11 +219,15 @@ export default function QuestionForum() {
                     <Paginator activePage={page} numPages={Math.ceil(numQuestions / questionsPerPage)}/>
                     <ListGroup>
                         {questionList.map((question) => (
-                            <ListGroup.Item action variant={ answers.includes(question._id) ? "tertiary" : "dark" } className="my-3 shadow border-5" onClick={async (e) => await selectQuestion(question)}>
+                            <ListGroup.Item action variant={ answers.includes(question._id) ? "tertiary" : "dark" } className="my-3 shadow border-0" onClick={async (e) => await selectQuestion(question)}
+                                style={{borderRadius: '15px', width:'90%', alignSelf: 'center'}}>
                                 <Card>
                                     <Card.Body>
-                                        <Card.Title>{question.text}</Card.Title>
-                                        <Card.Text>{ answers.includes(question._id) ? "(Answered)" : "" }</Card.Text>
+                                        <Card.Title>
+                                            {answers.includes(question._id) ? <FaCheck/> : <FaQuestion/>}
+                                            &nbsp;&nbsp;&nbsp;
+                                            {question.text}
+                                        </Card.Title>
                                     </Card.Body>
                                 </Card>
                             </ListGroup.Item>
@@ -323,7 +329,7 @@ export default function QuestionForum() {
                                 key={1}
                                 id={"radio-1"}
                                 type="radio"
-                                variant={"primary-" + stance}
+                                variant={"secondary-" + stance}
                                 name="radio"
                                 value={1}
                                 checked={radioValue === 1}
@@ -335,7 +341,8 @@ export default function QuestionForum() {
                             <ToggleButton className="w-50 d-flex align-items-center justify-content-center"
                                 style={{
                                     height: '40vh', borderRadius: '0', padding: '5vw',
-                                    position: 'relative', zIndex:'0', border: radioValue == 2 ? '10px solid black' : 'none'
+                                    position: 'relative', zIndex:'0', border: radioValue == 2 ? '10px solid black' : 'none',
+                                    borderLeftWidth: '5px', borderLeftColor: 'white'
                                 }}
                                 key={2}
                                 id={"radio-2"}
@@ -368,7 +375,7 @@ export default function QuestionForum() {
                                 width: '25%', height: '10vh'
                             }} 
                                 onClick={ () => setPanelOpen(false) }
-                                variant='secondary'
+                                variant={'primary-' + stance}
                                 aria-controls="choose-answer-panel lonely-stance-button"
                                 aria-expanded={false}
                             >
@@ -382,7 +389,7 @@ export default function QuestionForum() {
                                 key={3}
                                 //className={(active != "1" || active != "2") ? "active" : undefined}
                                 id={"3"}
-                                active={radioValue === ''}
+                                disabled={!alreadyAnswered && radioValue === 0}
                             >
                                 { alreadyAnswered ? 'GO TO FORUM' : 'SUBMIT' }
                             </Button>

@@ -86,7 +86,7 @@ function App() {
     
     const wrapElement = (element) => {
         if (isValidated) {
-            document.body.style.backgroundColor = (stance === "fight" ?  "#D66228" : "#17233F");
+            document.body.style.backgroundColor = 'white';
             return (
                 <div data-bs-theme={stance}>
                     {element}

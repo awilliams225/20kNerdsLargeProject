@@ -1,7 +1,8 @@
 import Spinner from 'react-bootstrap/Spinner';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { useParams } from "react-router-dom";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { StanceContext } from './StanceContext';
 import Paginator from './Paginator';
 import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container';
@@ -16,6 +17,7 @@ export default function ProfileReplyContent() {
     const [numReplies, setNumReplies] = useState({});
     const [repliesLoading, setRepliesLoading] = useState(true);
     const [paginationLoading, setPaginationLoading] = useState(true);
+    const {stance, setStance} = useContext(StanceContext);
 
     const repliesPerPage = 5;
 
@@ -94,7 +96,7 @@ export default function ProfileReplyContent() {
                             <Paginator activePage={page} numPages={Math.ceil(numReplies / repliesPerPage)} />
                             {pairList.map((pair) => (
                                 <ListGroup.Item action href={`/question/${pair.post.QuestionSlug}/post/${pair.post.Slug}/`} className="my-3 shadow border-5">
-                                    <Card>
+                                    <Card className="border-5">
                                         <Card.Header>
                                             <Card.Title className="text-center fs-3">Original Post</Card.Title>
                                             <Post post={pair.post} />

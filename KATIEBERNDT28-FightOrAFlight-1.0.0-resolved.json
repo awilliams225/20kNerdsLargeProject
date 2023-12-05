@@ -1,0 +1,862 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "This is the API documentation for COP4331 Large Project, Fight or Flight",
+    "version": "1.0.0",
+    "title": "Fight Or Flight",
+    "contact": {
+      "email": "ka504062@ucf.edu"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "host": "fight-or-flight-20k-5991cb1c14ef.herokuapp.com",
+  "basePath": "/api",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/login": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Logs in to the application",
+        "description": "Logs in to the application",
+        "operationId": "dlLogin",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "loginItem",
+            "description": "login",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/login"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "URL Not Found"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/register": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Adds a user",
+        "description": "Adds a user to the Users database",
+        "operationId": "addUser",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "userItem",
+            "description": "register",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/register"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "URL Not Found"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/registerWithEmail": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Email Verification",
+        "description": "Email Verification endpoint that sends the user and email to verify their account when registering",
+        "operationId": "dlRegisterWithEMail",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "registerWithEmail",
+            "description": "Register With Email",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/registerWithEmail"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "URL Not Found"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/generateToken": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Generate Token",
+        "description": "Generates a Token",
+        "operationId": "generateToken",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "generateTokenItem",
+            "description": "generateToken",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/generateToken"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "URL Not Found"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/validateToken": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Validate Token",
+        "description": "Validates a Token",
+        "operationId": "validateToken",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "validateTokenItem",
+            "description": "validateToken",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/validateToken"
+            }
+          },
+          {
+            "name": "twentythousand_header_key",
+            "in": "header",
+            "description": "jwt",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "URL Not Found"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/forgotPassword": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Forgot Password",
+        "description": "Forgot Password endpoint that sends the user and email to verify they want to change their password and allows password change",
+        "operationId": "dlForgotPassword",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "forgotPasswordItem",
+            "description": "forgotPassword",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/forgotPassword"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "URL Not Found"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/changePassword": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Change Password",
+        "description": "Change Password endpoint that allows the user to change their password",
+        "operationId": "dlChangePassword",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "changePasswordItem",
+            "description": "changePassword",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/changePassword"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "URL Not Found"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/changeUsername": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Change Username",
+        "description": "Change Username endpoint that allows the user to change their username, changes in all collections",
+        "operationId": "dlChangeUsername",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "changeUsernamedItem",
+            "description": "changeUsername",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/changeUsername"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "URL Not Found"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/changeEmail": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Change Email",
+        "description": "Change email endpoint that allows the user to change their email",
+        "operationId": "dlChangeEmail",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "changeEmailItem",
+            "description": "changeEmail",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/changeEmail"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "URL Not Found"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/getUserByEmail": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get User By Email",
+        "description": "Obtains the user information based on the user email",
+        "operationId": "dlGetUserByEmail",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "getUserByEmailItem",
+            "description": "getUserByEMail",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/getUserByEmail"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "URL Not Found"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/addPost": {
+      "post": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Add Post",
+        "description": "Allows the user to add a post",
+        "operationId": "dlAddPost",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "addPostItem",
+            "description": "addPost",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/addPost"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "URL Not Found"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/getPosts": {
+      "post": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Get Posts",
+        "description": "Allows the user to get a post",
+        "operationId": "dlGetPosts",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "getPostsItem",
+            "description": "getPosts",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/getPosts"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "URL Not Found"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/numPosts": {
+      "post": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Number of Posts",
+        "description": "Returns the number of posts for a given question",
+        "operationId": "dlnumPosts",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "numPostsItem",
+            "description": "numPosts",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/numPosts"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "URL Not Found"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/posts/getPostsByUser": {
+      "post": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Get Posts By User",
+        "description": "Allows the user to get posts based on the User",
+        "operationId": "dlGetPostsByUser",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "getPostsByUserItem",
+            "description": "getPostsByUser",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/getPostsByUser"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "URL Not Found"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/posts/countPostsByUser": {
+      "post": {
+        "tags": [
+          "Posts"
+        ],
+        "summary": "Count Posts By User",
+        "description": "Counts the number of posts made by a user",
+        "operationId": "dlCountPostsByUser",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "countPostsByUserItem",
+            "description": "countPostsByUser",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/countPostsByUser"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "URL Not Found"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "login": {
+      "type": "object",
+      "required": [
+        "login",
+        "password"
+      ],
+      "properties": {
+        "login": {
+          "type": "string",
+          "example": "Yumekki"
+        },
+        "password": {
+          "type": "string",
+          "example": "NewPassword123!"
+        }
+      }
+    },
+    "register": {
+      "type": "object",
+      "required": [
+        "email",
+        "password",
+        "username"
+      ],
+      "properties": {
+        "username": {
+          "type": "string",
+          "example": "katieb"
+        },
+        "password": {
+          "type": "string",
+          "example": "Password1*"
+        },
+        "email": {
+          "type": "string",
+          "example": "katie.berndt28@gmail.com"
+        }
+      }
+    },
+    "registerWithEmail": {
+      "type": "object",
+      "required": [
+        "email",
+        "userID"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "example": "katie.berndt28@gmail.com"
+        },
+        "userID": {
+          "type": "string",
+          "example": "656f3960bacb1d5c1a4e677c"
+        }
+      }
+    },
+    "generateToken": {
+      "type": "object",
+      "required": [
+        "userId"
+      ],
+      "properties": {
+        "userId": {
+          "type": "string",
+          "example": "656d1fcb2e651b4ac8557c1b"
+        }
+      }
+    },
+    "validateToken": {
+      "type": "object",
+      "required": [
+        "userId"
+      ],
+      "properties": {
+        "userId": {
+          "type": "string",
+          "example": "656d1fcb2e651b4ac8557c1b"
+        }
+      }
+    },
+    "forgotPassword": {
+      "type": "object",
+      "required": [
+        "email",
+        "userID"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "example": "katie.berndt28@gmail.com"
+        },
+        "userID": {
+          "type": "string",
+          "example": "656f3960bacb1d5c1a4e677c"
+        }
+      }
+    },
+    "changePassword": {
+      "type": "object",
+      "required": [
+        "newPassword",
+        "username"
+      ],
+      "properties": {
+        "username": {
+          "type": "string",
+          "example": "Katie"
+        },
+        "newPassword": {
+          "type": "string",
+          "example": "newPass"
+        }
+      }
+    },
+    "changeUsername": {
+      "type": "object",
+      "required": [
+        "newUsername",
+        "username"
+      ],
+      "properties": {
+        "username": {
+          "type": "string",
+          "example": "katieb"
+        },
+        "newUsername": {
+          "type": "string",
+          "example": "KatieB"
+        }
+      }
+    },
+    "changeEmail": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "example": "katie.berndt28@gmail.com"
+        },
+        "newUsername": {
+          "type": "string",
+          "example": "katiemtbike@gmail.com"
+        }
+      }
+    },
+    "getUserByEmail": {
+      "type": "object",
+      "required": [
+        "email"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "example": "katie.berndt28@gmail.com"
+        }
+      }
+    },
+    "addPost": {
+      "type": "object",
+      "required": [
+        "answerId",
+        "content",
+        "questionSlug",
+        "slug",
+        "title",
+        "userId"
+      ],
+      "properties": {
+        "userId": {
+          "type": "string",
+          "example": "656f3960bacb1d5c1a4e677c"
+        },
+        "slug": {
+          "type": "string",
+          "example": "is_pineapple_on_pizza_good"
+        },
+        "content": {
+          "type": "string",
+          "example": ""
+        },
+        "title": {
+          "type": "string",
+          "example": " "
+        },
+        "questionSlug": {
+          "type": "string",
+          "example": "is_pineapple_on_pizza_good"
+        },
+        "answerId": {
+          "type": "string",
+          "example": " "
+        }
+      }
+    },
+    "getPosts": {
+      "type": "object",
+      "required": [
+        "questionSlug",
+        "stance"
+      ],
+      "properties": {
+        "questionSlug": {
+          "type": "string",
+          "example": "is_pineapple_on_pizza_good"
+        },
+        "stance": {
+          "type": "string",
+          "example": "No, it's gross"
+        }
+      }
+    },
+    "numPosts": {
+      "type": "object",
+      "required": [
+        "questionSlug",
+        "response",
+        "stance"
+      ],
+      "properties": {
+        "questionSlug": {
+          "type": "string",
+          "example": "is_pineapple_on_pizza_good"
+        },
+        "stance": {
+          "type": "string",
+          "example": "No, it's gross"
+        },
+        "response": {
+          "type": "string",
+          "example": "Is pineapple on pizza good?"
+        }
+      }
+    },
+    "getPostsByUser": {
+      "type": "object",
+      "required": [
+        "postsPerPage",
+        "userId"
+      ],
+      "properties": {
+        "userId": {
+          "type": "string",
+          "example": "656f3960bacb1d5c1a4e677c"
+        },
+        "postsPerPage": {
+          "type": "string",
+          "example": ""
+        }
+      }
+    },
+    "countPostsByUser": {
+      "type": "object",
+      "required": [
+        "userId"
+      ],
+      "properties": {
+        "userId": {
+          "type": "string",
+          "example": "656f3960bacb1d5c1a4e677c"
+        }
+      }
+    }
+  }
+}

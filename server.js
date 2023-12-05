@@ -251,44 +251,44 @@ app.post('/api/forgotPassword', async (req, res, next) =>
 
 // change the username in all collections
 app.post('/api/changeUsername', async (req, res, next) => {
-
   var error = '';
-  const { username, newUsername } = req.body;
-  
-  try {
-    const db = client.db('COP4331_LargeProject');
-    db.collection('Users').updateMany( { Username:username },
-    {
-      $set: {
-        Username: newUsername
-      }
-    })
+  const { userId, newUsername } = req.body;
+  var userObjId = null;
+
+  if (userId != '')
+    userObjId = new ObjectId(userId);
+  else {
+    error = "User not found!";
+    var ret = { error: error };
+    res.status(401).json(ret);
+    return;
   }
-  catch (e) {
-    error = e.toString();
+
+  userQuery = {
+    $and: [
+      { "_id": { $exists: true } },
+      { "_id": userObjId },
+    ]
   }
+
 
   try {
     const db = client.db('COP4331_LargeProject');
-    db.collection('Replies').updateMany( { Username:username },
-    {
+    await db.collection('Post').updateMany({UserId: userId}, {
       $set: {
         Username: newUsername
       }
     })
-  }
-  catch (e) {
-    error = e.toString();
-  }
-
-  try {
-    const db = client.db('COP4331_LargeProject');
-    db.collection('Post').updateMany( { Username:username },
-    {
+    await db.collection('Replies').updateMany({userId: userId}, {
+      $set: {
+        username: newUsername
+      }
+    })
+    await db.collection('Users').updateOne(userQuery, {
       $set: {
         Username: newUsername
       }
-    })
+    });
   }
   catch (e) {
     error = e.toString();
@@ -296,8 +296,7 @@ app.post('/api/changeUsername', async (req, res, next) => {
 
   var ret = { newUsername: newUsername, error: error };
   res.status(200).json(ret);
-
-});
+})
 
 app.post('/api/changePassword', async (req, res, next) => {
 

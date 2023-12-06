@@ -396,7 +396,7 @@ export default function QuestionForum() {
                         </ButtonGroup>
                     </Row>
                     <Row className="d-flex align-items-center justify-content-center">
-                        <Button style={{width: '10vw', marginTop: '-75vh', position: 'absolute'}} action variant={randomVariant()} onClick={async (e) => await grabRandQuestion()}><GiPerspectiveDiceSixFacesRandom size={30} />RANDOM!<GiPerspectiveDiceSixFacesRandom size={30} /></Button>
+                        <Button style={{width: '10vw', marginTop: '-35vh', position: 'absolute'}} action variant={randomVariant()} onClick={async (e) => await grabRandQuestion()}><GiPerspectiveDiceSixFacesRandom size={30} />RANDOM!<GiPerspectiveDiceSixFacesRandom size={30} /></Button>
                         <div className="d-flex align-items-center justify-content-center shadow"
                             style={{
                                 backgroundColor: 'white', width: '60vw',

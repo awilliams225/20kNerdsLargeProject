@@ -147,7 +147,7 @@ export default function Register() {
 
     return (
         <>
-            <h2 className='h2'>Signup</h2>
+            <h2 className='h2' style={{color: 'white'}}>Signup</h2>
             <Form>
                 <Form.Control type='username' placeholder='Username' onChange={handleUsernameChange}/>
                 <InputGroup className='mt-2'>
@@ -157,7 +157,7 @@ export default function Register() {
                     </InputGroup.Text>
                 </InputGroup>
                 <Form.Control className='mt-2' type='email' placeholder='Email' onChange={handleEmailChange}/>
-                <Button className='mt-2' variant='primary' onClick={doRegister}>Register</Button>
+                <Button className='mt-2' variant='dark' onClick={doRegister}>Register</Button>
             </Form>
             <span id="registerResult">{message}</span>
             <span className='text-light small' id='passValidSpan'></span><br />

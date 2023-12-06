@@ -10,6 +10,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import Collapse from 'react-bootstrap/Collapse';
 import { FaCheck } from "react-icons/fa";
 import { FaQuestion } from "react-icons/fa";
+import { GiPerspectiveDiceSixFacesRandom } from "react-icons/gi";
 
 import React, { useState, useEffect, useContext } from 'react';
 import { StanceContext } from './StanceContext';
@@ -113,26 +114,9 @@ export default function QuestionForum() {
             }
         }
 
-        const grabRandQuestion = async () => {
-            setRandLoading(true);
-
-            const response = await fetch(buildPath("api/questions/getRandom"), { method: 'GET', headers: { 'Content-Type': 'application/json' } });
-
-            if (response != null) {
-                const json = await response.json();
-                await checkAnswered(json.question);
-                setCurrQuestion(json.question);
-                setRandLoading(false);
-            }
-            else {
-                console.log("Response is null");
-            }
-        }
-
         grabAnswers();
         grabQuestions();
         grabNumQuestions();
-        grabRandQuestion();
     }, [page]);
 
     function printResponses(side) {
@@ -195,6 +179,33 @@ export default function QuestionForum() {
 
     }
 
+    const grabRandQuestion = async () => {
+        setRandLoading(true);
+
+        const userData = localStorage.getItem('user_data');
+        const userId = JSON.parse(userData).id;
+
+        const obj = { userID: userId };
+
+        var js = JSON.stringify(obj);
+
+        const response = await fetch(buildPath("api/questions/getRandomUnanswered"), { method: 'POST', body:js, headers: { 'Content-Type': 'application/json' } });
+
+        if (response != null) {
+            const json = await response.json();
+            await checkAnswered(json.question);
+            setCurrQuestion(json.question);
+            setRandLoading(false);
+
+            if (!panelOpen) {
+                setPanelOpen(true);
+            }
+        }
+        else {
+            console.log("Response is null");
+        }
+    }
+
     const selectQuestion = async (question) => {
          
         await checkAnswered(question);
@@ -205,6 +216,12 @@ export default function QuestionForum() {
             setPanelOpen(true);
         }
 
+    }
+
+    const randomVariant = () => {
+        const variants = ["primary", "success", "danger", "warning", "info"];
+
+        return variants[Math.floor(Math.random() * variants.length)];
     }
 
     const renderQuestions = () => {
@@ -359,6 +376,7 @@ export default function QuestionForum() {
                         </ButtonGroup>
                     </Row>
                     <Row className="d-flex align-items-center justify-content-center">
+                        <Button style={{width: '10vw', marginTop: '-75vh', position: 'absolute'}} action variant={randomVariant()} onClick={async (e) => await grabRandQuestion()}><GiPerspectiveDiceSixFacesRandom size={30} />RANDOM!<GiPerspectiveDiceSixFacesRandom size={30} /></Button>
                         <div className="d-flex align-items-center justify-content-center shadow"
                             style={{
                                 backgroundColor: 'white', width: '60vw',

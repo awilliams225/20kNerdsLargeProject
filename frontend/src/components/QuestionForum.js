@@ -8,9 +8,12 @@ import Card from 'react-bootstrap/Card';
 import Spinner from 'react-bootstrap/Spinner';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Collapse from 'react-bootstrap/Collapse';
+
 import { FaCheck } from "react-icons/fa";
 import { FaQuestion } from "react-icons/fa";
 import { GiPerspectiveDiceSixFacesRandom } from "react-icons/gi";
+import { LuSwords } from "react-icons/lu";
+import { GiHeartWings } from "react-icons/gi";
 
 import React, { useState, useEffect, useContext } from 'react';
 import { StanceContext } from './StanceContext';
@@ -229,6 +232,7 @@ export default function QuestionForum() {
         return variants[Math.floor(Math.random() * variants.length)];
     }
 
+
     const renderQuestions = () => {
         if (questionsLoading || paginationLoading) {
             return <Spinner animation="border" />;
@@ -246,9 +250,15 @@ export default function QuestionForum() {
                                 <Card>
                                     <Card.Body>
                                         <Card.Title>
-                                            {answers.includes(question._id) ? <FaCheck/> : <FaQuestion/>}
-                                            &nbsp;&nbsp;&nbsp;
-                                            {question.text}
+                                            <span style={{display: "inline-block", width: '50%', textAlign: 'left'}}>
+                                                {answers.includes(question._id) ? <FaCheck/> : <FaQuestion/>}
+                                                &nbsp;&nbsp;&nbsp;
+                                                {question.text}
+                                            </span>
+                                            
+                                            <h3 style={{display: "inline-block", width: '50%', textAlign: 'right'}}>
+                                                {(stance === "fight") ? <LuSwords/> : <GiHeartWings/>}
+                                            </h3>
                                         </Card.Title>
                                     </Card.Body>
                                 </Card>
@@ -267,7 +277,9 @@ export default function QuestionForum() {
                     variant={'primary-' + stance} 
                     onClick={ panelOpen && alreadyAnswered ? null : changeStance }
                 >
-                    <span>{ stance.toUpperCase() } MODE</span>
+                    <span>{ stance.toUpperCase() } MODE&nbsp;
+                    <span style={{fontSize: '24px'}}>{(stance === "fight") ? <LuSwords/> : <GiHeartWings/>}</span>
+                    </span>
                     
                     <StanceInfo />
                 </Button> 

@@ -867,13 +867,47 @@ app.get('/api/questions/getRandom', async (req, res, next) => {
   try {
     const db = client.db('COP4331_LargeProject');
     const questions = db.collection("Questions");
-
     const query =  [{ $sample: { size: 1 } }];
 
     randomQuestion = await questions.aggregate(query).next();
 
 
   }
+  catch (e) {
+    error = e.toString();
+  }
+
+  var ret = { question: randomQuestion, error: error };
+  res.status(200).json(ret);
+
+});
+
+// Returns one random unanswered question based on userID
+app.post('/api/questions/getRandomUnanswered', async (req, res, next) => {
+
+  var error = '';
+  var randomQuestion;
+
+  const {userID} = req.body
+
+  const userObjID = new ObjectId(userID);
+
+
+  try {
+    const db = client.db('COP4331_LargeProject');
+    const projection = {question:1, _id : 0};
+
+    const answeredQuestions = await db.collection("Answer").find({user: userObjID}).project(projection).toArray();
+
+    const arrayOfIDs = answeredQuestions.map(obj => obj.question); // Get array of question IDs
+
+    const pipeline = [
+      { $match: { "_id": { $nin: arrayOfIDs } } }, // filter answered questions
+      { $sample: { size: 1 } } // Get a random document
+    ];
+
+    randomQuestion = await db.collection("Questions").aggregate(pipeline).next();
+  } 
   catch (e) {
     error = e.toString();
   }

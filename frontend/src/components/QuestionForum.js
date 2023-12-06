@@ -8,8 +8,12 @@ import Card from 'react-bootstrap/Card';
 import Spinner from 'react-bootstrap/Spinner';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Collapse from 'react-bootstrap/Collapse';
+
 import { FaCheck } from "react-icons/fa";
 import { FaQuestion } from "react-icons/fa";
+import { GiPerspectiveDiceSixFacesRandom } from "react-icons/gi";
+import { LuSwords } from "react-icons/lu";
+import { GiHeartWings } from "react-icons/gi";
 
 import React, { useState, useEffect, useContext } from 'react';
 import { StanceContext } from './StanceContext';
@@ -113,26 +117,9 @@ export default function QuestionForum() {
             }
         }
 
-        const grabRandQuestion = async () => {
-            setRandLoading(true);
-
-            const response = await fetch(buildPath("api/questions/getRandom"), { method: 'GET', headers: { 'Content-Type': 'application/json' } });
-
-            if (response != null) {
-                const json = await response.json();
-                await checkAnswered(json.question);
-                setCurrQuestion(json.question);
-                setRandLoading(false);
-            }
-            else {
-                console.log("Response is null");
-            }
-        }
-
         grabAnswers();
         grabQuestions();
         grabNumQuestions();
-        grabRandQuestion();
     }, [page]);
 
     function printResponses(side) {
@@ -195,6 +182,38 @@ export default function QuestionForum() {
 
     }
 
+    const grabRandQuestion = async () => {
+
+        if (Math.floor(Math.random() * 100) == 0) {
+            window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "_blank", "noreferrer");
+        }
+
+        setRandLoading(true);
+
+        const userData = localStorage.getItem('user_data');
+        const userId = JSON.parse(userData).id;
+
+        const obj = { userID: userId };
+
+        var js = JSON.stringify(obj);
+
+        const response = await fetch(buildPath("api/questions/getRandomUnanswered"), { method: 'POST', body:js, headers: { 'Content-Type': 'application/json' } });
+
+        if (response != null) {
+            const json = await response.json();
+            await checkAnswered(json.question);
+            setCurrQuestion(json.question);
+            setRandLoading(false);
+
+            if (!panelOpen) {
+                setPanelOpen(true);
+            }
+        }
+        else {
+            console.log("Response is null");
+        }
+    }
+
     const selectQuestion = async (question) => {
          
         await checkAnswered(question);
@@ -206,6 +225,13 @@ export default function QuestionForum() {
         }
 
     }
+
+    const randomVariant = () => {
+        const variants = ["primary", "success", "danger", "warning", "info"];
+
+        return variants[Math.floor(Math.random() * variants.length)];
+    }
+
 
     const renderQuestions = () => {
         if (questionsLoading || paginationLoading) {
@@ -224,9 +250,15 @@ export default function QuestionForum() {
                                 <Card>
                                     <Card.Body>
                                         <Card.Title>
-                                            {answers.includes(question._id) ? <FaCheck/> : <FaQuestion/>}
-                                            &nbsp;&nbsp;&nbsp;
-                                            {question.text}
+                                            <span style={{display: "inline-block", width: '50%', textAlign: 'left'}}>
+                                                {answers.includes(question._id) ? <FaCheck/> : <FaQuestion/>}
+                                                &nbsp;&nbsp;&nbsp;
+                                                {question.text}
+                                            </span>
+                                            
+                                            <h3 style={{display: "inline-block", width: '50%', textAlign: 'right'}}>
+                                                {(stance === "fight") ? <LuSwords/> : <GiHeartWings/>}
+                                            </h3>
                                         </Card.Title>
                                     </Card.Body>
                                 </Card>
@@ -245,7 +277,9 @@ export default function QuestionForum() {
                     variant={'primary-' + stance} 
                     onClick={ panelOpen && alreadyAnswered ? null : changeStance }
                 >
-                    <span>{ stance.toUpperCase() } MODE</span>
+                    <span>{ stance.toUpperCase() } MODE&nbsp;
+                    <span style={{fontSize: '24px'}}>{(stance === "fight") ? <LuSwords/> : <GiHeartWings/>}</span>
+                    </span>
                     
                     <StanceInfo />
                 </Button> 
@@ -359,6 +393,7 @@ export default function QuestionForum() {
                         </ButtonGroup>
                     </Row>
                     <Row className="d-flex align-items-center justify-content-center">
+                        <Button style={{width: '10vw', marginTop: '-75vh', position: 'absolute'}} action variant={randomVariant()} onClick={async (e) => await grabRandQuestion()}><GiPerspectiveDiceSixFacesRandom size={30} />RANDOM!<GiPerspectiveDiceSixFacesRandom size={30} /></Button>
                         <div className="d-flex align-items-center justify-content-center shadow"
                             style={{
                                 backgroundColor: 'white', width: '60vw',

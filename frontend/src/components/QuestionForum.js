@@ -180,6 +180,11 @@ export default function QuestionForum() {
     }
 
     const grabRandQuestion = async () => {
+
+        if (Math.floor(Math.random() * 100) == 0) {
+            window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "_blank", "noreferrer");
+        }
+
         setRandLoading(true);
 
         const userData = localStorage.getItem('user_data');

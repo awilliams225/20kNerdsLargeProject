@@ -34,11 +34,12 @@ export default function QuestionForum() {
     const [numQuestions, setNumQuestions] = useState({});
     const [questionsLoading, setQuestionsLoading] = useState(true);
     const [paginationLoading, setPaginationLoading] = useState(true);
-    const [randLoading, setRandLoading] = useState(true);
+    const [randLoading, setRandLoading] = useState(false);
     const [responsesLoading, setResponsesLoading] = useState(false);
 
     const {stance, setStance} = useContext(StanceContext);
     const [currQuestion, setCurrQuestion] = useState({});
+    const [questionSelected, setQuestionSelected] = useState(false);
     const [currAnswer, setCurrAnswer] = useState({});
     const [alreadyAnswered, setAlreadyAnswered] = useState(false);
     const [answers, setAnswers] = useState([]);
@@ -123,7 +124,7 @@ export default function QuestionForum() {
     }, [page]);
 
     function printResponses(side) {
-        if (randLoading || responsesLoading) {
+        if (randLoading || responsesLoading || !questionSelected) {
             return <Spinner animation="border" />;
         }
         else {
@@ -203,6 +204,7 @@ export default function QuestionForum() {
             const json = await response.json();
             await checkAnswered(json.question);
             setCurrQuestion(json.question);
+            setQuestionSelected(true);
             setRandLoading(false);
 
             if (!panelOpen) {
@@ -219,6 +221,7 @@ export default function QuestionForum() {
         await checkAnswered(question);
 
         setCurrQuestion(question);
+        setQuestionSelected(true);
 
         if (!panelOpen) {
             setPanelOpen(true);
@@ -393,7 +396,7 @@ export default function QuestionForum() {
                         </ButtonGroup>
                     </Row>
                     <Row className="d-flex align-items-center justify-content-center">
-                        <Button style={{width: '10vw', marginTop: '-75vh', position: 'absolute'}} action variant={randomVariant()} onClick={async (e) => await grabRandQuestion()}><GiPerspectiveDiceSixFacesRandom size={30} />RANDOM!<GiPerspectiveDiceSixFacesRandom size={30} /></Button>
+                        <Button style={{width: '10vw', marginTop: '-35vh', position: 'absolute'}} action variant={randomVariant()} onClick={async (e) => await grabRandQuestion()}><GiPerspectiveDiceSixFacesRandom size={30} />RANDOM!<GiPerspectiveDiceSixFacesRandom size={30} /></Button>
                         <div className="d-flex align-items-center justify-content-center shadow"
                             style={{
                                 backgroundColor: 'white', width: '60vw',

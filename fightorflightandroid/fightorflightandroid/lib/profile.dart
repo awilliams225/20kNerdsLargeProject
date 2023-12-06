@@ -7,7 +7,6 @@ import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'package:provider/provider.dart';
-//import 'package:fightorflightandroid/provider.dart';
 
 
 TextEditingController usernameController = TextEditingController();
@@ -31,9 +30,6 @@ Future<void> changeUsername(String userId, context, String username) async {
   print('Response body: ${response.body}');
   Map<String, dynamic> jsonMap = jsonDecode(response.body);
   if (response.statusCode == 200) {
-    //  userProvider.setUsername = jsonMap['newUsername'];
-    // Navigator.pop(context);
-    //Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage(userId: userId, username: username)));
   } else {
     print("Username wasn't changed. Please try again.");
   }
@@ -57,7 +53,6 @@ Future<void> changePassword(String userId) async {
   if (response.statusCode == 200) {
     print("password changed");
   } else {
-    // The request failed or the response is not a 200 Created status.
     print("Password not changed. Please try again.");
   }
 }
@@ -80,7 +75,6 @@ Future<void> changeEmail(String userId) async {
   if (response.statusCode == 200) {
     print("email changed");
   } else {
-    // The request failed or the response is not a 200 Created status.
     print("Email not changed. Please try again.");
   }
 }
@@ -117,8 +111,6 @@ class _ProfilePageState extends State<ProfilePage> {
     usernameController.clear();
     passwordController.clear();
     emailController.clear();
-    // var userProvider = Provider.of<UserProvider>(context);
-    // String username3 = userProvider.username;
     return Scaffold(
       backgroundColor: Color(0xff8c3f98),
       appBar: AppBar(
@@ -140,13 +132,12 @@ class _ProfilePageState extends State<ProfilePage> {
               'Profile',textAlign: TextAlign.center,
               style: GoogleFonts.outfit(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
             ),
-            //SizedBox(height: 20),
-            //Icon(Icons.account_circle, size: 50, color: Colors.white),
+
             SizedBox(height: 20),
             Container(
                 decoration: BoxDecoration(
                   color: Color(0xff063093),
-                  borderRadius: BorderRadius.circular(16.0), // Adjust the radius as needed
+                  borderRadius: BorderRadius.circular(16.0), 
                 ),
                 margin: EdgeInsets.only(left:50, right:50, top:10, bottom:10),
                 padding: EdgeInsets.only(top:10, bottom:5, right:20, left:20),
@@ -222,10 +213,6 @@ class _ProfilePageState extends State<ProfilePage> {
               onPressed: () {
                 if(usernameController.text != ''){
                   changeUsername(userId1, context, username);
-                 /* usernameController.clear();
-                  passwordController.clear();
-                  emailController.clear();*/
-                  //  userProvider.updateUser(userId1, usernameController.text);
                 }
                 if(passwordController.text != ''){
                   changePassword(userId1);

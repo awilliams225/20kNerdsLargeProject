@@ -116,28 +116,6 @@ class _ForumPageState extends State<ForumPage>  {
     futureAlbum =  printSlug(widget.slugtoforum, widget.selectedGameMode, receivedInt2);
    // selectedColors = (selection == GameMode.fightMode) ? AppColorSchemes.fightModeColors : AppColorSchemes.flightModeColors;
   }
-
-  /*
-  void _refreshPage() {
-    setState(() {
-      Navigator.pop(context);
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ForumPage(
-              slugtoforum: widget.slugtoforum1,
-              selectedGameMode: widget.selectedGameMode1,
-              receivedInt: receivedInt2,
-              answerId: widget.answerident,
-              userId: widget.userId1,
-              username: widget.username1,
-              selectionString: widget.selectionString1
-          ),
-        ),
-      );
-    });
-  }*/
-
   @override
   Widget build(BuildContext context) {
    return Scaffold(
@@ -209,7 +187,7 @@ class _ForumPageState extends State<ForumPage>  {
         future: futureAlbum,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            // If the Future is still running, you can return a loading indicator
+            
             return CircularProgressIndicator();
           }
     else if (snapshot.hasError) {
@@ -277,13 +255,11 @@ class _ForumPageState extends State<ForumPage>  {
                     child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Left Section: Profile Picture, Username, Timestamp
                           Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Container(
-                                  //      padding: EdgeInsets.all(),
                                   margin: EdgeInsets.only( right: 30),
                                   width: 30,
                                   height: 30,
@@ -328,7 +304,7 @@ class _ForumPageState extends State<ForumPage>  {
                                   ]),
                                 ),]),
                           SizedBox(width: 30),
-                          Expanded( // Wrap the content in an Expanded widget to allow it to take the remaining space
+                          Expanded( 
                             child: Container(
                               margin: EdgeInsets.only(top: 10),
                               child: Column(
